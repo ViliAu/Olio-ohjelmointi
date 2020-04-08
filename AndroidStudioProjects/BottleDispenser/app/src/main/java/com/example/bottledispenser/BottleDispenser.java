@@ -1,13 +1,12 @@
 package com.example.bottledispenser;
 
 import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.Locale;
 
 import android.content.Context;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class BottleDispenser {
 
@@ -15,15 +14,14 @@ public class BottleDispenser {
     private float money;
 
     // Other
-    ArrayList<Bottle> bottleList;
-    ArrayAdapter<Bottle> bottleAdapter;
-    Context context;
-    FileHandler fh;
+    private ArrayList<Bottle> bottleList;
+    private ArrayAdapter<Bottle> bottleAdapter;
+    private Context context;
+    private FileHandler fh;
 
     //UI Elements
-    TextView contents;
-    TextView textField2;
-    Spinner spinner;
+    private TextView contents;
+    private Spinner spinner;
 
     private static BottleDispenser bd;
     public static BottleDispenser getInstance(Spinner spin, Context c, TextView contents) {
@@ -33,7 +31,7 @@ public class BottleDispenser {
         return bd;
     }
 
-    public BottleDispenser(Spinner spin, Context c, TextView txtview) {
+    private BottleDispenser(Spinner spin, Context c, TextView txtview) {
         fh = new FileHandler(c);
         this.spinner = spin;
         contents = txtview;
@@ -58,7 +56,7 @@ public class BottleDispenser {
 
     public void addMoney(float money) {
         this.money += money;
-        contents.setText(String.format("Klink! Added more money!\n Amount: %.2f€", money));
+        contents.setText(String.format(Locale.getDefault(),"Klink! Added more money!\n Amount: %.2f€", money));
     }
 
     public void buyBottle() {
@@ -74,7 +72,8 @@ public class BottleDispenser {
 
         money -= b.price;
         bottleList.remove(b);
-        fh.writeFile("receipt.txt", String.format("RECEIPT:\n\nPRICE: %.2f€\nMANUFACTURER: %s\nNAME: %s\nSIZE: %.2fl\nENERGY: %.2fkCal", b.price, b.getManufacturer(), b.getName(), b.size, b.getEnergy()));
+        fh.writeFile("receipt.txt", String.format(Locale.getDefault(), "RECEIPT:\n\nPRICE: %.2f€\nMANUFACTURER: %s\nNAME: %s\nSIZE: %.2fl\nENERGY: %.2fkCal",
+                b.price, b.getManufacturer(), b.getName(), b.size, b.getEnergy()));
         bottleAdapter.notifyDataSetChanged();
         contents.setText("KACHUNK! " + b.getName() + " came out of the dispenser!");
     }
@@ -84,7 +83,7 @@ public class BottleDispenser {
             contents.setText("No money left in the dispenser!");
             return 0;
         }
-        contents.setText(String.format("Klink klink. Money came out!\nYou got %.2f€ back\n", money));
+        contents.setText(String.format(Locale.getDefault(),"Klink klink. Money came out!\nYou got %.2f€ back\n", money));
         float returnMoney = money;
         money = 0;
         return returnMoney;

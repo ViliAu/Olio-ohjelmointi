@@ -11,7 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Button;
 
-import java.util.Random;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     //Primitives
@@ -81,8 +81,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateMoneyTexts() {
-        customerMoney.setText(String.format("Money left: %.2f€", money));
-        machineMoney.setText(String.format("Money added: %.2f€", bd.getMoney()));
+        customerMoney.setText(String.format(Locale.getDefault(),"Money left: %.2f€", money));
+        machineMoney.setText(String.format(Locale.getDefault(),"Money added: %.2f€", bd.getMoney()));
     }
 
     /* Implements UI Element functionality */
