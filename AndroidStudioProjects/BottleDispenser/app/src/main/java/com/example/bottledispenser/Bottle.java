@@ -32,4 +32,11 @@ public class Bottle {
         return total_energy;
     }
 
+    @Override
+    public String toString() {
+        String spinnerText = "";
+        spinnerText = String.format("%s - %.2fl - %.2f€", name, size, price);
+        return spinnerText;
+    }
+
 }

@@ -12,91 +12,98 @@ import android.widget.Toast;
 public class BottleDispenser {
 
     // Primitives
-    private int bottles;
     private float money;
 
     // Other
-    ArrayList<Bottle> bottle_array;
+    ArrayList<Bottle> bottleList;
+    ArrayAdapter<Bottle> bottleAdapter;
     Context context;
+    FileHandler fh;
 
     //UI Elements
     TextView contents;
     TextView textField2;
-    Spinner spin;
+    Spinner spinner;
 
     private static BottleDispenser bd;
-    public static BottleDispenser getInstance(Spinner spin, Context c, TextView txtview, TextView l) {
+    public static BottleDispenser getInstance(Spinner spin, Context c, TextView contents) {
         if (bd == null) {
-            bd = new BottleDispenser(spin, c, txtview, l);
+            bd = new BottleDispenser(spin, c, contents);
         }
         return bd;
     }
 
-    // Overload for Customer class
-    public static BottleDispenser getInstance() {
-        return bd;
-    }
-
-    public BottleDispenser(Spinner spin, Context c, TextView txtview, TextView l) {
-        this.spin = spin;
+    public BottleDispenser(Spinner spin, Context c, TextView txtview) {
+        fh = new FileHandler(c);
+        this.spinner = spin;
         contents = txtview;
         context = c;
-        bottles = 5;
         money = 0;
         // Initialize the array
-        bottle_array = new ArrayList<Bottle>();
+        bottleList = new ArrayList<Bottle>(5);
+        addBottles();
 
-        //Add bottles
-        bottle_array.add(new Bottle("Pepsi Max", "Pepsi", 0.3d, 0.5f, 1.8f));
-        bottle_array.add(new Bottle("Pepsi Max", "Pepsi", 0.3d, 1.5f, 2.2f));
-        bottle_array.add(new Bottle("Coca-Cola Zero", "Coca-Cola", 0.3d, 0.5f, 2.0f));
-        bottle_array.add(new Bottle("Coca-Cola Zero", "Coca-Cola", 0.3d, 1.5f, 2.5f));
-        bottle_array.add(new Bottle("Fanta Zero", "Coca-Cola", 0.3d, 0.5f, 1.95f));
+        bottleAdapter = new ArrayAdapter<Bottle>(context, R.layout.spinner_entry, bottleList);
+        bottleAdapter.setDropDownViewResource(R.layout.spinner_entry);
+        spin.setAdapter(bottleAdapter);
+    }
+
+    private void addBottles() {
+        bottleList.add(new Bottle("Pepsi Max", "Pepsi", 0.3d, 0.5f, 1.8f));
+        bottleList.add(new Bottle("Pepsi Max", "Pepsi", 0.3d, 1.5f, 2.2f));
+        bottleList.add(new Bottle("Coca-Cola Zero", "Coca-Cola", 0.3d, 0.5f, 2.0f));
+        bottleList.add(new Bottle("Coca-Cola Zero", "Coca-Cola", 0.3d, 1.5f, 2.5f));
+        bottleList.add(new Bottle("Fanta Zero", "Coca-Cola", 0.3d, 0.5f, 1.95f));
     }
 
     public void addMoney(float money) {
         this.money += money;
-        System.out.println("Klink! Added more money!");
+        contents.setText(String.format("Klink! Added more money!\n Amount: %.2f€", money));
     }
 
     public void buyBottle() {
-        if (bottles > 0 && money > bottle_array.get(0).price) {
-            transaction();
+        Bottle b = bottleAdapter.getItem(spinner.getSelectedItemPosition());
+        if (b == null) {
+            contents.setText("No bottles left to buy.");
+            return;
         }
-        else if (bottles > 0) {
-            System.out.println("Add money first!");
+        else if (money < b.price) {
+            contents.setText("Not enough money. Insert more.");
+            return;
         }
-        else if (money > bottle_array.get(0).price) {
-            System.out.println("Out of bottels!");
-        }
-    }
 
-    public void returnMoney() {
-        System.out.print("Klink klink. Money came out! ");
-        System.out.printf("You got %.2f€ back", money);
-        System.out.println("");
-        money = 0;
-    }
-
-    public void listBottles() {
-        for (int i = 0; i < bottles; i++) {
-            System.out.println(i+1+". Name: "+bottle_array.get(i).getName());
-            System.out.println("\tSize: "+bottle_array.get(i).size+"\tPrice: "+bottle_array.get(i).price);
-        }
-    }
-    public void transaction() {
-        Bottle b;
-        int choice;
-
-        listBottles();
-        System.out.print("Your choice: ");
-        Scanner scanner = new Scanner(System.in);
-        choice = scanner.nextInt();
-        b = bottle_array.get(choice-1);
-
-        bottles -= 1;
-        bottle_array.remove(choice-1);
         money -= b.price;
-        System.out.println("KACHUNK! " + b.getName() + " came out of the dispenser!");
+        bottleList.remove(b);
+        fh.writeFile("receipt.txt", String.format("RECEIPT:\n\nPRICE: %.2f€\nMANUFACTURER: %s\nNAME: %s\nSIZE: %.2fl\nENERGY: %.2fkCal", b.price, b.getManufacturer(), b.getName(), b.size, b.getEnergy()));
+        bottleAdapter.notifyDataSetChanged();
+        contents.setText("KACHUNK! " + b.getName() + " came out of the dispenser!");
+    }
+
+    public float returnMoney() {
+        if (money == 0) {
+            contents.setText("No money left in the dispenser!");
+            return 0;
+        }
+        contents.setText(String.format("Klink klink. Money came out!\nYou got %.2f€ back\n", money));
+        float returnMoney = money;
+        money = 0;
+        return returnMoney;
+    }
+
+    public String printReceipt() {
+        ArrayList<String> fc = new ArrayList<String>();
+        String cont ="";
+        fc = fh.readFile("receipt.txt");
+        if (fc.size() == 0)
+            cont = "No receipt found.";
+        else {
+            for (String s : fc)
+                cont += s + "\n";
+        }
+        return cont;
+    }
+
+    public float getMoney() {
+        return money;
     }
 }
