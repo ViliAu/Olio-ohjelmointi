@@ -1,0 +1,32 @@
+<html>
+<head>
+    <script type="text/javascript">
+  function initialize() {
+    document.getElementById("random").innerHTML = "Moi maailma!";
+    document.getElementById("btn_en").style.display = "block";
+    document.getElementById("btn_fin").style.display = "none";
+  }
+
+  function shoutOut() {
+    document.getElementById("random").innerHTML = "Hello world!";
+    document.getElementById("btn_en").style.display = "none";
+    document.getElementById("btn_fin").style.display = "block";
+  }
+    </script>
+</head>
+
+<body onload="initialize()">
+<div>
+    <p id="random"></p>
+</div>
+
+<div id="btn_fin">
+    <input id="btn_in_finnish" type="button" value="Suomeksi" onclick="initialize()">
+</div>
+
+<div id="btn_en">
+    <input id="btn_in_english" type="button" value="In english" onclick="shoutOut()">
+</div>
+
+</body>
+</html>

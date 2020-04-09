@@ -1,0 +1,35 @@
+<html>
+<head>
+    <script type="text/javascript">
+  function initialize() {
+    document.getElementById("header").innerHTML = "Sivustoon ei saatu yhteyttä!";
+    document.getElementById("paragraph").innerHTML = "Sivua ei löytynyt, tai sitä ei ole olemassa.";
+    document.getElementById("btn_en").style.display = "block";
+    document.getElementById("btn_fin").style.display = "none";
+  }
+
+  function shoutOut() {
+    document.getElementById("header").innerHTML = "Couldn't connect to the site!";
+    document.getElementById("paragraph").innerHTML = "Site couldn't be found or it doesn't exist.";
+    document.getElementById("btn_en").style.display = "none";
+    document.getElementById("btn_fin").style.display = "block";
+  }
+    </script>
+</head>
+
+<body onload="initialize()">
+<div>
+    <h1 id="header"></h1>
+    <p id="paragraph"></p>
+</div>
+
+<div id="btn_fin">
+    <input id="btn_in_finnish" type="button" value="Suomeksi" onclick="initialize()">
+</div>
+
+<div id="btn_en">
+    <input id="btn_in_english" type="button" value="In english" onclick="shoutOut()">
+</div>
+
+</body>
+</html>
