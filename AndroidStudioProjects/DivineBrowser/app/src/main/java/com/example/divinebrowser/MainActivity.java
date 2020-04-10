@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         initButtons();
     }
 
-    void connect(String url) {
+    private void connect(String url) {
         if (url.equals("index.html")) {
             binding.webview.loadUrl("file:///android_asset/index.html");
             return;
@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("_LOG: Connecting to: "+ binding.webview.getUrl());
     }
 
-    void checkPageViewButtonStages() {
+    private void checkPageViewButtonStages() {
         if (!binding.webview.canGoBack())
             binding.buttonBack.setActivated(false);
         else
