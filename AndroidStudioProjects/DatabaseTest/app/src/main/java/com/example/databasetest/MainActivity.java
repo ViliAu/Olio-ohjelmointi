@@ -3,6 +3,8 @@ package com.example.databasetest;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -12,6 +14,8 @@ import android.os.Bundle;
 import android.util.Log;
 
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -23,11 +27,13 @@ import net.sourceforge.jtds.jdbc.*;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button button;
+    private Button button;
+    private TextView field;
+    private EditText et;
 
-    Connection con;
-    String un,pass,db,ip;
-    String usernam,passwordd;
+    boolean querySuccess = false;
+    private Connection con;
+    private String bankName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,28 +41,25 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initBtns();
+        initTextEditor();
     }
 
     private void initBtns() {
-        button = findViewById(R.id.button_db_query);
+        field = (TextView)findViewById(R.id.tw_db_text);
+        button = (Button)findViewById(R.id.button_db_query);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 System.out.println("_LOG: Button pressed.");
                 CheckLogin cL = new CheckLogin();
                 cL.execute("");
+                System.out.println("_LOG: QUERY: "+ querySuccess);
             }
         });
     }
 
     public class CheckLogin extends AsyncTask<String, String, String> {
         String z = "";
-        Boolean isSuccess = false;
-
-        @Override
-        protected void onPostExecute(String r) {
-            System.out.println("_LOG: aa");
-        }
 
         @Override
         protected String doInBackground(String... params) {
@@ -64,30 +67,44 @@ public class MainActivity extends AppCompatActivity {
                 // Connect to database
                 con = connectionclass();
                 if (con == null) {
-                    z = "_LOG: couldn't connect to database.";
+                    z = "Couldn't connect to database.";
                 }
                 else {
                     // Execute sql query
-                    String query = "SELECT * FROM login";
+                    System.out.println("_LOG: Query alku");
+                    String query = "SELECT bic FROM Pankit WHERE nimi = '"+bankName+"'";
                     Statement stmt = con.createStatement();
                     ResultSet rs = stmt.executeQuery(query);
+                    System.out.println("_LOG: Query loppu");
                     if (rs.next()) {
                         z = "Login successful";
-                        isSuccess = true;
+                        querySuccess = true;
+                        String s = rs.getString("bic");
+                        setText(s);
                         con.close();
                     }
                     else {
-                        z = "Invalid Credentials!";
-                        isSuccess = false;
+                        querySuccess = false;
+                        setText("Pankkia ei löytynyt!");
                     }
                 }
             }
             catch (Exception ex) {
-                isSuccess = false;
+                querySuccess = false;
                 z = ex.getMessage();
             }
+            System.out.println("_LOG: "+z);
             return z;
         }
+    }
+
+    private void setText(final String s)  {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                field.setText(s);
+            }
+        });
     }
 
     @SuppressLint("NewApi")
@@ -98,8 +115,8 @@ public class MainActivity extends AppCompatActivity {
         String ConnectionURL = null;
         try {
             Class.forName("net.sourceforge.jtds.jdbc.Driver").newInstance();//SQL5047.site4now.net
-            ConnectionURL = "jdbc:jtds:sqlserver://SQL5047.site4now.net;database=DB_A57EF2_bank;" +
-                    "user=DB_A57EF2_bank_admin;password=db_bank11212";
+            ConnectionURL = "jdbc:jtds:sqlserver://SQL5047.site4now.net;" +
+                    "database=DB_A57EF2_bank;user=DB_A57EF2_bank_admin;password=db_bank11212";
             connection = DriverManager.getConnection(ConnectionURL);
         } catch (SQLException se) {
             Log.e("error here 1 : ", se.getMessage());
@@ -109,5 +126,25 @@ public class MainActivity extends AppCompatActivity {
             Log.e("error here 3 : ", e.getMessage());
         }
         return connection;
+    }
+
+    void initTextEditor() {
+        et = (EditText)findViewById(R.id.et_bank_name);
+        et.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                bankName = et.getText().toString();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 }
