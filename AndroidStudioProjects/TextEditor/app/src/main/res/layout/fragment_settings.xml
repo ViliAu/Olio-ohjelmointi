@@ -3,13 +3,170 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <Space
+        android:id="@+id/space_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize" />
+
+    <TextView
+        android:id="@+id/header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/space_toolbar"
+        android:layout_centerInParent="true"
+        android:text="@string/settings"
+        android:textSize="40sp" />
+
+    <TextView
+        android:id="@+id/tw_font_change"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/header"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="40dp"
+        android:text="@string/font_size"
+        android:textSize="25sp" />
+
+    <EditText
+        android:id="@+id/et_font_size"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/header"
+        android:layout_marginTop="35dp"
+        android:layout_toEndOf="@id/tw_font_change"
+        android:inputType="number"
+        android:maxLines="1"
+        android:text="20" />
+
+    <TextView
+        android:id="@+id/tw_color_change"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tw_font_change"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="40dp"
+        android:text="@string/font_color"
+        android:textSize="25sp" />
+
+    <SeekBar
+        android:id="@+id/bar_r"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/et_font_size"
+        android:layout_marginLeft="-40dp"
+        android:layout_marginTop="40dp"
+        android:layout_toEndOf="@id/tw_color_change"
+        android:max="255"
+        android:rotation="270" />
+
+    <SeekBar
+        android:id="@+id/bar_g"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/et_font_size"
+        android:layout_marginLeft="-80dp"
+        android:layout_marginTop="40dp"
+        android:layout_toEndOf="@+id/bar_r"
+        android:max="255"
+        android:rotation="270" />
+
+    <SeekBar
+        android:id="@+id/bar_b"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/et_font_size"
+        android:layout_marginLeft="-80dp"
+        android:layout_marginTop="40dp"
+        android:layout_toEndOf="@id/bar_g"
+        android:max="255"
+        android:rotation="270" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/bar_r"
+        android:layout_marginStart="7dp"
+        android:layout_marginTop="40dp"
+        android:layout_toEndOf="@+id/tw_color_change"
+        android:text="R   G   B" />
 
-        android:text="Moro maailma settings fragio"
-        android:layout_centerInParent="true"
-        android:textSize="50sp"/>
+    <TextView
+        android:id="@+id/tw_line_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tw_color_change"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="80dp"
+        android:text="@string/line_amount"
+        android:textSize="25sp" />
+
+    <EditText
+        android:id="@+id/et_line_amount"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/header"
+        android:layout_marginTop="225dp"
+        android:layout_toEndOf="@id/tw_line_amount"
+        android:inputType="number"
+        android:maxLines="1"
+        android:text="5" />
+
+    <Button
+        android:id="@+id/button_all_caps"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tw_line_amount"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="40dp"
+        android:text="@string/change_text_to_all_caps" />
+
+    <Switch
+        android:id="@+id/switch_enable_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tw_line_amount"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="50dp"
+        android:layout_toRightOf="@+id/button_all_caps"
+        android:text="@string/enable_text_editing" />
+
+    <TextView
+        android:id="@+id/tw_override_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button_all_caps"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="@string/override_text"
+        android:textSize="20sp" />
+
+    <EditText
+        android:id="@+id/et_override_text"
+        android:layout_width="300dp"
+        android:layout_height="100dp"
+        android:layout_below="@+id/tw_override_text"
+        android:layout_centerHorizontal="true"
+        android:text="@string/editable" />
+
+    <ImageButton
+        android:id="@+id/button_language"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/et_font_size"
+        android:layout_marginLeft="70dp"
+        android:layout_marginBottom="30dp"
+        android:layout_marginTop="150dp"
+        android:background="@drawable/ic_language" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/language"
+        android:layout_marginTop="-30dp"
+        android:gravity="center"
+        android:layout_below="@id/button_language"
+        android:layout_toRightOf="@id/et_font_size"
+        android:layout_marginLeft="52dp"/>
 
 
 </RelativeLayout>

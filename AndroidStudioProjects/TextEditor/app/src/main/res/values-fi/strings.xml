@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Tekstieditori</string>
+    <string name="open">open</string>
+    <string name="close">close</string>
+    <string name="editable">Tämä tekstikenttä tulee muuttumaan \"Asetukset\" -välilehdellä olevien asetusten perusteella.</string>
+    <string name="user_editable">Salli tämän tekstikentän muokkaus \"Asetukset\" -välilehdeltä muokataksesi tätä tekstiä.</string>
+    <string name="language">Kieli</string>
+    <string name="settings">Asetukset:</string>
+    <string name="font_size">Fonttikoko:</string>
+    <string name="font_color">fontin väri:</string>
+    <string name="line_amount">Rivimäärä:</string>
+    <string name="change_text_to_all_caps">Muuta teksti isoihin kirjaimiin</string>
+    <string name="enable_text_editing">Salli tekstikentän muokkaus:</string>
+    <string name="override_text">Ylikirjoita teksti:</string>
+    <string name="menu_title">Valikko</string>
+    <string name="home">Koti</string>
+    <string name="menu_settings">Asetukset</string>
+    <string name="text_editor_pro">Tekstieditori ERIKOISASIANTUNTIJA</string>
+</resources>

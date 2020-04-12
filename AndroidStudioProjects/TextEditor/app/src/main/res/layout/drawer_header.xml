@@ -9,7 +9,7 @@
         android:background="@color/colorPrimary"
         android:paddingHorizontal="25dp"
         android:paddingVertical="50dp"
-        android:text="Text Editor PRO"
+        android:text="@string/text_editor_pro"
         android:textAlignment="textStart"
         android:textSize="25sp"
         android:textStyle="bold"

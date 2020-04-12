@@ -8,6 +8,7 @@ import androidx.core.view.GravityCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -44,9 +45,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Initialize view to main
         fm = getSupportFragmentManager();
-        ft = fm.beginTransaction();
-        ft.add(R.id.container_fragment, new MainFragment());
-        ft.commit();
+        if (ft == null) {
+            ft = fm.beginTransaction();
+            ft.add(R.id.container_fragment, new MainFragment());
+            ft.commit();
+        }
     }
 
     @Override
@@ -77,5 +80,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ft = fm.beginTransaction();
         ft.replace(R.id.container_fragment, new SettingsFragment());
         ft.commit();
+    }
+
+    @Override
+    public void recreate() {
+        super.recreate();
+        loadMain();
+    }
+
+    public void gotoSetting() {
+        Intent i = new Intent(android.provider.Settings.ACTION_LOCALE_SETTINGS);
+        startActivity(i);
+        recreate();
     }
 }

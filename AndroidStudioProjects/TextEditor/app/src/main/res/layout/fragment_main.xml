@@ -12,12 +12,17 @@
         android:id="@+id/et_user_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/space_toolbar" />
+        android:layout_below="@+id/tw_editor_text"
+        android:enabled="false"
+        android:text="@string/user_editable" />
 
     <TextView
         android:id="@+id/tw_editor_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/space_toolbar" />
-
+        android:layout_below="@+id/space_toolbar"
+        android:textSize="20sp"
+        android:textColor="#000000"
+        android:lines="5"
+        android:text="@string/editable" />
 </RelativeLayout>
