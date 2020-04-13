@@ -76,8 +76,8 @@ public class MainActivity extends AppCompatActivity {
                     Statement stmt = con.createStatement();
                     ResultSet rs = stmt.executeQuery(query);
                     System.out.println("_LOG: Query loppu");
+                    
                     if (rs.next()) {
-                        z = "Login successful";
                         querySuccess = true;
                         String s = rs.getString("bic");
                         setText(s);
