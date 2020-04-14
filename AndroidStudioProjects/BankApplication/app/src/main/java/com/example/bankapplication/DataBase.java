@@ -14,10 +14,13 @@ import java.sql.Statement;
 public class DataBase {
 
     private static Connection connection;
+    // Database query result
+    public static ResultSet rs;
 
     public static ResultSet dataQuery(String query) {
         System.out.println("_LOG: Start executing query");
-        return dataBaseQuery(query);
+        rs = dataBaseQuery(query);
+        return rs;
     }
 
     public static void dataInsert(String input) {
@@ -37,23 +40,24 @@ public class DataBase {
         String result = "";
         try {
             // Connect to database
-            connection = databaseConnection();  //TODO: Keep the connection and reconnect if connection is lost, make this as a async class
-            if (connection == null) {
+            //connection = databaseConnection();  //TODO: Keep the connection and reconnect if connection is lost, make this as a async class
+            boolean isConnected = getConnection();
+            if (!isConnected) {
                 result = "Couldn't connect to database.";
             }
             else {
                 // Execute sql query
                 System.out.println("_LOG: Query start: " + query);
                 Statement stmt = connection.createStatement();
-                ResultSet rs = stmt.executeQuery(query);
+                rs = stmt.executeQuery(query);
                 System.out.println("_LOG: Query end ");
 
                 if (rs.next()) {
-                    connection.close();
+                    //connection.close();
                     return rs;
                 }
                 else {
-                    connection.close();
+                    //connection.close();
                     return null;
                 }
             }
@@ -68,8 +72,9 @@ public class DataBase {
         String result = "";
         try {
             // Connect to database
-            connection = databaseConnection();  //TODO: Keep the connection and reconnect if connection is lost, make this as a async class
-            if (connection == null) {
+            //connection = databaseConnection();  //TODO: Keep the connection and reconnect if connection is lost, make this as a async class
+            boolean isConnected = getConnection();
+            if (!isConnected) {
                 result = "Couldn't connect to database.";
             }
             else {
@@ -95,16 +100,16 @@ public class DataBase {
 
     // DATABASE CONNECTION ÄLÄ KOSKE HYVIN TOIMII
     @SuppressLint("NewApi")
-    private static Connection databaseConnection() {
+    private static void connect() {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-        Connection connection = null;
+        Connection con = null;
         String ConnectionURL = "";
         try {
             Class.forName("net.sourceforge.jtds.jdbc.Driver").newInstance();
             ConnectionURL = "jdbc:jtds:sqlserver://SQL5047.site4now.net;" +
                     "database=DB_A57EF2_bank;user=DB_A57EF2_bank_admin;password=db_bank11212";
-            connection = DriverManager.getConnection(ConnectionURL);
+            con = DriverManager.getConnection(ConnectionURL);
         } catch (SQLException sqle) {
             System.out.println("_LOG: SQLException: " + sqle);
         } catch (ClassNotFoundException ce) {
@@ -112,7 +117,24 @@ public class DataBase {
         } catch (Exception e) {
             System.out.println("_LOG: Exception: " + e);
         }
-        return connection;
+        connection = con;
     }
 
+    public static boolean getConnection() {
+        if (connection == null)
+            connect();
+        if (connection != null)
+            return true;
+        else
+            return false;
+    }
+    public static void closeConnection() {
+        try {
+            connection.close();
+            System.out.println("_LOG: Database closed successfully.");
+        }
+        catch (SQLException e) {
+            System.out.println("_LOG: "+e);
+        }
+    }
 }

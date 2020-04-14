@@ -74,9 +74,8 @@ public class AccountCreationFragment extends Fragment {
 
         // Query database to see if there's already an account called this.
         if (canCreate) {
-            ResultSet rs;
-            rs = DataBase.dataQuery("SELECT * FROM henkilot WHERE bank = '" + bank + "' AND accountname = '" + userName + "' ");
-            if (rs == null)
+            DataBase.dataQuery("SELECT * FROM henkilot WHERE bank = '" + bank + "' AND accountname = '" + userName + "' ");
+            if (DataBase.rs == null)
                 DataBase.dataInsert("INSERT INTO henkilot VALUES ("+ (DataBase.getTableLength("henkilot")+1) +", '"+ userName +"', '" + name +"', '" + phoneNumber +"', '" + password +"', '" + bank +"', '" + salt +"', '" + address + "', '" + zipcode + "', '"+ socialid +"', "+1+")");
             else {
                 Toast toast = Toast.makeText(getContext(), "Account called \"" + userName + "\" already exists in this bank.", Toast.LENGTH_LONG);
@@ -149,6 +148,7 @@ public class AccountCreationFragment extends Fragment {
             this.zipcode = binding.etZipcode.getText().toString();
             this.phoneNumber = binding.etPhonenumber.getText().toString();
             this.userName = binding.etUsername.getText().toString();
+            this.password = binding.etPassword.getText().toString();
         }
         return isValid;
     }

@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.bankapplication.databinding.ActivityMainBinding;
 
@@ -42,6 +43,20 @@ public class MainActivity extends AppCompatActivity {
             ft.add(R.id.fragment_container, new StartFragment());
             ft.commit();
         }
+
+        // Check and establish a database connection
+        if (!DataBase.getConnection()) {
+            Toast.makeText(this, "Couldn't connect to database.", Toast.LENGTH_LONG).show();
+        }
+        else {
+            Toast.makeText(this, "Successfully connected to database.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        DataBase.closeConnection();
+        super.onDestroy();
     }
 
     private void setupToolbar() {
