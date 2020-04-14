@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:gravity="center"
+        android:text="Select your bank: "
+        android:textSize="40dp" />
+
+    <ImageButton
+        android:id="@+id/button_snorkkeli"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="150dp"
+        android:background="@drawable/ic_dollar" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button_snorkkeli"
+        android:layout_alignLeft="@+id/button_snorkkeli"
+        android:layout_alignRight="@+id/button_snorkkeli"
+        android:gravity="center"
+        android:text="Snorkkeli"
+        android:textSize="20sp" />
+
+</RelativeLayout>

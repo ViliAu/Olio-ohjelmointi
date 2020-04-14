@@ -14,49 +14,83 @@ import java.sql.Statement;
 public class DataBase {
 
     private static Connection connection;
-    private static String queryCommand = "";
 
-    public static void dataQuery(String query) {
+    public static ResultSet dataQuery(String query) {
         System.out.println("_LOG: Start executing query");
-        queryCommand = query;
-        DatabaseQuery dbQ = new DatabaseQuery();
-        dbQ.execute(query);
+        return dataBaseQuery(query);
     }
 
-    // Database query class, asynchronous
+    public static void dataInsert(String input) {
+        System.out.println("_LOG: Start executing input");
+        dataBaseQuery(input);
+    }
+
+    public static int getTableLength(String tableName) {
+        return tableLength(tableName);
+    }
+
+    /* Database query class, asynchronous
     public static class DatabaseQuery extends AsyncTask<String, String, String> {
         @Override
-        protected String doInBackground(String... params) {
-            String result = "";
-            try {
-                // Connect to database
-                connection = databaseConnection();  //TODO: Keep the connection and reconnect if connection is lost
-                if (connection == null) {
-                    System.out.println("_LOG: Couldn't connect to database.");
+        protected String doInBackground(String... params) { */
+    private static ResultSet dataBaseQuery(String query) {
+        String result = "";
+        try {
+            // Connect to database
+            connection = databaseConnection();  //TODO: Keep the connection and reconnect if connection is lost, make this as a async class
+            if (connection == null) {
+                result = "Couldn't connect to database.";
+            }
+            else {
+                // Execute sql query
+                System.out.println("_LOG: Query start: " + query);
+                Statement stmt = connection.createStatement();
+                ResultSet rs = stmt.executeQuery(query);
+                System.out.println("_LOG: Query end ");
+
+                if (rs.next()) {
+                    connection.close();
+                    return rs;
                 }
                 else {
-                    // Execute sql query
-                    System.out.println("_LOG: Query start: "+params[0]);
-                    Statement stmt = connection.createStatement();
-                    ResultSet rs = stmt.executeQuery(params[0]);
-                    System.out.println("_LOG: Query end");
-
-                    if (rs.next()) {
-                        result = rs.getString("nimi");
-                        connection.close();
-                    }
-                    else {
-                        result = ("Bank couldn't be found!");
-                    }
+                    connection.close();
+                    return null;
                 }
             }
-            catch (Exception ex) {
-                System.out.println("_LOG: "+result);
-                result = ex.getMessage();
-            }
-            System.out.println("_LOG: "+result);
-            return result;
+        } catch (Exception ex) {
+            result = ex.getMessage();
         }
+        System.out.println("_LOG: " + result);
+        return null;
+    }
+
+    private static int tableLength(String tableName) {
+        String result = "";
+        try {
+            // Connect to database
+            connection = databaseConnection();  //TODO: Keep the connection and reconnect if connection is lost, make this as a async class
+            if (connection == null) {
+                result = "Couldn't connect to database.";
+            }
+            else {
+                // Execute sql query
+                System.out.println("_LOG: Query start: SELECT TOP 1 * FROM " +tableName+ " ORDER BY id DESC");
+                Statement stmt = connection.createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT TOP 1 * FROM " +tableName+ " ORDER BY id DESC");
+                System.out.println("_LOG: Query end");
+                if (rs.next()) {
+                    return rs.getInt("id");
+                }
+                else {
+                    result = ("Table couldn't be found!");
+                }
+                connection.close();
+            }
+        } catch (Exception ex) {
+            result = ex.getMessage();
+        }
+        System.out.println("_LOG: " + result);
+        return 0;
     }
 
     // DATABASE CONNECTION ÄLÄ KOSKE HYVIN TOIMII
@@ -72,11 +106,11 @@ public class DataBase {
                     "database=DB_A57EF2_bank;user=DB_A57EF2_bank_admin;password=db_bank11212";
             connection = DriverManager.getConnection(ConnectionURL);
         } catch (SQLException sqle) {
-           System.out.println("_LOG: SQLException: "+sqle);
+            System.out.println("_LOG: SQLException: " + sqle);
         } catch (ClassNotFoundException ce) {
-            System.out.println("_LOG: ClassNotFoundException: "+ce);
+            System.out.println("_LOG: ClassNotFoundException: " + ce);
         } catch (Exception e) {
-            System.out.println("_LOG: Exception: "+e);
+            System.out.println("_LOG: Exception: " + e);
         }
         return connection;
     }
