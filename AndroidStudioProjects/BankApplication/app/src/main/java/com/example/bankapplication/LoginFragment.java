@@ -63,9 +63,8 @@ public class LoginFragment extends Fragment {
 
     private void loginBank(String name, String pass) {
         ResultSet rs;
-        System.out.println("_LOG: "+Hasher.hashPassword("admin", "admin"));
         try {
-            rs = DataBase.dataQuery("SELECT * FROM henkilot WHERE accountname = '" + name + "' AND (bank_id =" + viewModel.getBankId().getValue() + " OR bank_id=0)");
+            rs = DataBase.dataQuery("SELECT * FROM henkilot WHERE accountname = '" + name + "' AND (bank_id =" + viewModel.getBankId() + " OR bank_id=0)");
             if (rs == null) {
                 binding.inputUsername.setError("Username not found");
                 return;
@@ -75,25 +74,36 @@ public class LoginFragment extends Fragment {
                 binding.inputPassword.setError("Password incorrect.");
                 return;
             }
+
+            // Get acc type
             int accountType = rs.getInt("type");
+
+            // Pending
             if (accountType == 1) {
-                binding.inputUsername.setError("Username hasn't been approved by administration yet.");
-                Toast.makeText(getContext(), "Username hasn't been approved by administration yet.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Customer hasn't been approved by administration yet.", Toast.LENGTH_LONG).show();
                 return;
             }
+
+            // Normal
             else if (accountType == 2) {
-
+                MainActivity m = (MainActivity)getActivity();
+                m.loadCustomerActivity();
             }
+
+            // Disabled
             else if (accountType == 3) {
-
+                Toast.makeText(getContext(), "Customer has been disabled by the administration.", Toast.LENGTH_LONG).show();
+                return;
             }
+
+            // Admin
             else if (accountType == 0) {
                 MainActivity m = (MainActivity)getActivity();
                 m.loadAdminActivity();
             }
 
-
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             System.out.println("_LOG: " + e);
         }
     }

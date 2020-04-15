@@ -5,13 +5,13 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 public class SharedViewModelAdmin extends ViewModel {
-    private MutableLiveData<Integer> customerId = new MutableLiveData<>();
+    private int customerId = 0;
 
     public void setCustomerId(int id) {
-        customerId.setValue(id);
+        customerId = id;
     }
 
-    public LiveData<Integer> getCustomerId() {
+    public int getCustomerId() {
         return customerId;
     }
 }

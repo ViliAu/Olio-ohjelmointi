@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AdminActivity">
+    tools:context=".MainActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -12,12 +12,12 @@
         android:layout_height="?attr/actionBarSize"
         android:background="@color/colorPrimaryDark"
         android:theme="@style/ThemeOverlay.AppCompat.Dark">
-
         <ImageButton
             android:id="@+id/button_back"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:background="@drawable/button_toolbar_admin"
+            android:background="@drawable/ic_arrow_back"
+            android:visibility="invisible"
             android:elevation="8dp" />
     </androidx.appcompat.widget.Toolbar>
 
@@ -27,10 +27,14 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/toolbar" />
 
-    <!--
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />-->
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        app:menu="@menu/bottom_navigation_customer"
+        android:background="?android:attr/windowBackground"/>
+
 
 
 </RelativeLayout>

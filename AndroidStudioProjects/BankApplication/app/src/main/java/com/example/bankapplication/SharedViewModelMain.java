@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel;
 
 public class SharedViewModelMain extends ViewModel{
     private MutableLiveData<CharSequence> bankName = new MutableLiveData<CharSequence>();
-    private MutableLiveData<Integer> bankId = new MutableLiveData<Integer>();
+    private int bankId = 0;
 
     public LiveData<CharSequence> getBankName() {
         return bankName;
@@ -16,12 +16,12 @@ public class SharedViewModelMain extends ViewModel{
         bankName.setValue(s);
     }
 
-    public LiveData<Integer> getBankId() {
+    public int getBankId() {
         return bankId;
     }
 
     public void setBankId(int id) {
-        bankId.setValue(id);
+        bankId = id;
     }
 
 }

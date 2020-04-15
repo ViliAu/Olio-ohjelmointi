@@ -40,6 +40,7 @@ public class AdminRecyclerAdapter extends RecyclerView.Adapter<AdminRecyclerAdap
             twBank = itemView.findViewById(R.id.tw_bank);
             twOwner = itemView.findViewById(R.id.tw_owner);
             twAccType = itemView.findViewById(R.id.tw_account_type);
+
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

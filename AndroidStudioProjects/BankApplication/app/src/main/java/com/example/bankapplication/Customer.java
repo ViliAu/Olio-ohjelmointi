@@ -3,9 +3,9 @@ package com.example.bankapplication;
 public class Customer {
     // ACCOUNT TYPES: 0 = admin, 1 = pending 2 = normal 3 = (deleted)
     private int ID;
-    private int type = 0;
-    private  int bankId = 0;
-    private String userName = "", name = "", address = "", zipcode = "", phoneNumber = "", socialid = "";
+    private int type;
+    private  int bankId;
+    private String userName, name, address, zipcode, phoneNumber, socialid;
 
     public Customer(int id, int type, String userName, String name, String address, String  zipcode, String phoneNumber, String socialid, int bankId) {
         this.ID = id;

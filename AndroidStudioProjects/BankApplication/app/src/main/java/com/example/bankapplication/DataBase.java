@@ -19,13 +19,18 @@ public class DataBase {
 
     public static ResultSet dataQuery(String query) {
         System.out.println("_LOG: Start executing query");
-        return dataBaseQuery(query);
+        return dataBaseAccess(query);
         //return rs;
     }
 
     public static void dataInsert(String input) {
         System.out.println("_LOG: Start executing input");
-        rs = dataBaseQuery(input);
+        rs = dataBaseAccess(input);
+    }
+
+    public static void dataUpdate(String update) {
+        System.out.println("_LOG: Start executing update");
+        rs = dataBaseAccess(update);
     }
 
     public static int getTableLength(String tableName) {
@@ -36,7 +41,7 @@ public class DataBase {
     public static class DatabaseQuery extends AsyncTask<String, String, String> {
         @Override
         protected String doInBackground(String... params) { */
-    private static ResultSet dataBaseQuery(String query) {
+    private static ResultSet dataBaseAccess(String query) {
         String result = "";
         try {
             // Connect to database

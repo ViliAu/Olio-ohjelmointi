@@ -14,8 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.sql.ResultSet;
 
 import com.example.bankapplication.databinding.FragmentAccountCreationBinding;
@@ -23,11 +21,6 @@ import com.example.bankapplication.databinding.FragmentAccountCreationBinding;
 public class AccountCreationFragment extends Fragment {
     private SharedViewModelMain viewModel;
     private FragmentAccountCreationBinding binding;
-
-    // Account vars
-    private int id = 0, type = 0;
-    private String userName = "", password = "", name = "", address = "", zipcode = "", phoneNumber = "", salt = "", socialid = "";
-    private String bank;
 
     @Nullable
     @Override
@@ -42,8 +35,6 @@ public class AccountCreationFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         if (getActivity() != null)
             viewModel = ViewModelProviders.of(getActivity()).get(SharedViewModelMain.class);
-        if (viewModel.getBankName().getValue() != null)
-            bank = viewModel.getBankName().getValue().toString();
     }
 
     private void initElements() {
@@ -67,44 +58,36 @@ public class AccountCreationFragment extends Fragment {
 
     // Check if account request can be sent here
     private void initializeAccountRequest() {
-        boolean canCreate = true;
-        if (!passwordCheck())
-            //canCreate = false;
-        if (!fieldsCheck())
-            //canCreate = false;
+        if (/*passwordCheck() && */fieldsCheck()) {
+            createAccount(binding.etUsername.getText().toString(), binding.etName.getText().toString(),
+                    binding.etPassword.getText().toString(), binding.etSocialId.getText().toString(),
+                    binding.etAddress.getText().toString(), binding.etPhonenumber.getText().toString(),
+                    binding.etZipcode.getText().toString());
+        }
+    }
 
-        if (canCreate) {
-            this.name = binding.etName.getText().toString();
-            this.socialid = binding.etSocialId.getText().toString();
-            this.address = binding.etAddress.getText().toString();
-            this.zipcode = binding.etZipcode.getText().toString();
-            this.phoneNumber = binding.etPhonenumber.getText().toString();
-            this.userName = binding.etUsername.getText().toString();
-            this.password = binding.etPassword.getText().toString();
+    private void createAccount(String userName, String name, String password, String socialid, String address, String phoneNumber, String zipcode) {
+        ResultSet rs = DataBase.dataQuery("SELECT * FROM henkilot WHERE bank_id = '" + viewModel.getBankId() + "' AND accountname = '" + userName + "' ");
+        // Instance where there isn't an account called this in the database
+        if (rs == null) {
+            // Create hashed password
+            String salt = Hasher.getRandomSalt();
+            System.out.println("_LOG: "+salt);
+            String hashPass = Hasher.hashPassword(password, salt);
+            // Add to database
+            DataBase.dataInsert("INSERT INTO henkilot VALUES (" + (DataBase.getTableLength("henkilot") + 1) + ", '" + userName + "', '" + name + "', '" + phoneNumber + "', '" + hashPass + "', " + viewModel.getBankId() + ", '" + address + "', '" + zipcode + "', '" + socialid + "', " + 1 + ", '"+salt+"')");
+        }
+        // Instance where there is
+        else {
+            Toast toast = Toast.makeText(getContext(), "Account called \"" + userName + "\" already exists in this bank.", Toast.LENGTH_LONG);
+            toast.show();
         }
 
-        // Query database to see if there's already an account called this.
-        if (canCreate) {
-            ResultSet rs = DataBase.dataQuery("SELECT * FROM henkilot WHERE bank_id = '" + viewModel.getBankId().getValue() + "' AND accountname = '" + userName + "' ");
-            if (rs == null) {
-                // Create hashed password
-                String salt = Hasher.getRandomSalt();
-                System.out.println("_LOG: "+salt);
-                String hashPass = Hasher.hashPassword(password, salt);
-                // Add to database
-                DataBase.dataInsert("INSERT INTO henkilot VALUES (" + (DataBase.getTableLength("henkilot") + 1) + ", '" + userName + "', '" + name + "', '" + phoneNumber + "', '" + hashPass + "', " + viewModel.getBankId().getValue() + ", '" + address + "', '" + zipcode + "', '" + socialid + "', " + 1 + ", '"+salt+"')");
-            }
-                else {
-                Toast toast = Toast.makeText(getContext(), "Account called \"" + userName + "\" already exists in this bank.", Toast.LENGTH_LONG);
-                toast.show();
-            }
-
-        }
     }
 
     private boolean passwordCheck() {
         boolean isValid = true;
-        String password = binding.etPassword.getText().toString();
+        String password = binding.etPassword.getText().toString().trim();
         if (password.length() == 0) {
             isValid = false;
             binding.etPassword.setError("Password cannot be empty.");

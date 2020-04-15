@@ -11,10 +11,10 @@ import java.util.Random;
 public class Hasher {
 
     public static String getRandomSalt() {
-        Random rng = new SecureRandom();
+        Random random = new SecureRandom();
         byte[] salt = new byte[16];
-        rng.nextBytes(salt);
-        return salt.toString();
+        random.nextBytes(salt);
+        return bytesToHex(salt);
     }
 
     public static String hashPassword(String password, String salt) {
@@ -22,7 +22,6 @@ public class Hasher {
         MessageDigest digest;
         try {
             digest = MessageDigest.getInstance("SHA-256");
-            //digest.update(salt);
         }
         catch (NoSuchAlgorithmException e) {
             System.out.println("_LOG: "+e);
@@ -37,5 +36,16 @@ public class Hasher {
             return true;
         else
             return false;
+    }
+
+    private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
+    private static String bytesToHex(byte[] bytes) {
+        char[] hexChars = new char[bytes.length * 2];
+        for (int j = 0; j < bytes.length; j++) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = HEX_ARRAY[v >>> 4];
+            hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
+        }
+        return new String(hexChars);
     }
 }

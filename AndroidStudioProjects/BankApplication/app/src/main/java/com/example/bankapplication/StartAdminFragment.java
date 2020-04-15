@@ -56,14 +56,15 @@ public class StartAdminFragment extends Fragment implements AdapterView.OnItemSe
 
     private void initElements() {
         initRecyclerview();
-        getCustomers();
-        setupRecycler();
         initSpinner();
         initEditor();
         initButtons();
     }
 
     private void initRecyclerview() {
+        customers = getCustomers();
+        recyclerCardList = getCards(customers);
+
         recycler = binding.recyclerView;
         recycler.setHasFixedSize(true);
         recyclerLayoutManager = new LinearLayoutManager(getContext());
@@ -77,15 +78,19 @@ public class StartAdminFragment extends Fragment implements AdapterView.OnItemSe
             public void onItemClick(int position) {
                 int id = 0;
                 try {
-                    id = Integer.parseInt(recyclerCardList.get(position).getId());
+                    String idString = "";
+                    for (char c : recyclerCardList.get(position).getId().toCharArray()) {
+                        if (Character.isDigit(c))
+                            idString += c;
+                    }
+                    id = Integer.parseInt(idString);
                 }
                 catch (Exception e) {
                     System.out.println("_LOG: "+e);
                     return;
                 }
                 viewModel.setCustomerId(id);
-                AdminActivity m = (AdminActivity)getActivity();
-                //m.loadFragment();
+                loadUserSettingsFragment();
             }
         });
     }
@@ -130,8 +135,7 @@ public class StartAdminFragment extends Fragment implements AdapterView.OnItemSe
         customers = getCustomers();
         recyclerCardList = getCards(customers);
 
-        if (recyclerCardList != null)
-            recyclerAdapter = new AdminRecyclerAdapter(recyclerCardList);
+        recyclerAdapter = new AdminRecyclerAdapter(recyclerCardList);
         recycler.setAdapter(recyclerAdapter);
     }
 
@@ -179,6 +183,12 @@ public class StartAdminFragment extends Fragment implements AdapterView.OnItemSe
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-        column = "id";
+        column = "accountname";
     }
+
+    private void loadUserSettingsFragment() {
+        AdminActivity m = (AdminActivity)getActivity();
+        m.loadFragment(new AdminCustomerSettingsFragment());
+    }
+
 }
