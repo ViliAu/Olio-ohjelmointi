@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.sql.ResultSet;
 
@@ -68,16 +69,32 @@ public class AccountCreationFragment extends Fragment {
     private void initializeAccountRequest() {
         boolean canCreate = true;
         if (!passwordCheck())
-            canCreate = false;
+            //canCreate = false;
         if (!fieldsCheck())
-            canCreate = false;
+            //canCreate = false;
+
+        if (canCreate) {
+            this.name = binding.etName.getText().toString();
+            this.socialid = binding.etSocialId.getText().toString();
+            this.address = binding.etAddress.getText().toString();
+            this.zipcode = binding.etZipcode.getText().toString();
+            this.phoneNumber = binding.etPhonenumber.getText().toString();
+            this.userName = binding.etUsername.getText().toString();
+            this.password = binding.etPassword.getText().toString();
+        }
 
         // Query database to see if there's already an account called this.
         if (canCreate) {
-            DataBase.dataQuery("SELECT * FROM henkilot WHERE bank = '" + bank + "' AND accountname = '" + userName + "' ");
-            if (DataBase.rs == null)
-                DataBase.dataInsert("INSERT INTO henkilot VALUES ("+ (DataBase.getTableLength("henkilot")+1) +", '"+ userName +"', '" + name +"', '" + phoneNumber +"', '" + password +"', '" + bank +"', '" + salt +"', '" + address + "', '" + zipcode + "', '"+ socialid +"', "+1+")");
-            else {
+            ResultSet rs = DataBase.dataQuery("SELECT * FROM henkilot WHERE bank_id = '" + viewModel.getBankId().getValue() + "' AND accountname = '" + userName + "' ");
+            if (rs == null) {
+                // Create hashed password
+                String salt = Hasher.getRandomSalt();
+                System.out.println("_LOG: "+salt);
+                String hashPass = Hasher.hashPassword(password, salt);
+                // Add to database
+                DataBase.dataInsert("INSERT INTO henkilot VALUES (" + (DataBase.getTableLength("henkilot") + 1) + ", '" + userName + "', '" + name + "', '" + phoneNumber + "', '" + hashPass + "', " + viewModel.getBankId().getValue() + ", '" + address + "', '" + zipcode + "', '" + socialid + "', " + 1 + ", '"+salt+"')");
+            }
+                else {
                 Toast toast = Toast.makeText(getContext(), "Account called \"" + userName + "\" already exists in this bank.", Toast.LENGTH_LONG);
                 toast.show();
             }
@@ -140,15 +157,6 @@ public class AccountCreationFragment extends Fragment {
         if (binding.etUsername.getText().toString().equals("") || binding.etUsername.getText().toString().equals("admin")) {
             isValid = false;
             binding.etUsername.setError("Enter a valid username");
-        }
-        if (isValid) {
-            this.name = binding.etName.getText().toString();
-            this.socialid = binding.etSocialId.getText().toString();
-            this.address = binding.etAddress.getText().toString();
-            this.zipcode = binding.etZipcode.getText().toString();
-            this.phoneNumber = binding.etPhonenumber.getText().toString();
-            this.userName = binding.etUsername.getText().toString();
-            this.password = binding.etPassword.getText().toString();
         }
         return isValid;
     }

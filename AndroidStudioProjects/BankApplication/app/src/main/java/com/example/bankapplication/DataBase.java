@@ -15,17 +15,17 @@ public class DataBase {
 
     private static Connection connection;
     // Database query result
-    public static ResultSet rs;
+    private static ResultSet rs;
 
     public static ResultSet dataQuery(String query) {
         System.out.println("_LOG: Start executing query");
-        rs = dataBaseQuery(query);
-        return rs;
+        return dataBaseQuery(query);
+        //return rs;
     }
 
     public static void dataInsert(String input) {
         System.out.println("_LOG: Start executing input");
-        dataBaseQuery(input);
+        rs = dataBaseQuery(input);
     }
 
     public static int getTableLength(String tableName) {
@@ -40,7 +40,7 @@ public class DataBase {
         String result = "";
         try {
             // Connect to database
-            //connection = databaseConnection();  //TODO: Keep the connection and reconnect if connection is lost, make this as a async class
+            //connection = databaseConnection();
             boolean isConnected = getConnection();
             if (!isConnected) {
                 result = "Couldn't connect to database.";
@@ -72,7 +72,7 @@ public class DataBase {
         String result = "";
         try {
             // Connect to database
-            //connection = databaseConnection();  //TODO: Keep the connection and reconnect if connection is lost, make this as a async class
+            //connection = databaseConnection();
             boolean isConnected = getConnection();
             if (!isConnected) {
                 result = "Couldn't connect to database.";
@@ -87,9 +87,9 @@ public class DataBase {
                     return rs.getInt("id");
                 }
                 else {
-                    result = ("Table couldn't be found!");
+                    result = ("Couldn't create list order!");
                 }
-                connection.close();
+                //connection.close();
             }
         } catch (Exception ex) {
             result = ex.getMessage();

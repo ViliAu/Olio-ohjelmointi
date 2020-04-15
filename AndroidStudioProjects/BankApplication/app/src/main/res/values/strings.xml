@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Bank Application</string>
+
+    <string-array name="columns">
+        <item>id</item>
+        <item>accountname</item>
+        <item>name</item>
+        <item>bank_id</item>
+    </string-array>
 </resources>

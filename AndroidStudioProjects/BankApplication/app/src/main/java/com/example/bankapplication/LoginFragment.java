@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.example.bankapplication.databinding.FragmentLoginBinding;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -56,24 +57,44 @@ public class LoginFragment extends Fragment {
     }
 
     private void loadAccRequestFragment() {
-        MainActivity m = (MainActivity)getActivity();
+        MainActivity m = (MainActivity) getActivity();
         m.loadFragment(new AccountCreationFragment());
     }
 
-    private void loginBank(String name, String pass){
-        ResultSet rs = DataBase.dataQuery("SELECT * FROM henkilot WHERE accountname = '"+name+"' AND password = '"+pass+"' ");
-        if (rs == null) {
-            binding.inputUsername.setError("Username or password is incorrect.");
-            binding.inputPassword.setError("Username or password is incorrect.");
-            return;
-        }
+    private void loginBank(String name, String pass) {
+        ResultSet rs;
+        System.out.println("_LOG: "+Hasher.hashPassword("admin", "admin"));
         try {
-            if (rs.getInt("type") == 1) {
-                binding.inputUsername.setError("Username hasn't been approved by administration yet.");
+            rs = DataBase.dataQuery("SELECT * FROM henkilot WHERE accountname = '" + name + "' AND (bank_id =" + viewModel.getBankId().getValue() + " OR bank_id=0)");
+            if (rs == null) {
+                binding.inputUsername.setError("Username not found");
+                return;
             }
-        }
-        catch (SQLException e) {
-            System.out.println("_LOG: "+e);
+            String salt = rs.getString("salt");
+            if (!Hasher.testPassword(pass, rs.getString("password"), salt)) {
+                binding.inputPassword.setError("Password incorrect.");
+                return;
+            }
+            int accountType = rs.getInt("type");
+            if (accountType == 1) {
+                binding.inputUsername.setError("Username hasn't been approved by administration yet.");
+                Toast.makeText(getContext(), "Username hasn't been approved by administration yet.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            else if (accountType == 2) {
+
+            }
+            else if (accountType == 3) {
+
+            }
+            else if (accountType == 0) {
+                MainActivity m = (MainActivity)getActivity();
+                m.loadAdminActivity();
+            }
+
+
+        } catch (SQLException e) {
+            System.out.println("_LOG: " + e);
         }
     }
 }

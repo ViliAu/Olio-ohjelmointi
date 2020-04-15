@@ -6,6 +6,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -55,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        DataBase.closeConnection();
+        //DataBase.closeConnection();
         super.onDestroy();
     }
 
@@ -85,6 +87,12 @@ public class MainActivity extends AppCompatActivity {
         ft = fm.beginTransaction();
         ft.replace(R.id.fragment_container, fragment);
         ft.commit();
+    }
+
+    public void loadAdminActivity() {
+        Intent i = new Intent(this, AdminActivity.class);
+        startActivity(i);
+        this.finish();
     }
 
 

@@ -39,6 +39,7 @@ public class StartFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 viewModel.setBankName("snorkkeli");
+                viewModel.setBankId(1);
                 MainActivity m = (MainActivity)getActivity();
                 m.loadFragment(new LoginFragment());
             }
