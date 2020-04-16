@@ -17,15 +17,15 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.bankapplication.databinding.FragmentAdminStartBinding;
+import com.example.bankapplication.databinding.FragmentAdminHomeBinding;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class StartAdminFragment extends Fragment implements AdapterView.OnItemSelectedListener{
+public class AdminHomeFragment extends Fragment implements AdapterView.OnItemSelectedListener{
     private SharedViewModelAdmin viewModel;
-    private FragmentAdminStartBinding binding;
+    private FragmentAdminHomeBinding binding;
 
     private String column = "accountname";
     private String searchWord = "";
@@ -42,7 +42,7 @@ public class StartAdminFragment extends Fragment implements AdapterView.OnItemSe
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = FragmentAdminStartBinding.inflate(inflater, container, false);
+        binding = FragmentAdminHomeBinding.inflate(inflater, container, false);
         initElements();
         return binding.getRoot();
     }
@@ -55,8 +55,8 @@ public class StartAdminFragment extends Fragment implements AdapterView.OnItemSe
     }
 
     private void initElements() {
-        initRecyclerview();
         initSpinner();
+        initRecyclerview();
         initEditor();
         initButtons();
     }
@@ -101,6 +101,7 @@ public class StartAdminFragment extends Fragment implements AdapterView.OnItemSe
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.spinnerColumn.setAdapter(adapter);
         binding.spinnerColumn.setOnItemSelectedListener(this);
+        binding.spinnerColumn.setSelection(0);
     }
 
     void initEditor() {

@@ -126,12 +126,18 @@ public class DataBase {
     }
 
     public static boolean getConnection() {
-        if (connection == null)
-            connect();
-        if (connection != null)
-            return true;
-        else
+        try {
+            if (connection == null || connection.isClosed())
+                connect();
+            if (connection != null)
+                return true;
+            else
+                return false;
+        }
+        catch (SQLException e) {
+            System.out.println("_LOG: "+e);
             return false;
+        }
     }
     public static void closeConnection() {
         try {

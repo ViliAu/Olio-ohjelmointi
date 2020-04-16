@@ -16,16 +16,16 @@ import androidx.lifecycle.ViewModelProviders;
 
 import java.sql.ResultSet;
 
-import com.example.bankapplication.databinding.FragmentAccountCreationBinding;
+import com.example.bankapplication.databinding.FragmentMainCustomerCreationBinding;
 
-public class AccountCreationFragment extends Fragment {
+public class MainCustomerCreationFragment extends Fragment {
     private SharedViewModelMain viewModel;
-    private FragmentAccountCreationBinding binding;
+    private FragmentMainCustomerCreationBinding binding;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = FragmentAccountCreationBinding.inflate(inflater, container, false);
+        binding = FragmentMainCustomerCreationBinding.inflate(inflater, container, false);
         initElements();
         return binding.getRoot();
     }
@@ -67,15 +67,21 @@ public class AccountCreationFragment extends Fragment {
     }
 
     private void createAccount(String userName, String name, String password, String socialid, String address, String phoneNumber, String zipcode) {
+        // TODO: Move this to own function
         ResultSet rs = DataBase.dataQuery("SELECT * FROM henkilot WHERE bank_id = '" + viewModel.getBankId() + "' AND accountname = '" + userName + "' ");
         // Instance where there isn't an account called this in the database
         if (rs == null) {
+
             // Create hashed password
             String salt = Hasher.getRandomSalt();
             System.out.println("_LOG: "+salt);
             String hashPass = Hasher.hashPassword(password, salt);
+
             // Add to database
-            DataBase.dataInsert("INSERT INTO henkilot VALUES (" + (DataBase.getTableLength("henkilot") + 1) + ", '" + userName + "', '" + name + "', '" + phoneNumber + "', '" + hashPass + "', " + viewModel.getBankId() + ", '" + address + "', '" + zipcode + "', '" + socialid + "', " + 1 + ", '"+salt+"')");
+            DataBase.dataInsert("INSERT INTO henkilot VALUES (" + (DataBase.getTableLength("henkilot") + 1) +
+                    ", '" + userName + "', '" + name + "', '" + phoneNumber + "', '" +
+                    hashPass + "', " + viewModel.getBankId() + ", '" + address + "', '" +
+                    zipcode + "', '" + socialid + "', " + 1 + ", '"+salt+"')");
         }
         // Instance where there is
         else {

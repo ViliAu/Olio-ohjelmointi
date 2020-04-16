@@ -13,7 +13,6 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.example.bankapplication.databinding.FragmentLoginBinding;
 
-import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -58,7 +57,7 @@ public class LoginFragment extends Fragment {
 
     private void loadAccRequestFragment() {
         MainActivity m = (MainActivity) getActivity();
-        m.loadFragment(new AccountCreationFragment());
+        m.loadFragment(new MainCustomerCreationFragment());
     }
 
     private void loginBank(String name, String pass) {
@@ -87,7 +86,7 @@ public class LoginFragment extends Fragment {
             // Normal
             else if (accountType == 2) {
                 MainActivity m = (MainActivity)getActivity();
-                m.loadCustomerActivity();
+                m.loadCustomerActivity(rs.getInt("id"));
             }
 
             // Disabled

@@ -91,8 +91,9 @@ public class MainActivity extends AppCompatActivity {
         this.finish();
     }
 
-    public void loadCustomerActivity() {
+    public void loadCustomerActivity(int id) {
         Intent i = new Intent(this, CustomerActivity.class);
+        i.putExtra("customerId", id);
         startActivity(i);
         this.finish();
     }
