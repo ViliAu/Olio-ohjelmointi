@@ -8,4 +8,12 @@
         <item>bank_id</item>
         <item>type</item>
     </string-array>
+
+    <string-array name="account_types">
+        <item>Current account</item>
+        <item>Credit account</item>
+        <item>Savings account</item>
+        <item>Fixed term account</item>
+    </string-array>
+
 </resources>

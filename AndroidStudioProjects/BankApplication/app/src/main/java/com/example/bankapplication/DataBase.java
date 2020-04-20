@@ -1,9 +1,7 @@
 package com.example.bankapplication;
 
 import android.annotation.SuppressLint;
-import android.os.AsyncTask;
 import android.os.StrictMode;
-import android.util.Log;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -11,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+//TODO: Rework database with sql procedures (viikonloppu tekemist vilille(mugelle))
 public class DataBase {
 
     private static Connection connection;
@@ -33,8 +32,8 @@ public class DataBase {
         rs = dataBaseAccess(update);
     }
 
-    public static int getTableLength(String tableName) {
-        return tableLength(tableName);
+    public static int getNewId(String tableName) {
+        return createNewId(tableName);
     }
 
     /* Database query class, asynchronous
@@ -73,7 +72,7 @@ public class DataBase {
         return null;
     }
 
-    private static int tableLength(String tableName) {
+    private static int createNewId(String tableName) {
         String result = "";
         try {
             // Connect to database
@@ -89,7 +88,7 @@ public class DataBase {
                 ResultSet rs = stmt.executeQuery("SELECT TOP 1 * FROM " +tableName+ " ORDER BY id DESC");
                 System.out.println("_LOG: Query end");
                 if (rs.next()) {
-                    return rs.getInt("id");
+                    return rs.getInt("id")+1;
                 }
                 else {
                     result = ("Couldn't create list order!");

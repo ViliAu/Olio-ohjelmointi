@@ -1,9 +1,6 @@
 package com.example.bankapplication;
 
 import android.os.Bundle;
-import android.os.Message;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,7 +75,7 @@ public class MainCustomerCreationFragment extends Fragment {
             String hashPass = Hasher.hashPassword(password, salt);
 
             // Add to database
-            DataBase.dataInsert("INSERT INTO henkilot VALUES (" + (DataBase.getTableLength("henkilot") + 1) +
+            DataBase.dataInsert("INSERT INTO henkilot VALUES (" + (DataBase.getNewId("henkilot")) +
                     ", '" + userName + "', '" + name + "', '" + phoneNumber + "', '" +
                     hashPass + "', " + viewModel.getBankId() + ", '" + address + "', '" +
                     zipcode + "', '" + socialid + "', " + 1 + ", '"+salt+"')");

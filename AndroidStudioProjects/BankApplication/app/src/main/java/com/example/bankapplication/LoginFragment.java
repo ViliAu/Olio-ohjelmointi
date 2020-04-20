@@ -86,7 +86,7 @@ public class LoginFragment extends Fragment {
             // Normal
             else if (accountType == 2) {
                 MainActivity m = (MainActivity)getActivity();
-                m.loadCustomerActivity(rs.getInt("id"));
+                m.loadCustomerActivity(rs.getInt("id"), viewModel.getBankId());
             }
 
             // Disabled

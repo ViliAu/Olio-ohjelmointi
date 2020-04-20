@@ -2,4 +2,33 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent">
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="8dp"
+        android:background="#e0e0e0"
+        android:scrollbars="vertical" />
+
+    <ImageButton
+        android:id="@+id/button_add_account"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="40dp"
+        android:background="@drawable/ic_add_circle" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@id/button_add_account"
+        android:layout_alignEnd="@id/button_add_account"
+        android:gravity="center"
+        android:text="Add account"
+        android:textSize="13sp"
+        android:layout_below="@+id/button_add_account"
+        android:layout_marginTop="-40dp" />
+
 </RelativeLayout>

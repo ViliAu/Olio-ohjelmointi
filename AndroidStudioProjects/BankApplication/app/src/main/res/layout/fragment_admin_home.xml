@@ -41,6 +41,7 @@
         android:layout_height="match_parent"
         android:layout_below="@id/search_bar"
         android:padding="8dp"
+        android:background="#e0e0e0"
         android:scrollbars="vertical" />
 
 </RelativeLayout>

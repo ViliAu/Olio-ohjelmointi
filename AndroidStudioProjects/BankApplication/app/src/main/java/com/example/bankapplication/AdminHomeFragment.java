@@ -12,7 +12,6 @@ import android.widget.ArrayAdapter;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,21 +22,20 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class AdminHomeFragment extends Fragment implements AdapterView.OnItemSelectedListener{
+public class AdminHomeFragment extends Fragment implements AdapterView.OnItemSelectedListener {
     private SharedViewModelAdmin viewModel;
     private FragmentAdminHomeBinding binding;
 
     private String column = "accountname";
     private String searchWord = "";
 
-    // UI ELEMENTS
+    // Recycler view
     private RecyclerView recycler;
-    private AdminRecyclerAdapter recyclerAdapter;
+    private AdminCustomerRecyclerAdapter recyclerAdapter;
     private RecyclerView.LayoutManager recyclerLayoutManager;
 
     // LISTS
     private ArrayList<Customer> customers = new ArrayList<>();
-    private ArrayList<AdminCustomersCard> recyclerCardList = new ArrayList<>();
 
     @Nullable
     @Override
@@ -63,33 +61,19 @@ public class AdminHomeFragment extends Fragment implements AdapterView.OnItemSel
 
     private void initRecyclerview() {
         customers = getCustomers();
-        recyclerCardList = getCards(customers);
 
         recycler = binding.recyclerView;
         recycler.setHasFixedSize(true);
         recyclerLayoutManager = new LinearLayoutManager(getContext());
-        recyclerAdapter = new AdminRecyclerAdapter(recyclerCardList);
+        recyclerAdapter = new AdminCustomerRecyclerAdapter(customers);
 
         recycler.setLayoutManager(recyclerLayoutManager);
         recycler.setAdapter(recyclerAdapter);
 
-        recyclerAdapter.setOnItemClickListener(new AdminRecyclerAdapter.OnItemClickListener() {
+        recyclerAdapter.setOnItemClickListener(new AdminCustomerRecyclerAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                int id = 0;
-                try {
-                    String idString = "";
-                    for (char c : recyclerCardList.get(position).getId().toCharArray()) {
-                        if (Character.isDigit(c))
-                            idString += c;
-                    }
-                    id = Integer.parseInt(idString);
-                }
-                catch (Exception e) {
-                    System.out.println("_LOG: "+e);
-                    return;
-                }
-                viewModel.setCustomerId(id);
+                viewModel.setCustomerId(customers.get(position).getId());
                 loadUserSettingsFragment();
             }
         });
@@ -134,9 +118,8 @@ public class AdminHomeFragment extends Fragment implements AdapterView.OnItemSel
 
     void setupRecycler() {
         customers = getCustomers();
-        recyclerCardList = getCards(customers);
 
-        recyclerAdapter = new AdminRecyclerAdapter(recyclerCardList);
+        recyclerAdapter = new AdminCustomerRecyclerAdapter(customers);
         recycler.setAdapter(recyclerAdapter);
     }
 
@@ -164,16 +147,6 @@ public class AdminHomeFragment extends Fragment implements AdapterView.OnItemSel
             System.out.println("_LOG: "+e);
         }
         return searchedCustomers;
-    }
-
-    private ArrayList<AdminCustomersCard> getCards(ArrayList<Customer> customers) {
-        ArrayList<AdminCustomersCard> cards = new ArrayList<>();
-        for (Customer c : customers) {
-            cards.add(new AdminCustomersCard(R.drawable.ic_account_circle_black_24dp, c.getAccountName(),
-                    "ID: "+String.valueOf(c.getId()), "Bank: "+c.getBankString(),
-                    "Owner: "+c.getName(), "Type: "+c.getAccTypeString()));
-        }
-        return cards;
     }
 
     // Spinner methods

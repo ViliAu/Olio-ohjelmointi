@@ -14,11 +14,16 @@ import android.view.View;
 import com.example.bankapplication.databinding.ActivityCustomerBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
 public class CustomerActivity extends AppCompatActivity {
 
     private ActivityCustomerBinding binding;
     private FragmentManager fm;
     private FragmentTransaction ft;
+    SharedViewModelCustomer viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,9 +32,11 @@ public class CustomerActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         // Setup viewmodel
-        SharedViewModelCustomer viewModel = ViewModelProviders.of(this).get(SharedViewModelCustomer.class);
+        viewModel = ViewModelProviders.of(this).get(SharedViewModelCustomer.class);
         viewModel.setCustomerId(getIntent().getIntExtra("customerId", 0));
-        System.out.println("_LOG: "+viewModel.getCustomerId());
+        viewModel.setBankId(getIntent().getIntExtra("bankId", 0));
+        System.out.println("_LOG: "+viewModel.getCustomerId() + viewModel.getBankId());
+        viewModel.setAccounts(updateAccounts());
 
         // Setup toolbar
         setupToolbar();
@@ -37,7 +44,7 @@ public class CustomerActivity extends AppCompatActivity {
         // Init bottom nav bar
         initBottomBar();
 
-        // Initialize view to start fragment
+        // Initialize view to customer fragment
         fm = getSupportFragmentManager();
         if (fm != null) {
             ft = fm.beginTransaction();
@@ -99,5 +106,48 @@ public class CustomerActivity extends AppCompatActivity {
         ft = fm.beginTransaction();
         ft.replace(R.id.fragment_container, fragment);
         ft.commit();
+    }
+
+    public ArrayList<Account> updateAccounts() {
+        ArrayList<Account> accList = new ArrayList<>();
+        ResultSet rs = DataBase.dataQuery("SELECT * FROM accounts WHERE owner_id = "+viewModel.getCustomerId()+" ORDER BY money_amount DESC");
+        try {
+            if (rs != null) {
+                if (rs.getInt("state") == 2 || rs.getInt("state") == 4) {
+                    do {
+                        switch (rs.getInt("type")) {
+                            case 1:
+                                accList.add(new CurrentAccount(rs.getInt("id"),
+                                        viewModel.getCustomerId(), viewModel.getBankId(), 1,
+                                        rs.getInt("state"), rs.getString("name"),
+                                        rs.getString("address"), rs.getFloat("money_amount")));
+                                break;
+                            case 2:
+                                accList.add(new CreditAccount(rs.getInt("id"),
+                                        viewModel.getCustomerId(), viewModel.getBankId(), 2,
+                                        rs.getInt("state"), rs.getString("name"),
+                                        rs.getString("address"), rs.getFloat("money_amount"), rs.getFloat("credit_limit")));
+                                break;
+                            case 3:
+                                accList.add(new SavingsAccount(rs.getInt("id"),
+                                        viewModel.getCustomerId(), viewModel.getBankId(), 3,
+                                        rs.getInt("state"), rs.getString("name"),
+                                        rs.getString("address"), rs.getFloat("money_amount"), 1));//TODO: Rework interest
+                                break;
+                            case 4:
+                                accList.add(new FixedTermAccount(rs.getInt("id"),
+                                        viewModel.getCustomerId(), viewModel.getBankId(), 4,
+                                        rs.getInt("state"), rs.getString("name"),
+                                        rs.getString("address"), rs.getFloat("money_amount")));
+                                break;
+                        }
+                    } while (rs.next());
+                }
+            }
+        }
+        catch (SQLException e) {
+            System.out.println("_LOG "+e);
+        }
+        return accList;
     }
 }

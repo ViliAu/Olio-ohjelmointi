@@ -10,10 +10,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
-public class AdminRecyclerAdapter extends RecyclerView.Adapter<AdminRecyclerAdapter.AdminViewHolder> {
+public class AdminCustomerRecyclerAdapter extends RecyclerView.Adapter<AdminCustomerRecyclerAdapter.AdminCustomerViewHolder> {
 
-    private ArrayList<AdminCustomersCard> customerCardList = new ArrayList<>();
+    private ArrayList<Customer> customerList;
     private OnItemClickListener clickListener;
 
     public interface OnItemClickListener {
@@ -24,7 +25,7 @@ public class AdminRecyclerAdapter extends RecyclerView.Adapter<AdminRecyclerAdap
         clickListener = listener;
     }
 
-    public static class AdminViewHolder extends RecyclerView.ViewHolder {
+    public static class AdminCustomerViewHolder extends RecyclerView.ViewHolder {
         public ImageView cardImage;
         public TextView twUsername;
         public TextView twId;
@@ -32,7 +33,7 @@ public class AdminRecyclerAdapter extends RecyclerView.Adapter<AdminRecyclerAdap
         public TextView twOwner;
         public TextView twAccType;
 
-        public AdminViewHolder(@NonNull View itemView, final OnItemClickListener listener) {
+        public AdminCustomerViewHolder(@NonNull View itemView, final OnItemClickListener listener) {
             super(itemView);
             cardImage = itemView.findViewById(R.id.imageView);
             twUsername = itemView.findViewById(R.id.tw_username);
@@ -55,32 +56,32 @@ public class AdminRecyclerAdapter extends RecyclerView.Adapter<AdminRecyclerAdap
         }
     }
 
-    public AdminRecyclerAdapter(ArrayList<AdminCustomersCard> cardList) {
-        customerCardList = cardList;
+    public AdminCustomerRecyclerAdapter(ArrayList<Customer> custList) {
+        customerList = custList;
     }
 
     @NonNull
     @Override
-    public AdminViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_rw_admin_customers, parent, false);
-        AdminViewHolder evh = new AdminViewHolder(v, clickListener);
+    public AdminCustomerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_admin_customer, parent, false);
+        AdminCustomerViewHolder evh = new AdminCustomerViewHolder(v, clickListener);
         return evh;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull AdminViewHolder holder, int position) {
-        AdminCustomersCard card = customerCardList.get(position);
+    public void onBindViewHolder(@NonNull AdminCustomerViewHolder holder, int position) {
+        Customer cust = customerList.get(position);
 
-        holder.cardImage.setImageResource(card.getImageResource());
-        holder.twUsername.setText(card.getUsername());
-        holder.twId.setText(card.getId());
-        holder.twBank.setText(card.getBank());
-        holder.twOwner.setText(card.getOwner());
-        holder.twAccType.setText(card.getAccType());
+        holder.cardImage.setImageResource(R.drawable.ic_account_circle);
+        holder.twUsername.setText(cust.getAccountName());
+        holder.twId.setText(String.format(Locale.GERMANY, "ID: %d", cust.getId()));
+        holder.twBank.setText(cust.getBankString());
+        holder.twOwner.setText(cust.getName());
+        holder.twAccType.setText(cust.getAccTypeString());
     }
 
     @Override
     public int getItemCount() {
-        return customerCardList.size();
+        return customerList.size();
     }
 }

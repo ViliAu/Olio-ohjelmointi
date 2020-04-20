@@ -1,5 +1,144 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
+    <TextView
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:text="New transaction"
+        android:textSize="22sp" />
+
+    <TextView
+        android:id="@+id/tw_account_from"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/header"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        android:gravity="center"
+        android:text="From:"
+        android:textSize="20sp" />
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/tw_account_from"
+        android:layout_alignTop="@id/tw_account_from"
+        android:layout_toRightOf="@id/tw_account_from"
+        android:padding="4dp"
+        android:layout_below="@id/tw_account_from" />
+
+    <TextView
+        android:id="@+id/tw_account_to"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/spinner"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:text="To:"
+        android:textSize="20sp" />
+
+    <EditText
+        android:id="@+id/et_account_to"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/tw_account_to"
+        android:layout_marginStart="10dp"
+        android:textSize="20sp"
+        android:layout_alignBottom="@id/tw_account_to"
+        android:layout_marginTop="10dp" />
+
+    <TextView
+        android:id="@+id/tw_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/et_account_to"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:text="Amount:"
+        android:textSize="20sp" />
+
+    <EditText
+        android:id="@+id/et_amount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/tw_amount"
+        android:layout_marginStart="10dp"
+        android:textSize="20sp"
+        android:layout_toEndOf="@id/tw_amount"
+        android:inputType="numberDecimal" />
+
+    <TextView
+        android:id="@+id/tw_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/et_amount"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:text="Message:"
+        android:textSize="20sp" />
+
+    <EditText
+        android:id="@+id/et_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/tw_message"
+        android:layout_marginStart="10dp"
+        android:textSize="20sp"
+        android:layout_toEndOf="@id/tw_message"
+        android:inputType="numberDecimal" />
+
+    <TextView
+        android:id="@+id/tw_due_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/et_message"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        android:text="Due date: "
+        android:textSize="15sp" />
+
+    <CalendarView
+        android:id="@+id/cw_due_date"
+        android:layout_width="280dp"
+        android:layout_height="290dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/tw_message"
+        android:layout_toRightOf="@id/tw_due_date"
+        android:layout_gravity="center" />
+
+    <Button
+        android:id="@+id/button_make_transaction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/cw_due_date"
+        android:layout_centerHorizontal="true"
+        android:text="Make transaction" />
+
+    <TextView
+        android:id="@+id/tw_reoccurance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tw_due_date"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="10dp"
+        android:text="Reoccuring"
+        android:textSize="15sp" />
+
+    <Switch
+        android:id="@+id/switch_reoccuring"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@id/tw_reoccurance"
+        android:layout_alignEnd="@id/tw_reoccurance"
+        android:layout_below="@id/tw_reoccurance"
+        />
 </RelativeLayout>
