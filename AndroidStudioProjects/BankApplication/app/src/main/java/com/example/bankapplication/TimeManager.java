@@ -41,8 +41,9 @@ public class TimeManager {
 
     public long getDateAdvancedByMonth(long date) {
         Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(date);
         cal.add(Calendar.MONTH, 1);
-        return date + cal.getTimeInMillis();
+        return cal.getTimeInMillis();
     }
 
 }

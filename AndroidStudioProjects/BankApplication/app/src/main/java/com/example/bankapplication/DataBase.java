@@ -19,7 +19,7 @@ public class DataBase {
     // Deny instantiation
     private DataBase(){}
 
-    public static ResultSet dataQuery(String query) {
+    static ResultSet dataQuery(String query) {
         System.out.println("_LOG: Start executing query");
         return dataBaseAccess(query);
         //return rs;
@@ -44,7 +44,7 @@ public class DataBase {
         @Override
         protected String doInBackground(String... params) { */
     private static ResultSet dataBaseAccess(String query) {
-        String result = "";
+        String result;
         try {
             // Connect to database
             //connection = databaseConnection();
@@ -76,7 +76,7 @@ public class DataBase {
     }
 
     private static int createNewId(String tableName) {
-        String result = "";
+        String result;
         try {
             // Connect to database
             //connection = databaseConnection();
@@ -111,7 +111,7 @@ public class DataBase {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         Connection con = null;
-        String ConnectionURL = "";
+        String ConnectionURL;
         try {
             Class.forName("net.sourceforge.jtds.jdbc.Driver").newInstance();
             ConnectionURL = "jdbc:jtds:sqlserver://SQL5047.site4now.net;" +
@@ -131,16 +131,14 @@ public class DataBase {
         try {
             if (connection == null || connection.isClosed())
                 connect();
-            if (connection != null)
-                return true;
-            else
-                return false;
+            return connection != null;
         }
         catch (SQLException e) {
             System.out.println("_LOG: "+e);
             return false;
         }
     }
+    /*
     public static void closeConnection() {
         try {
             connection.close();
@@ -149,5 +147,5 @@ public class DataBase {
         catch (SQLException e) {
             System.out.println("_LOG: "+e);
         }
-    }
+    }*/
 }

@@ -102,7 +102,7 @@ public class Bank {
             DataBase.dataInsert("INSERT INTO pending_transactions VALUES ("
                     +DataBase.getNewId("pending_transactions")+
                     ", '"+accountFrom+"', '"+accountTo+"', "+amount+", '"+new Date(time.getDateAdvancedByMonth(dueDate.getTime()))+
-                    "', '"+isReoccurring+"') ");
+                    "', '"+isReoccurring+"', '"+message+"') ");
         }
         try {
             ResultSet account1 = DataBase.dataQuery("SELECT * FROM accounts WHERE address = '" + accountFrom + "' ");
@@ -132,8 +132,15 @@ public class Bank {
                             rs.getDate("due_date"),
                             rs.getBoolean("reoccuring"), rs.getString("message"));
                     // Delete pending payment if it is successful and not recurring
-                    if (result.equals("Money transferred.") && !rs.getBoolean("reoccuring")) {
+                    if (result.equals("Money transferred.")) {
                         DataBase.dataUpdate("DELETE FROM pending_transactions WHERE id = "+rs.getInt("id"));
+                    }
+                    else if (rs.getBoolean("reoccuring")) {
+                        DataBase.dataUpdate("UPDATE accounts SET reoccuring = 'false' WHERE id = "+rs.getInt("id"));
+                    }
+                    if (rs.getBoolean("reoccuring")) {
+                        checkPendingPayments();
+                        break;
                     }
                 } while (rs.next());
             }
