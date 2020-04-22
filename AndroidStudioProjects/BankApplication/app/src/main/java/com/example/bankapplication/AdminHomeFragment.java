@@ -58,7 +58,7 @@ public class AdminHomeFragment extends Fragment implements AdapterView.OnItemSel
         initEditor();
         initButtons();
     }
-
+    //TODO: REWORK THIS (ONCLICKLISTENER DOESN'T UPDATE)
     private void initRecyclerview() {
         customers = getCustomers();
 
