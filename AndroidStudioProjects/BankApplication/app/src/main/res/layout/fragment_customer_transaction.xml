@@ -94,7 +94,7 @@
         android:layout_marginStart="10dp"
         android:textSize="20sp"
         android:layout_toEndOf="@id/tw_message"
-        android:inputType="numberDecimal" />
+        android:inputType="text" />
 
     <TextView
         android:id="@+id/tw_due_date"

@@ -49,6 +49,9 @@ public class MainActivity extends AppCompatActivity {
         else {
             Toast.makeText(this, "Successfully connected to database.", Toast.LENGTH_SHORT).show();
         }
+
+        // Create bank instance so we can load pending payments
+        Bank bank = Bank.getInstance();
     }
 
     @Override
@@ -95,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
         Intent i = new Intent(this, CustomerActivity.class);
         i.putExtra("customerId", id);
         i.putExtra("bankId", bankId);
+
         startActivity(i);
         this.finish();
     }

@@ -94,7 +94,7 @@ public class CustomerTransactionFragment extends Fragment {
     }
 
     // Check if the amount is correct
-    private void checkTransaction() {
+    private void checkTransaction() { //TODO: Move to bank class
         boolean canTransfer = true;
         float amount = 0;
         try {
@@ -131,7 +131,7 @@ public class CustomerTransactionFragment extends Fragment {
             String toast = "";
             toast = bank.transferMoney(accs.get(binding.spinner.getSelectedItemPosition()).getAccountNumber(),
                     binding.etAccountTo.getText().toString(), amount,
-                    currentDate,binding.switchReoccuring.isChecked());
+                    currentDate,binding.switchReoccuring.isChecked(), binding.etMessage.getText().toString());
             Toast.makeText(getContext(), toast, Toast.LENGTH_LONG).show();
             CustomerActivity ca = (CustomerActivity)getActivity();
             viewModel.setAccounts(ca.updateAccounts());

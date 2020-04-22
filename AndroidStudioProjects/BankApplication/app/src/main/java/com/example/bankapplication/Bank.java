@@ -25,7 +25,6 @@ public class Bank {
         return b;
     }
 
-    //TODO: BANK CONSTRUCTOR
     private Bank() {
         tm = TimeManager.getInstance();
         checkPendingPayments();
@@ -39,7 +38,21 @@ public class Bank {
         this.id = id;
     }
 
-    public String generateAccountNumber(int bankId) {
+    private String getBicById(int id) {
+        switch (id) {
+            case 1:
+                return "SNORKKELI";
+            case 2:
+                return "POJUTIN";
+            case 3:
+                return "SYNTISYPPI";
+            case 4:
+                return "ROSKIS";
+            default:
+                return "ERROR";
+        }
+    }
+    private String generateAccountNumber(int bankId) {
         String prefix = "";
         switch (bankId) {
             case 1:
@@ -67,19 +80,20 @@ public class Bank {
         return prefix;
     }
 
-    public void createAccountRequest(int type, int bankId, int ownerId, String accName, float creditLimit, Date dueDate) {
-        String accNumber = generateAccountNumber(bankId);
+    public void createAccountRequest(int type, int ownerId, String accName, float creditLimit, Date dueDate) {
+        String accNumber = generateAccountNumber(id);
         DataBase.dataInsert("INSERT INTO accounts VALUES ("+DataBase.getNewId("accounts")+", "+ownerId+
-                ", "+bankId+", '"+accNumber+"', "+0+", "+type+", "+1+", '"+accName+"', "+creditLimit+", '"+dueDate+"') ");
+                ", "+id+", '"+accNumber+"', "+0+", "+type+", "+1+", '"+accName+"', "+creditLimit+", '"+dueDate+"') ");
     }
 
-    public String transferMoney(String accountFrom, String accountTo, float amount, Date dueDate, boolean isReoccurring) {
+    // Used to transfer money between two accounts. Returns the result as a string
+    public String transferMoney(String accountFrom, String accountTo, float amount, Date dueDate, boolean isReoccurring, String message) {
         // Check if the transaction happens other time than today
         TimeManager time = new TimeManager();
         if (!dueDate.before(new Date(time.today()))) {
             DataBase.dataInsert("INSERT INTO pending_transactions VALUES ("
                     +DataBase.getNewId("pending_transactions")+
-                    ", '"+accountFrom+"', '"+accountTo+"', "+amount+", '"+dueDate+"', '"+isReoccurring+"') ");
+                    ", '"+accountFrom+"', '"+accountTo+"', "+amount+", '"+dueDate+"', '"+isReoccurring+"', '"+message+"') ");
             return "Transfer due date set.";
         }
         // Check if the transaction is recurring
@@ -102,6 +116,7 @@ public class Bank {
             return "Something went wrong.";
         }
         DataBase.dataQuery("EXEC transfer_money @account_from = '"+accountFrom+"', @account_to = '"+accountTo+"', @amount = "+amount);
+        createTransactionHistory(accountFrom, accountTo, amount, message, dueDate);
         return "Money transferred.";
     }
 
@@ -115,7 +130,7 @@ public class Bank {
                     result = transferMoney(rs.getString("account_from"),
                             rs.getString("account_to"), rs.getFloat("amount"),
                             rs.getDate("due_date"),
-                            rs.getBoolean("reoccuring"));
+                            rs.getBoolean("reoccuring"), rs.getString("message"));
                     // Delete pending payment if it is successful and not recurring
                     if (result.equals("Money transferred.") && !rs.getBoolean("reoccuring")) {
                         DataBase.dataUpdate("DELETE FROM pending_transactions WHERE id = "+rs.getInt("id"));
@@ -126,5 +141,24 @@ public class Bank {
         catch (SQLException e) {
             System.out.println("_LOG: "+ e);
         }
+    }
+
+    // Write a new entry in transaction history
+    private void createTransactionHistory(String accountFrom, String accountTo, float amount, String message, Date date) {
+        // Get bank bic codes
+        ResultSet rs;
+        String bicFrom = "";
+        String bicTo = "";
+        try {
+            rs = DataBase.dataQuery("SELECT * FROM accounts WHERE address = '"+accountFrom+"'");
+            bicFrom = getBicById(rs.getInt("bank_id"));
+            rs = DataBase.dataQuery("SELECT * FROM accounts WHERE address = '"+accountTo+"'");
+            bicTo = getBicById(rs.getInt("bank_id"));
+        }
+        catch (SQLException e) {
+            System.out.println("_LOG: "+e);
+        }
+        DataBase.dataInsert("INSERT INTO transaction_history VALUES ("+DataBase.getNewId("transaction_history")+
+                ", '"+accountFrom+"', '"+accountTo+"', '"+bicFrom+"', '"+bicTo+"', "+amount+", '"+message+"', '"+date+"')");
     }
 }

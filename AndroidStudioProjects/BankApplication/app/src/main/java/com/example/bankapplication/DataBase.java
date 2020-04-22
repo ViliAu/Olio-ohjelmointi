@@ -16,6 +16,9 @@ public class DataBase {
     // Database query result
     private static ResultSet rs;
 
+    // Deny instantiation
+    private DataBase(){}
+
     public static ResultSet dataQuery(String query) {
         System.out.println("_LOG: Start executing query");
         return dataBaseAccess(query);

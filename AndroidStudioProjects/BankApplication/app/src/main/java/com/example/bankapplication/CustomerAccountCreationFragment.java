@@ -75,7 +75,7 @@ public class CustomerAccountCreationFragment extends Fragment implements Adapter
         if (checkFields()) {
             try {
                 java.sql.Date date = new java.sql.Date(binding.cwDueDate.getDate());
-                bank.createAccountRequest(accountType, viewModel.getBankId(), viewModel.getCustomerId(),
+                bank.createAccountRequest(accountType, viewModel.getCustomerId(),
                         binding.etAccountName.getText().toString(),
                         Float.parseFloat(binding.etCreditLimit.getText().toString()), date);
             }

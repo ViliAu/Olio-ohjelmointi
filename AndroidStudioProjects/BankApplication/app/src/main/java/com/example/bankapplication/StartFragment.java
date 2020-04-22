@@ -17,12 +17,14 @@ public class StartFragment extends Fragment {
 
     private SharedViewModelMain viewModel;
     private FragmentStartBinding binding;
+    private Bank bank;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentStartBinding.inflate(inflater, container, false);
         initButtons();
+        bank = Bank.getInstance();
         return binding.getRoot();
     }
 
@@ -40,6 +42,7 @@ public class StartFragment extends Fragment {
             public void onClick(View v) {
                 viewModel.setBankName("snorkkeli");
                 viewModel.setBankId(1);
+                bank.setId(1);
                 MainActivity m = (MainActivity)getActivity();
                 m.loadFragment(new LoginFragment());
             }
