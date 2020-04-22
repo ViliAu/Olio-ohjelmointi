@@ -116,7 +116,7 @@ public class Bank {
             return "Something went wrong.";
         }
         DataBase.dataQuery("EXEC transfer_money @account_from = '"+accountFrom+"', @account_to = '"+accountTo+"', @amount = "+amount);
-        createTransactionHistory(accountFrom, accountTo, amount, message, dueDate);
+        createTransactionHistory(accountFrom, accountTo, amount, message, dueDate, "Transaction");
         return "Money transferred.";
     }
 
@@ -151,7 +151,7 @@ public class Bank {
     }
 
     // Write a new entry in transaction history
-    private void createTransactionHistory(String accountFrom, String accountTo, float amount, String message, Date date) {
+    private void createTransactionHistory(String accountFrom, String accountTo, float amount, String message, Date date, String action) {
         // Get bank bic codes
         ResultSet rs;
         String bicFrom = "";
@@ -166,6 +166,6 @@ public class Bank {
             System.out.println("_LOG: "+e);
         }
         DataBase.dataInsert("INSERT INTO transaction_history VALUES ("+DataBase.getNewId("transaction_history")+
-                ", '"+accountFrom+"', '"+accountTo+"', '"+bicFrom+"', '"+bicTo+"', "+amount+", '"+message+"', '"+date+"')");
+                ", '"+accountFrom+"', '"+accountTo+"', '"+bicFrom+"', '"+bicTo+"', "+amount+", '"+message+"', '"+date+"', '"+action+"')");
     }
 }

@@ -1,20 +1,29 @@
 package com.example.bankapplication;
 
-public class PaymentTransaction {
-    String accountFrom;
-    String accountTo;
-    String bicFrom;
-    String bicTo;
-    String message;
-    float amount;
+import java.sql.Date;
 
-    public PaymentTransaction(String accountFrom, String accountTo, String bicFrom, String bicTo, String message, float amount) {
+public class PaymentTransaction {
+    private final String accountFrom;
+    private final String accountTo;
+    private final String bicFrom;
+    private final String bicTo;
+    private final String message;
+    private final float amount;
+    private final Date date;
+    private final String action;
+    private final String targetAccount;
+
+    public PaymentTransaction(String accountFrom, String accountTo, String bicFrom, String bicTo,
+                              String message, float amount, Date date, String action, String targetAccount) {
         this.accountFrom = accountFrom;
         this.accountTo = accountTo;
         this.bicFrom = bicFrom;
         this.bicTo = bicTo;
         this.message = message;
         this.amount = amount;
+        this.date = date;
+        this.action = action;
+        this.targetAccount = targetAccount;
     }
 
     public String getAccountFrom() {
@@ -39,5 +48,17 @@ public class PaymentTransaction {
 
     public float getAmount() {
         return amount;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public String getTargetAccount() {
+        return targetAccount;
     }
 }
