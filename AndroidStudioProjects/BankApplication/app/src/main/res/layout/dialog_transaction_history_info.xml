@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/tw_account_from"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="start"
+        android:text="From: "
+        android:textSize="20dp" />
+
+    <TextView
+        android:id="@+id/tw_account_to"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tw_bic_from"
+        android:layout_marginTop="10dp"
+        android:gravity="start"
+        android:text="To: "
+        android:textSize="20dp" />
+
+    <TextView
+        android:id="@+id/tw_bic_from"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tw_account_from"
+        android:gravity="start"
+        android:layout_marginStart="5dp"
+        android:text="BIC: "
+        android:textSize="15dp" />
+
+    <TextView
+        android:id="@+id/tw_bic_to"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tw_account_to"
+        android:gravity="start"
+        android:text="BIC: "
+        android:layout_marginStart="5dp"
+        android:textSize="15dp" />
+
+    <TextView
+        android:id="@+id/tw_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tw_bic_to"
+        android:layout_marginTop="10dp"
+        android:gravity="start"
+        android:text="Date: "
+        android:textSize="20dp" />
+
+    <TextView
+        android:id="@+id/tw_amount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tw_date"
+        android:gravity="start"
+        android:text="Amount: "
+        android:textSize="20dp" />
+
+    <TextView
+        android:id="@+id/tw_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tw_amount"
+        android:layout_marginTop="10dp"
+        android:gravity="start"
+        android:text="Message: "
+        android:textSize="20dp" />
+
+
+</RelativeLayout>

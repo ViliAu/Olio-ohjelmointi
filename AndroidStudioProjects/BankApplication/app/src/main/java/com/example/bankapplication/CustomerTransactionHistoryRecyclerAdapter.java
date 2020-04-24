@@ -38,7 +38,7 @@ public class CustomerTransactionHistoryRecyclerAdapter extends RecyclerView.Adap
             date = itemView.findViewById(R.id.tw_date);
             message = itemView.findViewById(R.id.tw_message);
 
-            infoImage.setOnClickListener(new View.OnClickListener() {
+            itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (listener != null) {

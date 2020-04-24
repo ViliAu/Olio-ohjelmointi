@@ -1,5 +1,6 @@
 package com.example.bankapplication;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -90,13 +91,13 @@ public class CustomerTransactionHistoryFragment extends Fragment implements Adap
         payments = getPayments(accs.get(accPosition).getAccountNumber());
         recyclerAdapter = new CustomerTransactionHistoryRecyclerAdapter(payments);
         recycler.setAdapter(recyclerAdapter);
-        /*
-        recyclerAdapter.setOnItemClickListener(new CustomerHomeRecyclerAdapter.OnItemClickListener() {
+
+        recyclerAdapter.setOnItemClickListener(new CustomerTransactionHistoryRecyclerAdapter.OnItemClickListener() {
             @Override
-            public void onDeleteItemClick(int position) {
-                //TODO: More information regarding payment
+            public void onInfoItemClick(int position) {
+                showInfo(position);
             }
-        });*/
+        });
     }
 
     private ArrayList<PaymentTransaction> getPayments(String accountNumber) {
@@ -130,6 +131,23 @@ public class CustomerTransactionHistoryFragment extends Fragment implements Adap
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+
+    private void showInfo(int position) {
+        // Set data to viewmodel
+        PaymentTransaction pay = payments.get(position);
+        viewModel.setAccountFrom(pay.getAccountFrom());
+        viewModel.setAccountTo(pay.getAccountTo());
+        viewModel.setBicFrom(pay.getBicFrom());
+        viewModel.setBicTo(pay.getBicTo());
+        viewModel.setDate(pay.getDate().toString());
+        viewModel.setMessage(pay.getMessage());
+        viewModel.setAmount(String.valueOf(pay.getAmount()));
+
+        // Open dialog
+        CustomerTransactionHistoryInfoDialog dialog = new CustomerTransactionHistoryInfoDialog();
+        CustomerActivity activity = (CustomerActivity)getActivity();
+        dialog.show(activity.getSupportFragmentManager(), "dialog");
     }
 
     private class SpinnerAccount {

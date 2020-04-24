@@ -127,6 +127,11 @@ public class CustomerTransactionFragment extends Fragment {
             System.out.println("_LOG: "+e);
             Toast.makeText(getContext(), "Something went wrong. Please try again."+e, Toast.LENGTH_LONG).show();
         }
+        // Check if money is being transferred to the same account
+        if (binding.etAccountTo.equals(accs.get(binding.spinner.getSelectedItemPosition()).getAccountNumber())) {
+            canTransfer = false;
+            Toast.makeText(getContext(), "The Sending and receiving accounts cannot be same.", Toast.LENGTH_LONG).show();
+        }
         if (canTransfer) {
             String toast = "";
             toast = bank.transferMoney(accs.get(binding.spinner.getSelectedItemPosition()).getAccountNumber(),
