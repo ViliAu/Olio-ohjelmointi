@@ -60,9 +60,14 @@ public class CustomerAccountsFragment extends Fragment {
         recyclerAdapter.setOnItemClickListener(new CustomerAccountsRecyclerAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                //TODO: Goto account settings
+                openSettings();
             }
         });
+    }
+
+    private void openSettings() {
+        CustomerActivity activity = (CustomerActivity)getActivity();
+        activity.loadFragment(new CustomerAccountSettingsFragment());
     }
 
     private void initButtons() {

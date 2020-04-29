@@ -16,4 +16,10 @@
         <item>Fixed term account</item>
     </string-array>
 
+    <string-array name="account_types_account_settings">
+        <item>Current account</item>
+        <item>Credit account</item>
+        <item>Savings account</item>
+    </string-array>
+
 </resources>

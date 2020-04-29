@@ -132,13 +132,13 @@ public class CustomerActivity extends AppCompatActivity {
                                 accList.add(new SavingsAccount(rs.getInt("id"),
                                         viewModel.getCustomerId(), viewModel.getBankId(), 3,
                                         rs.getInt("state"), rs.getString("name"),
-                                        rs.getString("address"), rs.getFloat("money_amount"), 1));//TODO: Rework interest
+                                        rs.getString("address"), rs.getFloat("money_amount"), rs.getFloat("interest")));
                                 break;
                             case 4:
                                 accList.add(new FixedTermAccount(rs.getInt("id"),
                                         viewModel.getCustomerId(), viewModel.getBankId(), 4,
                                         rs.getInt("state"), rs.getString("name"),
-                                        rs.getString("address"), rs.getFloat("money_amount")));
+                                        rs.getString("address"), rs.getFloat("money_amount"), rs.getDate("due_date"), rs.getFloat("interest")));
                                 break;
                         }
                     } while (rs.next());

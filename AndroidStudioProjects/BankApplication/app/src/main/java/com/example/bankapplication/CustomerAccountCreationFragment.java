@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.DatePicker;
+import android.widget.CalendarView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -15,9 +15,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.bankapplication.databinding.FragmentCustomerAccountCreationBinding;
-
-import java.sql.Time;
-import java.util.Date;
+import java.sql.Date;
+import java.util.Locale;
 
 public class CustomerAccountCreationFragment extends Fragment implements AdapterView.OnItemSelectedListener {
 
@@ -25,12 +24,16 @@ public class CustomerAccountCreationFragment extends Fragment implements Adapter
     private SharedViewModelCustomer viewModel;
 
     private int accountType = 0;
-    private Bank bank = Bank.getInstance();
+    private Bank bank;
+    private TimeManager time;
+    private Date currentDate;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentCustomerAccountCreationBinding.inflate(inflater, container, false);
+        bank = Bank.getInstance();
+        time = TimeManager.getInstance();
         initElements();
         return binding.getRoot();
     }
@@ -48,7 +51,7 @@ public class CustomerAccountCreationFragment extends Fragment implements Adapter
         initCalendar();
     }
 
-    void initSpinner() {
+    private void initSpinner() {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.account_types, R.layout.spinner_item_account_type);
         adapter.setDropDownViewResource(R.layout.spinner_item_account_type);
@@ -67,17 +70,22 @@ public class CustomerAccountCreationFragment extends Fragment implements Adapter
     }
 
     private void initCalendar() {
-        Date date = new Date();
-        binding.cwDueDate.setMinDate(date.getTime());
+        binding.cwDueDate.setMinDate(time.today());
+        binding.cwDueDate.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+            @Override
+            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+                currentDate = new Date(time.parseDate
+                        (String.format(Locale.GERMANY, "%d-%d-%d", year, month+1, dayOfMonth)));
+            }
+        });
     }
 
     private void checkAccountCreation() {
         if (checkFields()) {
             try {
-                java.sql.Date date = new java.sql.Date(binding.cwDueDate.getDate());
                 bank.createAccountRequest(accountType, viewModel.getCustomerId(),
                         binding.etAccountName.getText().toString(),
-                        Float.parseFloat(binding.etCreditLimit.getText().toString()), date);
+                        Float.parseFloat(binding.etCreditLimit.getText().toString()), currentDate);
             }
             catch (Exception e) {
                 System.out.println("_LOG: "+e);
@@ -95,7 +103,7 @@ public class CustomerAccountCreationFragment extends Fragment implements Adapter
         if (accountType != 2) {
             binding.etCreditLimit.setText("0");
         }
-        else if (accountType == 2 && binding.etCreditLimit.getText().toString().trim().isEmpty()) {
+        else if (binding.etCreditLimit.getText().toString().trim().isEmpty()) {
             canCreate = false;
             binding.etAccountName.setError("Credit limit cannot be empty");
         }

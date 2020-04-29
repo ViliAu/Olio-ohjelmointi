@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 //TODO: Rework database with sql procedures (viikonloppu tekemist vilille(mugelle))
+//TODO: Throw exceptions!
 public class DataBase {
 
     private static Connection connection;

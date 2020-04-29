@@ -96,11 +96,10 @@ public class CustomerAccountsRecyclerAdapter extends RecyclerView.Adapter<Custom
                 holder.specialText.setText(String.format(Locale.GERMANY, "Interest: %.2f%%", sAcc.getInterest()));
                 holder.accountType.setText("Type: Savings account");
                 break;
-            //TODO: Implement this later
             case 4:
                 FixedTermAccount fAcc = (FixedTermAccount) account;
                 holder.cardImage.setImageResource(R.drawable.ic_calendar);
-                holder.specialText.setText(String.format(Locale.GERMANY, "Due date: TOMORROW!"));
+                holder.specialText.setText(String.format(Locale.GERMANY, "Due date: %s, Interest: +%f", fAcc.getDueDate(), fAcc.getInterest()));
                 holder.accountType.setText("Type: Fixed term account");
                 break;
         }

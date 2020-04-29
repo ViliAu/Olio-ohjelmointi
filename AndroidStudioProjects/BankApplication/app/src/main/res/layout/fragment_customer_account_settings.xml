@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:text="Account settings"
+        android:textSize="30sp" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/input_account_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/header"
+        android:layout_marginTop="5dp">
+
+        <EditText
+            android:id="@+id/et_account_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Account name"
+            android:inputType="text"
+            android:textSize="25sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/tw_account_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/et_info"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
+        android:text="Account type: "
+        android:textSize="20sp" />
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/input_account_name"
+        android:layout_alignTop="@id/tw_account_type"
+        android:layout_alignBottom="@id/tw_account_type"
+        android:layout_marginStart="5dp"
+        android:layout_toEndOf="@id/tw_account_type" />
+
+    <TextView
+        android:id="@+id/tw_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/input_account_name"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
+        android:text="Credit limit: "
+        android:textSize="20sp" />
+
+    <EditText
+        android:id="@+id/et_info"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/tw_info"
+        android:layout_alignTop="@id/tw_info"
+        android:layout_alignBottom="@id/tw_info"
+        android:layout_below="@id/input_account_name" />
+
+    <Switch
+        android:id="@+id/switch_payment_enabled"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tw_account_type"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
+        android:text="Enable paying: "
+        android:textSize="20sp" />
+
+    <Button
+        android:id="@+id/button_update_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/switch_payment_enabled"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:text="Update account information" />
+
+    <Button
+        android:id="@+id/button_request_card"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/button_update_info"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:text="Request card" />
+
+</RelativeLayout>
