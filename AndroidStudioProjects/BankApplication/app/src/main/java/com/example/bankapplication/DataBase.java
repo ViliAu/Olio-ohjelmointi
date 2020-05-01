@@ -23,7 +23,6 @@ public class DataBase {
     static ResultSet dataQuery(String query) {
         System.out.println("_LOG: Start executing query");
         return dataBaseAccess(query);
-        //return rs;
     }
 
     public static void dataInsert(String input) {

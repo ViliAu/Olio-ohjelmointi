@@ -58,7 +58,7 @@ public class AdminHomeFragment extends Fragment implements AdapterView.OnItemSel
         initEditor();
         initButtons();
     }
-    //TODO: REWORK THIS (ONCLICKLISTENER DOESN'T UPDATE)
+
     private void initRecyclerview() {
         customers = getCustomers();
 
@@ -121,6 +121,13 @@ public class AdminHomeFragment extends Fragment implements AdapterView.OnItemSel
 
         recyclerAdapter = new AdminCustomerRecyclerAdapter(customers);
         recycler.setAdapter(recyclerAdapter);
+        recyclerAdapter.setOnItemClickListener(new AdminCustomerRecyclerAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                viewModel.setCustomerId(customers.get(position).getId());
+                loadUserSettingsFragment();
+            }
+        });
     }
 
 

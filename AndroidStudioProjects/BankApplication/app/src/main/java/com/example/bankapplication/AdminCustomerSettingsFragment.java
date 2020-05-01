@@ -28,6 +28,7 @@ public class AdminCustomerSettingsFragment extends Fragment implements AdapterVi
 
     private int id = 0;
     private int accountId = 0;
+    private String accountNumber = "";
     private ArrayList<AccountListElement> accList = new ArrayList<>();
     private ArrayAdapter<AccountListElement> accountAdapter;
 
@@ -112,6 +113,22 @@ public class AdminCustomerSettingsFragment extends Fragment implements AdapterVi
                 }
             }
         });
+
+        binding.buttonAcceptCards.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeCardState(2);
+                Toast.makeText(getContext(), "Account cards enabled", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        binding.buttonRejectCards.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeCardState(3);
+                Toast.makeText(getContext(), "Account cards disabled", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void initSpinner() {
@@ -143,6 +160,10 @@ public class AdminCustomerSettingsFragment extends Fragment implements AdapterVi
         DataBase.dataUpdate("UPDATE accounts SET state = "+state+" WHERE id = "+accountId);
     }
 
+    private void changeCardState(int state) {
+        DataBase.dataUpdate("UPDATE cards SET state = "+state+" WHERE owner_account = '"+accountNumber+"' ");
+    }
+
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         try {
@@ -160,6 +181,7 @@ public class AdminCustomerSettingsFragment extends Fragment implements AdapterVi
             System.out.println("_LOG: "+e);
         }
         accountId = accList.get(position).id;
+        accountNumber = accList.get(position).accountNumber;
     }
 
     @Override

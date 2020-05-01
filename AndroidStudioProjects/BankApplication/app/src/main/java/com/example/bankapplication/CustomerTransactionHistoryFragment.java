@@ -38,12 +38,14 @@ public class CustomerTransactionHistoryFragment extends Fragment implements Adap
     private ArrayList<PaymentTransaction> payments = new ArrayList<>();
 
     private int accPosition = 0;
+    private TimeManager time;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentCustomerTransactionHistoryBinding.inflate(inflater, container, false);
         initElements();
+        time = TimeManager.getInstance();
         return binding.getRoot();
     }
 
@@ -110,7 +112,7 @@ public class CustomerTransactionHistoryFragment extends Fragment implements Adap
                     transactions.add(new PaymentTransaction(
                             rs.getString("account_from"), rs.getString("account_to"), rs.getString("bic_from"),
                             rs.getString("bic_to"), rs.getString("message"),
-                            rs.getFloat("amount"), rs.getDate("date"),
+                            rs.getFloat("amount"), rs.getTimestamp("date"),
                             rs.getString("action"), accountNumber
                     ));
                 } while (rs.next());
@@ -140,9 +142,9 @@ public class CustomerTransactionHistoryFragment extends Fragment implements Adap
         viewModel.setAccountTo(pay.getAccountTo());
         viewModel.setBicFrom(pay.getBicFrom());
         viewModel.setBicTo(pay.getBicTo());
-        viewModel.setDate(pay.getDate().toString());
+        viewModel.setDate(time.getReadableDateTime(pay.getDate().getTime()));
         viewModel.setMessage(pay.getMessage());
-        viewModel.setAmount(String.valueOf(pay.getAmount()));
+        viewModel.setAmount(String.format(Locale.GERMANY, "%.2f€", pay.getAmount()));
 
         // Open dialog
         CustomerTransactionHistoryInfoDialog dialog = new CustomerTransactionHistoryInfoDialog();
@@ -150,6 +152,7 @@ public class CustomerTransactionHistoryFragment extends Fragment implements Adap
         dialog.show(activity.getSupportFragmentManager(), "dialog");
     }
 
+    //TODO: Remove this class and add the functionality to account class
     private class SpinnerAccount {
         String text;
         String number;

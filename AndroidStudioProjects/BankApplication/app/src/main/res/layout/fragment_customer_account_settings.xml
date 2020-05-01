@@ -63,8 +63,8 @@
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/tw_info"
-        android:layout_alignTop="@id/tw_info"
-        android:layout_alignBottom="@id/tw_info"
+        android:layout_marginTop="15dp"
+        android:inputType="number"
         android:layout_below="@id/input_account_name" />
 
     <Switch

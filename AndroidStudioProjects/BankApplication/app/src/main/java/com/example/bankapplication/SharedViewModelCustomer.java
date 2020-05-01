@@ -11,6 +11,8 @@ public class SharedViewModelCustomer extends ViewModel {
     private int bankId = 0;
     private Bank bank;
     private ArrayList<Account> accounts = new ArrayList<>();
+    private Account accountToEdit;
+    private Card cardToEdit;
 
     // Info dialog textview strings
     private String accountFrom, accountTo, bicFrom, bicTo, date, amount, message;
@@ -102,5 +104,21 @@ public class SharedViewModelCustomer extends ViewModel {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public Account getAccountToEdit() {
+        return accountToEdit;
+    }
+
+    public void setAccountToEdit(Account accountToEdit) {
+        this.accountToEdit = accountToEdit;
+    }
+
+    public Card getCardToEdit() {
+        return cardToEdit;
+    }
+
+    public void setCardToEdit(Card cardToEdit) {
+        this.cardToEdit = cardToEdit;
     }
 }

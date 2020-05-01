@@ -70,6 +70,7 @@ public class CustomerAccountCreationFragment extends Fragment implements Adapter
     }
 
     private void initCalendar() {
+        currentDate = new Date(time.today());
         binding.cwDueDate.setMinDate(time.today());
         binding.cwDueDate.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
@@ -86,6 +87,7 @@ public class CustomerAccountCreationFragment extends Fragment implements Adapter
                 bank.createAccountRequest(accountType, viewModel.getCustomerId(),
                         binding.etAccountName.getText().toString(),
                         Float.parseFloat(binding.etCreditLimit.getText().toString()), currentDate);
+                Toast.makeText(getContext(), "Account created.", Toast.LENGTH_LONG).show();
             }
             catch (Exception e) {
                 System.out.println("_LOG: "+e);

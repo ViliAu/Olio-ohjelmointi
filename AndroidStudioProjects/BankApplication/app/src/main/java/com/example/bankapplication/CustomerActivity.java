@@ -35,7 +35,6 @@ public class CustomerActivity extends AppCompatActivity {
         viewModel = ViewModelProviders.of(this).get(SharedViewModelCustomer.class);
         viewModel.setCustomerId(getIntent().getIntExtra("customerId", 0));
         viewModel.setBankId(getIntent().getIntExtra("bankId", 0));
-        System.out.println("_LOG: "+viewModel.getCustomerId() + viewModel.getBankId());
         viewModel.setAccounts(updateAccounts());
 
         // Setup toolbar

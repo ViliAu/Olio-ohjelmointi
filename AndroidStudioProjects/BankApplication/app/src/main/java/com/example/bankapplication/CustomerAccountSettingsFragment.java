@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,12 +15,17 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.example.bankapplication.databinding.FragmentCustomerAccountSettingsBinding;
 
+import java.sql.ResultSet;
+import java.util.Random;
+
 public class CustomerAccountSettingsFragment extends Fragment implements AdapterView.OnItemSelectedListener {
     private FragmentCustomerAccountSettingsBinding binding;
     private SharedViewModelCustomer viewModel;
 
     private Bank bank;
     private TimeManager time;
+    private Account acc;
+    private int type;
 
     @Nullable
     @Override
@@ -39,21 +45,155 @@ public class CustomerAccountSettingsFragment extends Fragment implements Adapter
     }
 
     private void initElements() {
+        loadAccount();
         initSpinner();
+        initTexts();
+        initSwitch();
+        initButtons();
+    }
+
+    private void loadAccount() {
+        acc = viewModel.getAccountToEdit();
+        type = acc.getType();
+    }
+
+    private void initTexts() {
+        binding.etAccountName.setText(acc.getName());
+        binding.etInfo.setText("0");
+        if (!(acc instanceof CreditAccount)) {
+            binding.twInfo.setVisibility(View.INVISIBLE);
+            binding.etInfo.setVisibility(View.INVISIBLE);
+        }
+        else {
+            binding.etInfo.setText(String.valueOf(((CreditAccount) acc).getCreditLimit()));
+        }
+    }
+
+    private void initSwitch() {
+        // Hide payment enabling if account is savings account
+        if (acc instanceof SavingsAccount)
+            binding.switchPaymentEnabled.setVisibility(View.INVISIBLE);
+        else {
+            boolean paymentState = (acc.getState() == 2);
+            binding.switchPaymentEnabled.setChecked(paymentState);
+        }
+    }
+
+    private void initButtons() {
+        binding.buttonUpdateInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkInfoUpdate();
+            }
+        });
+        binding.buttonRequestCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestCard();
+            }
+        });
+    }
+
+    private void checkInfoUpdate() {
+        boolean canUpdate = true;
+        if (acc.getBalance() < 0) {
+            canUpdate = false;
+            Toast.makeText(getContext(), "Account balance cannot be negative.", Toast.LENGTH_LONG).show();
+        }
+        if (binding.etAccountName.getText().toString().trim().equals("")) {
+            canUpdate = false;
+            binding.inputAccountName.setError("Account name cannot be empty.");
+        }
+        if (canUpdate) {
+            updateInfo();
+        }
+    }
+
+    private void requestCard() {
+        ResultSet rs;
+        rs = DataBase.dataQuery("SELECT * FROM cards WHERE owner_account = '" + acc.getAccountNumber() + "' AND state = 1");
+        if (rs != null) {
+            Toast.makeText(getContext(), "You have a pending card request.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        String number = "";
+        // Generate random number sequence
+        for (int i = 0; i < 16; i++) {
+            Random rand = new Random();
+            number += String.valueOf(rand.nextInt(10));
+        }
+        // Check database for same account number
+        rs = DataBase.dataQuery("SELECT * FROM accounts WHERE address = '" + number + "' ");
+        if (rs != null)
+            requestCard();
+
+        DataBase.dataInsert("INSERT INTO cards VALUES ("+DataBase.getNewId("cards")+
+                ", '"+acc.getAccountNumber()+"', "+100+", "+100+", "+1+", '"+number+"', "+1+", 'Bank card' ) ");
+        Toast.makeText(getContext(), "Card requested.", Toast.LENGTH_LONG).show();
+    }
+
+    private void updateInfo() {
+        float creditLimit = 0;
+        if (type == 2) {
+            try {
+                creditLimit = Float.parseFloat(binding.etInfo.getText().toString());
+                if (creditLimit < 0) {
+                    Toast.makeText(getContext(), "Enter a valid credit amount.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+            catch (Exception e) {
+                Toast.makeText(getContext(), "Enter a valid credit amount.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+        int state = (binding.switchPaymentEnabled.isChecked()) ? 2 : 4;
+        try {
+            bank.updateAccount(acc.ID, binding.etAccountName.getText().toString(), type, creditLimit, acc.getAccountNumber(), state);
+            updateAccounts();
+            Toast.makeText(getContext(), "Account info updated.", Toast.LENGTH_SHORT).show();
+        }
+        catch (Exception e) {
+            Toast.makeText(getContext(), "Something went wrong!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void updateAccounts() {
+        CustomerActivity activity = (CustomerActivity)getActivity();
+        viewModel.setAccounts(activity.updateAccounts());
     }
 
     private void initSpinner() {
+        // Makes it so you can't change fixed term account to other types
+        if (acc instanceof FixedTermAccount) {
+            binding.twAccountType.setVisibility(View.INVISIBLE);
+            binding.spinner.setVisibility(View.INVISIBLE);
+            return;
+        }
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.account_types_account_settings, R.layout.spinner_item_account_type);
         adapter.setDropDownViewResource(R.layout.spinner_item_account_type);
         binding.spinner.setAdapter(adapter);
         binding.spinner.setOnItemSelectedListener(this);
-        binding.spinner.setSelection(0);
+        binding.spinner.setSelection(type - 1);
     }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
+        binding.switchPaymentEnabled.setEnabled(true);
+        binding.switchPaymentEnabled.setChecked(true);
+        binding.buttonUpdateInfo.setEnabled(true);
+        binding.twInfo.setVisibility(View.INVISIBLE);
+        binding.etInfo.setVisibility(View.INVISIBLE);
+        if (position == 2) {
+            binding.switchPaymentEnabled.setChecked(false);
+            binding.switchPaymentEnabled.setEnabled(false);
+        }
+        else if (position == 3) {
+            binding.twInfo.setVisibility(View.VISIBLE);
+            binding.etInfo.setVisibility(View.VISIBLE);
+        }
+        type = position+1;
     }
 
     @Override

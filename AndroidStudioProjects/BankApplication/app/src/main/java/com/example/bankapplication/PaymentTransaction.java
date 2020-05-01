@@ -1,6 +1,6 @@
 package com.example.bankapplication;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 public class PaymentTransaction {
     private final String accountFrom;
@@ -9,12 +9,12 @@ public class PaymentTransaction {
     private final String bicTo;
     private final String message;
     private final float amount;
-    private final Date date;
+    private final Timestamp date;
     private final String action;
     private final String targetAccount;
 
     public PaymentTransaction(String accountFrom, String accountTo, String bicFrom, String bicTo,
-                              String message, float amount, Date date, String action, String targetAccount) {
+                              String message, float amount, Timestamp date, String action, String targetAccount) {
         this.accountFrom = accountFrom;
         this.accountTo = accountTo;
         this.bicFrom = bicFrom;
@@ -50,7 +50,7 @@ public class PaymentTransaction {
         return amount;
     }
 
-    public Date getDate() {
+    public Timestamp getDate() {
         return date;
     }
 

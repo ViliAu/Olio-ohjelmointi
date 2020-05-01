@@ -19,11 +19,13 @@ import java.sql.SQLException;
 public class LoginFragment extends Fragment {
     private SharedViewModelMain viewModel;
     private FragmentLoginBinding binding;
+    private Bank bank;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentLoginBinding.inflate(inflater, container, false);
+        bank = Bank.getInstance();
         initElements();
         return binding.getRoot();
     }
@@ -63,7 +65,7 @@ public class LoginFragment extends Fragment {
     private void loginBank(String name, String pass) {
         ResultSet rs;
         try {
-            rs = DataBase.dataQuery("SELECT * FROM henkilot WHERE accountname = '" + name + "' AND (bank_id =" + viewModel.getBankId() + " OR bank_id=0)");
+            rs = DataBase.dataQuery("SELECT * FROM henkilot WHERE accountname = '" + name + "' AND (bank_id =" + bank.getId() + " OR bank_id = 0)");
             if (rs == null) {
                 binding.inputUsername.setError("Username not found");
                 return;
@@ -86,7 +88,7 @@ public class LoginFragment extends Fragment {
             // Normal
             else if (accountType == 2) {
                 MainActivity m = (MainActivity)getActivity();
-                m.loadCustomerActivity(rs.getInt("id"), viewModel.getBankId());
+                m.loadCustomerActivity(rs.getInt("id"));
             }
 
             // Disabled

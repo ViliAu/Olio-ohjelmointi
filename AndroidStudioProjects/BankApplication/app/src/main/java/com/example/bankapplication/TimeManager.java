@@ -7,7 +7,10 @@ import java.util.Date;
 
 public class TimeManager {
 
-    SimpleDateFormat simpleDateFormat;
+    private final SimpleDateFormat sqlDateFormat;
+    private final SimpleDateFormat sqlDateTimeFormatter;
+    private final SimpleDateFormat readableDateFormat;
+    private final SimpleDateFormat readableDateTimeFormat;
 
     private static TimeManager tm;
     public static TimeManager getInstance() {
@@ -18,12 +21,10 @@ public class TimeManager {
     }
 
     public TimeManager() {
-        simpleDateFormat = new SimpleDateFormat("yy-MM-dd");
-    }
-
-    public boolean isSameDay(long time1, long time2) {
-        System.out.println("_LOG: "+simpleDateFormat.format(new Date(time1)) + "  "+simpleDateFormat.format(new Date(time2)));
-        return simpleDateFormat.format(new Date(time1)).equals(simpleDateFormat.format(new Date(time2)));
+        sqlDateFormat = new SimpleDateFormat("yy-MM-dd");
+        sqlDateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        readableDateFormat = new SimpleDateFormat("dd.MM.yyyy");
+        readableDateTimeFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
     }
 
     public long today() {
@@ -32,7 +33,7 @@ public class TimeManager {
 
     public long parseDate(String date) {
         try {
-            return simpleDateFormat.parse(date).getTime();
+            return sqlDateFormat.parse(date).getTime();
         } catch (ParseException e) {
             e.printStackTrace();
             return 0;
@@ -44,6 +45,18 @@ public class TimeManager {
         cal.setTimeInMillis(date);
         cal.add(Calendar.MONTH, 1);
         return cal.getTimeInMillis();
+    }
+
+    public String getDateTime(long time) {
+        return sqlDateTimeFormatter.format(new Date(time));
+    }
+
+    public String getReadableDate(long time) {
+        return readableDateFormat.format(new Date(time));
+    }
+
+    public String getReadableDateTime(long time) {
+        return readableDateTimeFormat.format(new Date(time));
     }
 
 }

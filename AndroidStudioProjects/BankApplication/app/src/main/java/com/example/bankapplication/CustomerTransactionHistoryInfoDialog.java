@@ -48,7 +48,7 @@ public class CustomerTransactionHistoryInfoDialog extends AppCompatDialogFragmen
         bicFrom.setText("BIC: "+viewModel.getBicFrom());
         bicTo.setText("BIC: "+viewModel.getBicTo());
         date.setText("Date: "+viewModel.getDate());
-        amount.setText("Amount: " +viewModel.getAmount()+"€");
+        amount.setText("Amount: " +viewModel.getAmount());
         message.setText("Message: "+viewModel.getMessage());
     }
 }

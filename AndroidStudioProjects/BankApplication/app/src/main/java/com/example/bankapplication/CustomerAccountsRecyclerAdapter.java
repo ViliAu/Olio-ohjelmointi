@@ -3,6 +3,7 @@ package com.example.bankapplication;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,6 +20,7 @@ public class CustomerAccountsRecyclerAdapter extends RecyclerView.Adapter<Custom
 
     public interface OnItemClickListener {
         void onItemClick(int position);
+        void onCardClick(int position);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
@@ -26,17 +28,20 @@ public class CustomerAccountsRecyclerAdapter extends RecyclerView.Adapter<Custom
     }
 
     public static class CustomerAccountViewHolder extends RecyclerView.ViewHolder {
-        public ImageView cardImage;
-        public TextView accountName, balance, accountNumber, accountType, specialText;
+        public ImageView accountImage;
+        public ImageButton cardButton;
+        public TextView accountName, balance, accountNumber, accountType, specialText, paymentEnabled;
 
         public CustomerAccountViewHolder(@NonNull View itemView, final OnItemClickListener listener) {
             super(itemView);
-            cardImage = itemView.findViewById(R.id.imageview_account);
+            accountImage = itemView.findViewById(R.id.imageview_account);
+            cardButton = itemView.findViewById(R.id.button_card);
             accountName = itemView.findViewById(R.id.tw_account_name);
             balance = itemView.findViewById(R.id.tw_balance);
             accountNumber = itemView.findViewById(R.id.tw_account_number);
             accountType = itemView.findViewById(R.id.tw_account_type);
             specialText = itemView.findViewById(R.id.tw_special_info);
+            paymentEnabled = itemView.findViewById(R.id.tw_payment_enabled);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -45,6 +50,17 @@ public class CustomerAccountsRecyclerAdapter extends RecyclerView.Adapter<Custom
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
                             listener.onItemClick(position);
+                        }
+                    }
+                }
+            });
+            cardButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            listener.onCardClick(position);
                         }
                     }
                 }
@@ -80,26 +96,26 @@ public class CustomerAccountsRecyclerAdapter extends RecyclerView.Adapter<Custom
         // Init certain menu items based on acc type
         switch (type) {
             case 1:
-                holder.cardImage.setImageResource(R.drawable.ic_money);
-                holder.specialText.setVisibility(View.INVISIBLE);
+                holder.accountImage.setImageResource(R.drawable.ic_current_account);
+                holder.specialText.setVisibility(View.GONE);
                 holder.accountType.setText("Type: Current account");
                 break;
             case 2:
                 CreditAccount cAcc = (CreditAccount)account;
-                holder.cardImage.setImageResource(R.drawable.ic_credit_card);
-                holder.specialText.setText(String.format(Locale.GERMANY, "Credit limit: %f", cAcc.getCreditLimit()));
+                holder.accountImage.setImageResource(R.drawable.ic_money);
+                holder.specialText.setText(String.format(Locale.GERMANY, "Credit limit: %.2f€", cAcc.getCreditLimit()));
                 holder.accountType.setText("Type: Credit account");
                 break;
             case 3:
                 SavingsAccount sAcc = (SavingsAccount) account;
-                holder.cardImage.setImageResource(R.drawable.ic_save);
+                holder.accountImage.setImageResource(R.drawable.ic_save);
                 holder.specialText.setText(String.format(Locale.GERMANY, "Interest: %.2f%%", sAcc.getInterest()));
                 holder.accountType.setText("Type: Savings account");
                 break;
             case 4:
                 FixedTermAccount fAcc = (FixedTermAccount) account;
-                holder.cardImage.setImageResource(R.drawable.ic_calendar);
-                holder.specialText.setText(String.format(Locale.GERMANY, "Due date: %s, Interest: +%f", fAcc.getDueDate(), fAcc.getInterest()));
+                holder.accountImage.setImageResource(R.drawable.ic_calendar);
+                holder.specialText.setText(String.format(Locale.GERMANY, "Due date: %s, Interest: %.2f%%", fAcc.getDueDate(), fAcc.getInterest()));
                 holder.accountType.setText("Type: Fixed term account");
                 break;
         }
@@ -107,5 +123,9 @@ public class CustomerAccountsRecyclerAdapter extends RecyclerView.Adapter<Custom
         holder.accountName.setText(account.getName());
         holder.balance.setText(String.format(Locale.GERMANY, "%.2f€", account.getBalance()));
         holder.accountNumber.setText(account.getAccountNumber());
+        String paymentText = "Payment enabled";
+        if (account.getState() == 4)
+            paymentText = "Payment disabled";
+        holder.paymentEnabled.setText(paymentText);
     }
 }

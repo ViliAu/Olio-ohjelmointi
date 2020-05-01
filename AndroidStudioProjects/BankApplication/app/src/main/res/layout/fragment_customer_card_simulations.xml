@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:text="Card simulations"
+        android:textSize="25sp" />
+
+    <TextView
+        android:id="@+id/tw_card"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/header"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:text="Card: "
+        android:textSize="20sp" />
+
+    <Spinner
+        android:id="@+id/spinner_card"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/tw_card"
+        android:layout_alignBottom="@id/tw_card"
+        android:layout_toEndOf="@id/tw_card" />
+
+    <TextView
+        android:id="@+id/tw_simulation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tw_card"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:text="Simulation: "
+        android:textSize="20sp" />
+
+    <Spinner
+        android:id="@+id/spinner_simulation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/tw_simulation"
+        android:layout_alignBottom="@id/tw_simulation"
+        android:layout_toEndOf="@id/tw_simulation" />
+
+    <RelativeLayout
+        android:id="@+id/layout_deposit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tw_simulation"
+        android:layout_marginTop="15dp">
+
+        <TextView
+            android:id="@+id/tw_sim_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="Deposit"
+            android:textSize="25sp" />
+
+        <TextView
+            android:id="@+id/tw_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tw_sim_type"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="10dp"
+            android:text="Amount:"
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/et_amount"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="33dp"
+            android:inputType="number"
+            android:layout_toEndOf="@id/tw_amount" />
+
+        <TextView
+            android:id="@+id/tw_to"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tw_amount"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="15dp"
+            android:text="To:"
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/et_to"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="75dp"
+            android:layout_toEndOf="@id/tw_to" />
+
+        <TextView
+            android:id="@+id/tw_country"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tw_to"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="15dp"
+            android:text="Country: "
+            android:textSize="20sp" />
+
+        <Spinner
+            android:id="@+id/spinner_country"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/tw_country"
+            android:layout_alignBottom="@id/tw_country"
+            android:layout_toRightOf="@id/tw_country"
+            android:layout_below="@+id/tw_to" />
+
+        <Button
+            android:id="@+id/button_simulate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Simulate"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/spinner_country"
+            android:layout_marginTop="10dp" />
+
+        <Button
+            android:id="@+id/button_card_settings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Change card settings"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/button_simulate"
+            android:layout_marginTop="20dp" />
+    </RelativeLayout>
+
+</RelativeLayout>

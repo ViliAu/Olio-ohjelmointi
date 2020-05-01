@@ -60,14 +60,20 @@ public class CustomerAccountsFragment extends Fragment {
         recyclerAdapter.setOnItemClickListener(new CustomerAccountsRecyclerAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                openSettings();
+                openFragment(accounts.get(position), new CustomerAccountSettingsFragment());
+            }
+
+            @Override
+            public void onCardClick(int position) {
+                openFragment(accounts.get(position), new CustomerCardSimulationsFragment());
             }
         });
     }
 
-    private void openSettings() {
+    private void openFragment(Account acc, Fragment frag) {
+        viewModel.setAccountToEdit(acc);
         CustomerActivity activity = (CustomerActivity)getActivity();
-        activity.loadFragment(new CustomerAccountSettingsFragment());
+        activity.loadFragment(frag);
     }
 
     private void initButtons() {

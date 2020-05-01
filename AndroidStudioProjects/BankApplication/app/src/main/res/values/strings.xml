@@ -22,4 +22,17 @@
         <item>Savings account</item>
     </string-array>
 
+    <string-array name="simulations">
+        <item>Deposit</item>
+        <item>Withdraw</item>
+        <item>Pay with card</item>
+    </string-array>
+
+    <string-array name="countries">
+        <item>Finland</item>
+        <item>Nordic countries</item>
+        <item>Europe</item>
+        <item>Anywhere in the world</item>
+    </string-array>
+
 </resources>

@@ -18,6 +18,16 @@
             android:layout_height="50dp"
             android:padding="2dp" />
 
+        <ImageButton
+            android:id="@+id/button_card"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_below="@id/tw_balance"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/ic_credit_card"
+            android:padding="2dp" />
+
         <TextView
             android:id="@+id/tw_account_name"
             android:layout_width="wrap_content"
@@ -61,16 +71,24 @@
             android:textSize="12sp" />
 
         <TextView
+            android:id="@+id/tw_payment_enabled"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tw_account_type"
+            android:layout_marginStart="75dp"
+            android:text="Payment enabled"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textSize="13sp" />
+
+        <TextView
             android:id="@+id/tw_special_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/tw_account_number"
-            android:layout_marginStart="18dp"
-            android:layout_toEndOf="@id/tw_account_type"
+            android:layout_below="@+id/tw_payment_enabled"
+            android:layout_marginStart="75dp"
             android:text="SPECIAL INFO HERE"
             android:gravity="center"
-            android:textStyle="bold"
-            android:textColor="#000000"
             android:textSize="13sp" />
 
     </RelativeLayout>

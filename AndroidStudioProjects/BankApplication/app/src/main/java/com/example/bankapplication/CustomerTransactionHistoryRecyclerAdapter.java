@@ -16,6 +16,7 @@ public class CustomerTransactionHistoryRecyclerAdapter extends RecyclerView.Adap
 
     private ArrayList<PaymentTransaction> paymentList;
     private OnItemClickListener clickListener;
+    private TimeManager time;
 
     public interface OnItemClickListener {
         void onInfoItemClick(int position);
@@ -54,6 +55,7 @@ public class CustomerTransactionHistoryRecyclerAdapter extends RecyclerView.Adap
 
     public CustomerTransactionHistoryRecyclerAdapter(ArrayList<PaymentTransaction> payments) {
         paymentList = payments;
+        time = TimeManager.getInstance();
     }
 
     @NonNull
@@ -70,7 +72,7 @@ public class CustomerTransactionHistoryRecyclerAdapter extends RecyclerView.Adap
 
         holder.infoImage.setImageResource(R.drawable.ic_info);
         holder.action.setText(payment.getAction());
-        holder.date.setText(payment.getDate().toString());
+        holder.date.setText(time.getReadableDateTime(payment.getDate().getTime()));
         holder.message.setText("Message: "+payment.getMessage());
 
         // Check if money was lost or gained

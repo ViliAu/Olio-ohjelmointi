@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private FragmentManager fm;
     private FragmentTransaction ft;
+    private Bank bank;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Create bank instance so we can load pending payments
-        Bank bank = Bank.getInstance();
+        bank = Bank.getInstance();
     }
 
     @Override
@@ -94,10 +95,10 @@ public class MainActivity extends AppCompatActivity {
         this.finish();
     }
 
-    public void loadCustomerActivity(int id, int bankId) {
+    public void loadCustomerActivity(int id) {
         Intent i = new Intent(this, CustomerActivity.class);
         i.putExtra("customerId", id);
-        i.putExtra("bankId", bankId);
+        i.putExtra("bankId", bank.getId());
 
         startActivity(i);
         this.finish();
