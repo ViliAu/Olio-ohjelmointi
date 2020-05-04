@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,14 +15,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bankapplication.databinding.FragmentCustomerAccountsBinding;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class CustomerAccountsFragment extends Fragment {
 
     private FragmentCustomerAccountsBinding binding;
     private SharedViewModelCustomer viewModel;
+    private DataManager data;
 
     // Recycler view
     private RecyclerView recycler;
@@ -34,6 +34,7 @@ public class CustomerAccountsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentCustomerAccountsBinding.inflate(inflater, container, false);
+        data = DataManager.getInstance();
         initButtons();
         return binding.getRoot();
     }
@@ -71,6 +72,23 @@ public class CustomerAccountsFragment extends Fragment {
     }
 
     private void openFragment(Account acc, Fragment frag) {
+        if (frag instanceof CustomerCardSimulationsFragment) {
+            try {
+                ArrayList<Card> cards = data.getAccountCards(acc);
+                if (cards.isEmpty()) {
+                    Toast.makeText(getContext(), "Account doesn't have any bank cards.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                else {
+                    viewModel.setAccountCards(cards);
+                }
+            }
+            catch (Exception e) {
+                System.err.println("_LOG: "+e);
+                Toast.makeText(getContext(), "Couldn't fetch account cards.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
         viewModel.setAccountToEdit(acc);
         CustomerActivity activity = (CustomerActivity)getActivity();
         activity.loadFragment(frag);

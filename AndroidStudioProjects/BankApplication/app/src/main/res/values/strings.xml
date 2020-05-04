@@ -2,11 +2,11 @@
     <string name="app_name">Bank Application</string>
 
     <string-array name="columns">
-        <item>accountname</item>
+        <item>username</item>
         <item>id</item>
         <item>name</item>
         <item>bank_id</item>
-        <item>type</item>
+        <item>state</item>
     </string-array>
 
     <string-array name="account_types">

@@ -13,9 +13,6 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.example.bankapplication.databinding.FragmentLoginBinding;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 public class LoginFragment extends Fragment {
     private SharedViewModelMain viewModel;
     private FragmentLoginBinding binding;
@@ -63,49 +60,32 @@ public class LoginFragment extends Fragment {
     }
 
     private void loginBank(String name, String pass) {
-        ResultSet rs;
-        try {
-            rs = DataBase.dataQuery("SELECT * FROM henkilot WHERE accountname = '" + name + "' AND (bank_id =" + bank.getId() + " OR bank_id = 0)");
-            if (rs == null) {
+        LoginManager log = new LoginManager();
+        int[] result;
+        result = log.login(name, pass, bank.getId());
+        switch (result[0]) {
+            case 1:
                 binding.inputUsername.setError("Username not found");
-                return;
-            }
-            String salt = rs.getString("salt");
-            if (!Hasher.testPassword(pass, rs.getString("password"), salt)) {
+                break;
+            case 2:
                 binding.inputPassword.setError("Password incorrect.");
-                return;
-            }
-
-            // Get acc type
-            int accountType = rs.getInt("type");
-
-            // Pending
-            if (accountType == 1) {
+                break;
+            case 3:
                 Toast.makeText(getContext(), "Customer hasn't been approved by administration yet.", Toast.LENGTH_LONG).show();
-                return;
-            }
-
-            // Normal
-            else if (accountType == 2) {
+                break;
+            case 4:
                 MainActivity m = (MainActivity)getActivity();
-                m.loadCustomerActivity(rs.getInt("id"));
-            }
-
-            // Disabled
-            else if (accountType == 3) {
+                m.loadCustomerActivity(result[1]);
+                break;
+            case 5:
                 Toast.makeText(getContext(), "Customer has been disabled by the administration.", Toast.LENGTH_LONG).show();
-                return;
-            }
-
-            // Admin
-            else if (accountType == 0) {
-                MainActivity m = (MainActivity)getActivity();
-                m.loadAdminActivity();
-            }
-
-        }
-        catch (SQLException e) {
-            System.out.println("_LOG: " + e);
+                break;
+            case 6:
+                MainActivity m2 = (MainActivity)getActivity();
+                m2.loadAdminActivity();
+                break;
+            default:
+                break;
         }
     }
 }

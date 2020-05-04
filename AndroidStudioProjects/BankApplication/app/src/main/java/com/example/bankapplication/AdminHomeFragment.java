@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,29 +19,29 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bankapplication.databinding.FragmentAdminHomeBinding;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class AdminHomeFragment extends Fragment implements AdapterView.OnItemSelectedListener {
     private SharedViewModelAdmin viewModel;
     private FragmentAdminHomeBinding binding;
 
-    private String column = "accountname";
-    private String searchWord = "";
+    private String column = "username";
 
     // Recycler view
     private RecyclerView recycler;
     private AdminCustomerRecyclerAdapter recyclerAdapter;
     private RecyclerView.LayoutManager recyclerLayoutManager;
 
-    // LISTS
+    // Lists
     private ArrayList<Customer> customers = new ArrayList<>();
+
+    DataManager data;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentAdminHomeBinding.inflate(inflater, container, false);
+        data = DataManager.getInstance();
         initElements();
         return binding.getRoot();
     }
@@ -55,7 +56,6 @@ public class AdminHomeFragment extends Fragment implements AdapterView.OnItemSel
     private void initElements() {
         initSpinner();
         initRecyclerview();
-        initEditor();
         initButtons();
     }
 
@@ -73,8 +73,7 @@ public class AdminHomeFragment extends Fragment implements AdapterView.OnItemSel
         recyclerAdapter.setOnItemClickListener(new AdminCustomerRecyclerAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                viewModel.setCustomerId(customers.get(position).getId());
-                loadUserSettingsFragment();
+                loadUserSettingsFragment(customers.get(position));
             }
         });
     }
@@ -86,25 +85,6 @@ public class AdminHomeFragment extends Fragment implements AdapterView.OnItemSel
         binding.spinnerColumn.setAdapter(adapter);
         binding.spinnerColumn.setOnItemSelectedListener(this);
         binding.spinnerColumn.setSelection(0);
-    }
-
-    void initEditor() {
-        binding.etSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                searchWord = binding.etSearch.getText().toString();
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
     }
 
     void initButtons() {
@@ -124,36 +104,21 @@ public class AdminHomeFragment extends Fragment implements AdapterView.OnItemSel
         recyclerAdapter.setOnItemClickListener(new AdminCustomerRecyclerAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                viewModel.setCustomerId(customers.get(position).getId());
-                loadUserSettingsFragment();
+                loadUserSettingsFragment(customers.get(position));
             }
         });
     }
 
 
     private ArrayList<Customer> getCustomers() {
-        ArrayList <Customer> searchedCustomers = new ArrayList<>();
         try {
-            ResultSet rs;
-            if (column.equals("id") || column.equals("type") || column.equals("bank_id"))
-                rs = DataBase.dataQuery("SELECT * FROM Henkilot WHERE " + column + " = " + searchWord + " AND NOT id = 1 ORDER BY id ASC");
-            else
-                rs = DataBase.dataQuery("SELECT * FROM Henkilot WHERE " + column + " LIKE '%" + searchWord + "%' AND NOT id = 1 ORDER BY id ASC");
-            if (rs != null) {
-                do {
-                    System.out.println("_LOG: Adding to customer list: "+rs.getString("accountname"));
-                    searchedCustomers.add(new Customer(rs.getInt("id"), rs.getInt("type"),
-                            rs.getString("accountname"), rs.getString("name"), rs.getString("address"),
-                            rs.getString("zipcode"), rs.getString("phonenumber"), rs.getString("socialid"),
-                            rs.getInt("bank_id")));
-
-                } while (rs.next());
-            }
+            return data.getCustomersForAdminView(column, binding.etSearch.getText().toString());
         }
-        catch (SQLException e) {
-            System.out.println("_LOG: "+e);
+        catch (Exception e) {
+            System.err.println("_LOG: "+e);
+            Toast.makeText(getContext(), "Couldn't load customers.", Toast.LENGTH_SHORT).show();
+            return new ArrayList<>();
         }
-        return searchedCustomers;
     }
 
     // Spinner methods
@@ -164,12 +129,13 @@ public class AdminHomeFragment extends Fragment implements AdapterView.OnItemSel
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-        column = "accountname";
+        column = "username";
     }
 
-    private void loadUserSettingsFragment() {
-        AdminActivity m = (AdminActivity)getActivity();
-        m.loadFragment(new AdminCustomerSettingsFragment());
+    private void loadUserSettingsFragment(Customer customer) {
+        viewModel.setCustomer(customer);
+        AdminActivity act = (AdminActivity)getActivity();
+        act.loadFragment(new AdminCustomerSettingsFragment());
     }
 
 }

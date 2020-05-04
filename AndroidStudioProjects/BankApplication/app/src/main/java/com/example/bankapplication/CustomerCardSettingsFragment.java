@@ -19,12 +19,14 @@ public class CustomerCardSettingsFragment extends Fragment {
     private SharedViewModelCustomer viewModel;
     private Bank bank;
     private Card card;
+    private DataManager data;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentCustomerCardSettingsBinding.inflate(inflater, container, false);
         bank = Bank.getInstance();
+        data = DataManager.getInstance();
         return binding.getRoot();
     }
 
@@ -96,9 +98,13 @@ public class CustomerCardSettingsFragment extends Fragment {
     }
 
     private void updateCardSettings(float payAmount, float withdrawAmount) {
-        DataBase.dataUpdate("UPDATE cards SET name = '"+binding.etCardName.getText().toString()+"', pay_limit = "+payAmount+
-                ", withdraw_limit = "+withdrawAmount+", country_limit = "+(binding.spinner.getSelectedItemPosition()+1)+
-                " WHERE id = "+card.getId());
-        Toast.makeText(getContext(), "Card updated", Toast.LENGTH_LONG).show();
+        try {
+            data.updateCardSettings(binding.etCardName.getText().toString(), payAmount, withdrawAmount, binding.spinner.getSelectedItemPosition() + 1, card.getId());
+            Toast.makeText(getContext(), "Card updated", Toast.LENGTH_LONG).show();
+        }
+        catch (Exception e) {
+            System.err.println("_LOG: "+e);
+            Toast.makeText(getContext(), "Error updating card settings.", Toast.LENGTH_LONG).show();
+        }
     }
 }

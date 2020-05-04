@@ -1,9 +1,14 @@
 package com.example.bankapplication;
 
+import android.content.Context;
+import android.widget.Toast;
+
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.ExecutorCompletionService;
 
 public class Bank {
 
@@ -12,6 +17,7 @@ public class Bank {
     private String bic;
     private float interest;
     private TimeManager time;
+    private DataManager data;
 
     // Create bank instance
     private static Bank b;
@@ -24,6 +30,7 @@ public class Bank {
     }
 
     private Bank() {
+        data = DataManager.getInstance();
         time = TimeManager.getInstance();
         checkPendingPayments();
         checkFixedTermAccounts();
@@ -36,10 +43,10 @@ public class Bank {
 
     public void setValues(int id) throws Exception {
         try {
-            ResultSet rs = DataBase.dataQuery("SELECT * FROM Pankit WHERE id = " + id);
+            ResultSet rs = DataBase.dataQuery("SELECT * FROM banks WHERE id = " + id);
             this.id = id;
             this.bic = rs.getString("bic");
-            this.name = rs.getString("nimi");
+            this.name = rs.getString("name");
             this.interest = rs.getFloat("interest");
         } catch (Exception e) {
             throw e;
@@ -61,7 +68,7 @@ public class Bank {
         }
     }
 
-    private String generateAccountNumber(int bankId) {
+    private String generateAccountNumber(int bankId) throws Exception {
         String prefix = "";
         switch (bankId) {
             case 1:
@@ -83,200 +90,160 @@ public class Bank {
             prefix += String.valueOf(rand.nextInt(10));
         }
         // Check database for same account number
-        ResultSet rs = DataBase.dataQuery("SELECT * FROM accounts WHERE address = '" + prefix + "' ");
-        if (rs != null)
-            generateAccountNumber(bankId);
-        return prefix;
+        try {
+            if (data.exists("accounts", prefix))
+                generateAccountNumber(bankId);
+            return prefix;
+        } catch (Exception e) {
+            throw e;
+        }
     }
 
     public void createAccountRequest(int type, int ownerId, String accName, float creditLimit, Date dueDate) throws Exception {
         // Generate an account number
         String accNumber = generateAccountNumber(id);
         // Create interest payment if needed
-        if (type == 3 || type == 4) {
-            try {
-                createNewInterestPayment(accNumber, type);
-            } catch (Exception e) {
-                throw e;
-            }
-        }
+        if (type == 3 || type == 4)
+            createNewInterestPayment(accNumber, type);
+
         float bankInterest = interest;
         if (type == 4)
             bankInterest *= 3;
         // Insert the account in the database
+
         DataBase.dataInsert("INSERT INTO accounts VALUES (" + DataBase.getNewId("accounts") + ", " + ownerId +
                 ", " + id + ", '" + accNumber + "', " + 0 + ", " + type + ", " + 1 + ", '" + accName + "', " + creditLimit + ", '" + dueDate + "', " + bankInterest + ") ");
     }
 
-    // Used to transfer money between two accounts. Returns the result as a string
-    public String transferMoney(String accountFrom, String accountTo, float amount, Date dueDate, boolean isReoccurring, String message) {
+    // Used to transfer money between two accounts.
+    public void transferMoney(PendingPayment p) throws Exception {
         // Check if the transaction happens other time than today
-        if (!dueDate.before(new Date(time.today()))) {
-            DataBase.dataInsert("INSERT INTO pending_transactions VALUES ("
-                    + DataBase.getNewId("pending_transactions") +
-                    ", '" + accountFrom + "', '" + accountTo + "', " + amount + ", '" + dueDate + "', '" + isReoccurring + "', '" + message + "', '" + false + "') ");
-            return "Transfer due date set.";
+        if (!p.getDate().before(new Date(time.today()))) {
+            data.createNewPendingTransaction(new PendingPayment(p.getAccountFrom(), p.getAccountTo(),
+                    p.getMessage(), p.getDate(), p.getAmount(), false, 0, false));
+            return;
         }
         // Check if the transaction is recurring
-        if (isReoccurring) {
+        if (p.isReoccurring()) {
             // Set payment a month ahead
-            DataBase.dataInsert("INSERT INTO pending_transactions VALUES ("
-                    + DataBase.getNewId("pending_transactions") +
-                    ", '" + accountFrom + "', '" + accountTo + "', " + amount + ", '" + new Date(time.getDateAdvancedByMonth(dueDate.getTime())) +
-                    "', '" + true + "', '" + message + "') ");
+            data.createNewPendingTransaction(new PendingPayment(p.getAccountFrom(), p.getAccountTo(),
+                    p.getMessage(), new Date(time.getDateAdvancedByMonth(p.getDate().getTime())),
+                    p.getAmount(), true, 0, false));
         }
-        try {
-            ResultSet account1 = DataBase.dataQuery("SELECT * FROM accounts WHERE address = '" + accountFrom + "' ");
-            // Check if account has enough money
-            if (account1.getFloat("money_amount") + account1.getFloat("credit_limit") < amount) {
-                return "Not enough money!";
-            }
-        } catch (SQLException e) {
-            System.out.println("_LOG: " + e);
-            return "Something went wrong.";
-        }
-        DataBase.dataQuery("EXEC transfer_money @account_from = '" + accountFrom + "', @account_to = '" + accountTo + "', @amount = " + amount);
-        createTransactionHistory(accountFrom, accountTo, amount, message, dueDate, "Transaction", "", "");
-        return "Money transferred.";
+
+        DataBase.dataQuery("EXEC transfer_money @account_from = '" + p.getAccountFrom() + "', @account_to = '" + p.getAccountTo() + "', @amount = " + p.getAmount());
+        createTransactionHistory(p.getAccountFrom(), p.getAccountTo(), p.getAmount(), p.getMessage(), p.getDate(), "Transaction", "", "");
+        return;
     }
 
-    //TODO: Rework this shit when database throws exceptions
-    private String payInterest(String accountFrom, String accountTo, float amount, Date dueDate, String message) {
+    private void payInterest(PendingPayment p) throws Exception {
         // Get values
-        ResultSet rs;
         String bicFrom;
         String bicTo;
         float sum;
-        try {
-            // Get bank bic
-            rs = DataBase.dataQuery("SELECT * FROM Pankit WHERE nimi = '" + accountFrom + "'");
-            bicFrom = getBicById(rs.getInt("id"));
 
-            // Get account bic and money amount
-            rs = DataBase.dataQuery("SELECT * FROM accounts WHERE address = '" + accountTo + "'");
-            bicTo = getBicById(rs.getInt("bank_id"));
-            sum = rs.getFloat("money_amount");
-        } catch (Exception e) {
-            System.out.println("_LOG: " + e);
-            return "Something went wrong.";
-        }
-        // Calculate payable interest
-        sum *= (amount * 0.01f);
+        // Get bank bic
+        bicFrom = getBicById(data.getBankIdByBankName(p.getAccountFrom()));
 
-        // Pay interest and update payment to next month
-        DataBase.dataUpdate("EXEC add_money @account_number = '" + accountTo + "', @amount = " + sum);
-        DataBase.dataUpdate("UPDATE pending_transactions SET due_date = '" + new Date(time.getDateAdvancedByMonth(dueDate.getTime())) + "' WHERE id = " + id);
+        // Get account bic and money amount
+        bicTo = getBicById(data.getBankIdByAccount(p.getAccountTo()));
+        sum = data.getAccountMoneyAmount(p.getAccountTo());
+
+        // Calculate payable interest and pay interest
+        sum *= (p.getAmount() * 0.01f);
+        data.payInterest(p.getAccountTo(), sum, new Date(time.getDateAdvancedByMonth(p.getDate().getTime())), id);
 
         // Create transaction history
-        DataBase.dataInsert("INSERT INTO transaction_history VALUES (" + DataBase.getNewId("transaction_history") +
-                ", '" + accountFrom + "', '" + accountTo + "', '" + bicFrom + "', '" + bicTo + "', " + sum + ", '" + message + "', '" + dueDate + "', '" + "Monthly interest" + "')");
-        return "Interest paid.";
+        data.createTransactionHistory(p.getAccountFrom(), p.getAccountTo(), bicFrom, bicTo, sum,
+                p.getMessage(), time.getDateTime(p.getDate().getTime()), "Monthly interest");
     }
 
     // Check if there's any pending transactions which due date has expired
     public void checkPendingPayments() {
+        ArrayList<PendingPayment> payments;
         try {
-            ResultSet rs = DataBase.dataQuery("EXEC check_payments");
-            if (rs != null) {
-                do {
-                    // Check if payment is an interest
-                    String result = "";
-                    if (rs.getBoolean("interest")) {
-                        result = payInterest(rs.getString("account_from"),
-                                rs.getString("account_to"), rs.getFloat("amount"),
-                                rs.getDate("due_date"),
-                                rs.getString("message"));
-                    } else {
-                        result = transferMoney(rs.getString("account_from"),
-                                rs.getString("account_to"), rs.getFloat("amount"),
-                                rs.getDate("due_date"),
-                                rs.getBoolean("reoccuring"), rs.getString("message"));
+            payments = data.getPendingPayments();
+            for (PendingPayment p : payments) {
+                // Check if payment is an interest
+                if (p.isInterest()) {
+                    payInterest(p);
+                }
+                else {
+                    if (data.hasEnoughMoney(p.getAccountFrom(), p.getAmount())) {
+                        transferMoney(p);
+                        data.deletePayment(p.getId());
                     }
-
-                    // Delete pending payment if it is successful and not recurring
-                    if (result.equals("Money transferred.")) {
-                        DataBase.dataUpdate("DELETE FROM pending_transactions WHERE id = " + rs.getInt("id"));
-                    }
-                    // If the payment fails and is reoccurring, remove the recurrence form the failed payment
-                    else if (rs.getBoolean("reoccuring") && result.equals("Interest paid.")) {
-                        DataBase.dataUpdate("UPDATE accounts SET reoccuring = 'false' WHERE id = " + rs.getInt("id"));
-                    }
-                    // Iterate the payment if it's reoccurring so that every month gets paid
-                    if (rs.getBoolean("reoccuring")) {
-                        checkPendingPayments();
-                        break;
-                    }
-                } while (rs.next());
+                }
+                // Iterate the payment if it's recurring so that every month gets paid
+                if (p.isReoccurring()) {
+                    checkPendingPayments();
+                    break;
+                }
             }
-        } catch (SQLException e) {
-            System.out.println("_LOG: " + e);
+        }
+        catch (Exception e) {
+            System.err.println("_LOG: " + e);
         }
     }
 
     // Write a new entry in transaction history
-    private void createTransactionHistory(String accountFrom, String accountTo, float amount, String message, Date date, String action, String bicF, String bicT) {
+    private void createTransactionHistory(String accountFrom, String accountTo,
+                                          float amount, String message, Date date, String action, String bicF, String bicT) {
         // Get bank bic codes
-        ResultSet rs;
         String bicFrom = bicF;
         String bicTo = bicT;
         try {
             if (bicFrom.equals("")) {
-                rs = DataBase.dataQuery("SELECT * FROM accounts WHERE address = '" + accountFrom + "'");
-                bicFrom = getBicById(rs.getInt("bank_id"));
+                bicFrom = getBicById(data.getBankIdByAccount(accountFrom));
             }
             if (bicTo.equals("")) {
-                rs = DataBase.dataQuery("SELECT * FROM accounts WHERE address = '" + accountTo + "'");
-                bicTo = getBicById(rs.getInt("bank_id"));
+                bicTo = getBicById(data.getBankIdByAccount(accountTo));
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             System.out.println("_LOG: " + e);
         }
-        DataBase.dataInsert("INSERT INTO transaction_history VALUES (" + DataBase.getNewId("transaction_history") +
-                ", '" + accountFrom + "', '" + accountTo + "', '" + bicFrom + "', '" + bicTo + "', " + amount + ", '" + message + "', '" + time.getDateTime(date.getTime()) + "', '" + action + "')");
+        try {
+            data.createTransactionHistory(accountFrom, accountTo, bicFrom, bicTo, amount, message,
+                    time.getDateTime(date.getTime()), action);
+        } catch (Exception e) {
+            System.err.println("_LOG: " + e);
+        }
     }
 
     // Check if there's any pending accounts that have expired and set their type to savings acc
     private void checkFixedTermAccounts() {
         try {
-            ResultSet rs;
-            rs = DataBase.dataQuery("EXEC check_expired_accounts");
-            if (rs != null) {
-                do {
-                    DataBase.dataUpdate("UPDATE accounts SET type = 3, interest /= 3 WHERE id = " + rs.getInt("id"));
-                } while (rs.next());
-            }
-        } catch (SQLException e) {
-            System.out.println("_LOG: " + e);
+            data.checkFixedTermAccounts();
+        } catch (Exception e) {
+            System.err.println("_LOG: " + e);
         }
     }
 
-    public void updateAccount(int id, String accountName, int accountType, float creditLimit, String accNumber, int state) throws Exception {
+    public void updateAccount(int id, String accountName, int accountType,
+                              float creditLimit, String accNumber, int state) throws Exception {
         DataBase.dataUpdate("UPDATE accounts SET name = '" + accountName +
-                "', type = " + accountType + ", credit_limit = " + creditLimit + ", state = "+state+" WHERE id = " + id);
+                "', type = " + accountType + ", credit_limit = " + creditLimit + ", state = " + state + " WHERE id = " + id);
         try {
             createNewInterestPayment(accNumber, accountType);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw e;
         }
     }
 
     private void createNewInterestPayment(String accNumber, int type) throws Exception {
         // Check if there's already an interest payment
-        System.out.println("_LOG: "+type);
+        System.out.println("_LOG: " + type);
         try {
-            ResultSet rs = DataBase.dataQuery("SELECT * FROM pending_transactions WHERE account_to = '"+accNumber+"' AND interest = 'true'");
+            ResultSet rs = DataBase.dataQuery("SELECT * FROM pending_transactions WHERE account_to = '" + accNumber + "' AND interest = 'true'");
             if (rs != null) {
                 if (type == 3 || type == 4) {
                     return;
-                }
-                else {
+                } else {
                     DataBase.dataUpdate("DELETE FROM pending_transactions WHERE account_to = '" + accNumber + "' AND interest = 'true'");
                     return;
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw e;
         }
 
@@ -297,35 +264,38 @@ public class Bank {
     }
 
     // Withdrawing or depositing
-    public void cardAction(int action, String accountNumber, float amount, int cardId) throws Exception{
+    public void cardAction(int action, String accountNumber, float amount, int cardId) throws
+            Exception {
         try {
             if (action == 0) {
                 DataBase.dataUpdate("EXEC add_money @account_number = '" + accountNumber + "', @amount = " + amount);
                 createTransactionHistory("ATM", accountNumber, amount, "Cash deposit.", new Date(time.today()), "Deposit", this.bic, "");
-            }
-            else if (action == 1) {
+            } else if (action == 1) {
                 DataBase.dataUpdate("EXEC add_money @account_number = '" + accountNumber + "', @amount = " + (-amount));
-                DataBase.dataUpdate("UPDATE cards SET withdrawn += "+amount+" WHERE id = "+cardId);
+                DataBase.dataUpdate("UPDATE cards SET withdrawn += " + amount + " WHERE id = " + cardId);
                 createTransactionHistory(accountNumber, "ATM", amount, "Cash withdraw.", new Date(time.today()), "Withdraw", "", this.bic);
             }
-        }
-        catch (Exception e) {
-            System.out.println("_LOG: "+e);
+        } catch (Exception e) {
+            System.out.println("_LOG: " + e);
         }
     }
 
-    public void cardPayment(String accountNumber, float amount, int cardId, String to) throws Exception{
+    public void cardPayment(String accountNumber, float amount, int cardId, String to) throws
+            Exception {
         try {
             DataBase.dataUpdate("EXEC add_money @account_number = '" + accountNumber + "', @amount = " + (-amount));
-            DataBase.dataUpdate("UPDATE cards SET paid += "+amount+" WHERE id = "+cardId);
-            createTransactionHistory(accountNumber, to, amount, "Card payment to "+to, new Date(time.today()), "Card payment", "", this.bic);
-        }
-        catch (Exception e) {
-            System.out.println("_LOG: "+e);
+            DataBase.dataUpdate("UPDATE cards SET paid += " + amount + " WHERE id = " + cardId);
+            createTransactionHistory(accountNumber, to, amount, "Card payment to " + to, new Date(time.today()), "Card payment", "", this.bic);
+        } catch (Exception e) {
+            System.out.println("_LOG: " + e);
         }
     }
 
     private void checkCards() {
-        DataBase.dataUpdate("EXEC reset_cards");
+        try {
+            data.resetCards();
+        } catch (Exception e) {
+            System.err.println("_LOG: " + e);
+        }
     }
 }

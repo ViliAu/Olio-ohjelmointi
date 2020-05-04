@@ -9,45 +9,40 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-//TODO: Rework database with sql procedures (viikonloppu tekemist vilille(mugelle))
-//TODO: Throw exceptions!
 public class DataBase {
 
     private static Connection connection;
     // Database query result
     private static ResultSet rs;
+    //private DataBaseAccess access;
 
     // Deny instantiation
     private DataBase(){}
 
-    static ResultSet dataQuery(String query) {
-        System.out.println("_LOG: Start executing query");
+    static ResultSet dataQuery(String query) throws Exception{
         return dataBaseAccess(query);
     }
 
-    public static void dataInsert(String input) {
-        System.out.println("_LOG: Start executing input");
+    public static void dataInsert(String input) throws Exception{
         rs = dataBaseAccess(input);
     }
 
-    public static void dataUpdate(String update) {
-        System.out.println("_LOG: Start executing update");
+    public static void dataUpdate(String update) throws Exception {
         rs = dataBaseAccess(update);
     }
 
-    public static int getNewId(String tableName) {
+    public static int getNewId(String tableName) throws Exception{
         return createNewId(tableName);
     }
 
     /* Database query class, asynchronous
-    public static class DatabaseQuery extends AsyncTask<String, String, String> {
+    public static class DatabaseAccess extends AsyncTask<String, String, String> {
         @Override
         protected String doInBackground(String... params) { */
-    private static ResultSet dataBaseAccess(String query) {
+    private static ResultSet dataBaseAccess(String query) throws Exception{
         String result;
         try {
             // Connect to database
-            //connection = databaseConnection();
             boolean isConnected = getConnection();
             if (!isConnected) {
                 result = "Couldn't connect to database.";
@@ -57,29 +52,25 @@ public class DataBase {
                 System.out.println("_LOG: Query start: " + query);
                 Statement stmt = connection.createStatement();
                 rs = stmt.executeQuery(query);
-                System.out.println("_LOG: Query end ");
 
                 if (rs.next()) {
-                    //connection.close();
                     return rs;
                 }
                 else {
-                    //connection.close();
                     return null;
                 }
             }
-        } catch (Exception ex) {
-            result = ex.getMessage();
+        } catch (Exception e) {
+            result = e.getMessage();
         }
         System.out.println("_LOG: " + result);
         return null;
     }
 
-    private static int createNewId(String tableName) {
+    private static int createNewId(String tableName) throws Exception {
         String result;
         try {
             // Connect to database
-            //connection = databaseConnection();
             boolean isConnected = getConnection();
             if (!isConnected) {
                 result = "Couldn't connect to database.";
@@ -94,9 +85,8 @@ public class DataBase {
                     return rs.getInt("id")+1;
                 }
                 else {
-                    result = ("Couldn't create list order!");
+                    result = ("List is empty or couldn't create list order");
                 }
-                //connection.close();
             }
         } catch (Exception ex) {
             result = ex.getMessage();
@@ -117,11 +107,11 @@ public class DataBase {
             ConnectionURL = "jdbc:jtds:sqlserver://SQL5047.site4now.net;" +
                     "database=DB_A57EF2_bank;user=DB_A57EF2_bank_admin;password=db_bank11212";
             con = DriverManager.getConnection(ConnectionURL);
-        } catch (SQLException sqle) {
+        }
+        catch (SQLException sqle) {
             System.out.println("_LOG: SQLException: " + sqle);
-        } catch (ClassNotFoundException ce) {
-            System.out.println("_LOG: ClassNotFoundException: " + ce);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             System.out.println("_LOG: Exception: " + e);
         }
         connection = con;

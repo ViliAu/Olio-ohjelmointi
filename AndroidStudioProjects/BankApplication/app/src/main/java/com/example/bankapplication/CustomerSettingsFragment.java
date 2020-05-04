@@ -21,12 +21,14 @@ public class CustomerSettingsFragment extends Fragment {
     private FragmentCustomerSettingsBinding binding;
     private SharedViewModelCustomer viewModel;
     private String salt;
+    private DataManager data;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentCustomerSettingsBinding.inflate(inflater, container, false);
         initElements();
+        data = DataManager.getInstance();
         return binding.getRoot();
     }
 
@@ -43,17 +45,21 @@ public class CustomerSettingsFragment extends Fragment {
     }
 
     private void getAccountData() {
-        ResultSet rs = DataBase.dataQuery("SELECT * FROM henkilot WHERE id = "+viewModel.getCustomerId());
+        Customer cust = null;
         try {
-            binding.etName.setText(rs.getString("name"));
-            binding.etZipcode.setText(rs.getString("zipcode"));
-            binding.etSocialId.setText(rs.getString("socialid"));
-            binding.etAddress.setText(rs.getString("address"));
-            binding.etPhonenumber.setText(rs.getString("phonenumber"));
-            salt = rs.getString("salt");
+            cust = data.getSingleCustomer(viewModel.getCustomerId());
         }
-        catch (SQLException e) {
-            System.out.println("_LOG: "+e);
+        catch (Exception e) {
+            System.err.println("_LOG: "+e);
+            Toast.makeText(getContext(), "Error fetching account data.", Toast.LENGTH_SHORT).show();
+        }
+        if (cust != null) {
+            binding.etName.setText(cust.getName());
+            binding.etZipcode.setText(cust.getZipcode());
+            binding.etSocialId.setText(cust.getSocialid());
+            binding.etAddress.setText(cust.getAddress());
+            binding.etPhonenumber.setText(cust.getPhoneNumber());
+            salt = cust.getSalt();
         }
     }
 
@@ -76,14 +82,14 @@ public class CustomerSettingsFragment extends Fragment {
     }
 
     private void updateAccountInfo(String name, String password, String socialid, String address, String phoneNumber, String zipcode) {
-        // Hash password
-        String hashed = Hasher.hashPassword(password, this.salt);
-
-        DataBase.dataUpdate("UPDATE Henkilot SET name = '"+name+"', phonenumber = '"+phoneNumber+"'," +
-                " password = '"+hashed+"', address = '"+address+"'," +
-                " zipcode = '"+zipcode+"', socialid = '"+socialid+"' " +
-                "WHERE id = "+viewModel.getCustomerId());
-        Toast.makeText(getContext(), "Account information updated", Toast.LENGTH_SHORT).show();
+        try {
+            data.updateCustomerInfo(name, phoneNumber, Hasher.hashPassword(password, this.salt), address, zipcode, socialid, viewModel.getCustomerId());
+            Toast.makeText(getContext(), "Customer information updated", Toast.LENGTH_SHORT).show();
+        }
+        catch (Exception e) {
+            System.err.println("_LOG: "+e);
+            Toast.makeText(getContext(), "Couldn't update account info.", Toast.LENGTH_LONG).show();
+        }
     }
 
     private boolean passwordCheck() {

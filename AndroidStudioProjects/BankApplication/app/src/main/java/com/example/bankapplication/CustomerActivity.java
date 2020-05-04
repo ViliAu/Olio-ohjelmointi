@@ -7,9 +7,11 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.bankapplication.databinding.ActivityCustomerBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -23,7 +25,9 @@ public class CustomerActivity extends AppCompatActivity {
     private ActivityCustomerBinding binding;
     private FragmentManager fm;
     private FragmentTransaction ft;
-    SharedViewModelCustomer viewModel;
+    private Fragment fragment;
+    private DataManager data;
+    private SharedViewModelCustomer viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +36,7 @@ public class CustomerActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         // Setup viewmodel
+        data = DataManager.getInstance();
         viewModel = ViewModelProviders.of(this).get(SharedViewModelCustomer.class);
         viewModel.setCustomerId(getIntent().getIntExtra("customerId", 0));
         viewModel.setBankId(getIntent().getIntExtra("bankId", 0));
@@ -59,9 +64,23 @@ public class CustomerActivity extends AppCompatActivity {
         binding.buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //loadFragment(new StartFragment());
+                handleBackButtonAction();
             }
         });
+    }
+
+    private void handleBackButtonAction() {
+        if (fragment instanceof CustomerAccountCreationFragment ||
+                fragment instanceof CustomerCardSimulationsFragment ||
+                fragment instanceof CustomerAccountSettingsFragment) {
+            loadFragment(new CustomerAccountsFragment());
+        }
+        else if (fragment instanceof CustomerCardSettingsFragment) {
+            loadFragment(new CustomerCardSimulationsFragment());
+        }
+        else if (fragment instanceof CustomerHomeFragment) {
+            loadMainActivity();
+        }
     }
 
     private void initBottomBar() {
@@ -71,18 +90,23 @@ public class CustomerActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.nav_home:
                         loadFragment(new CustomerHomeFragment());
+                        binding.buttonBack.setVisibility(View.VISIBLE);
                         break;
                     case R.id.nav_accounts:
                         loadFragment(new CustomerAccountsFragment());
+                        binding.buttonBack.setVisibility(View.INVISIBLE);
                         break;
                     case R.id.nav_transaction:
                         loadFragment(new CustomerTransactionFragment());
+                        binding.buttonBack.setVisibility(View.INVISIBLE);
                         break;
                     case R.id.nav_transaction_history:
                         loadFragment(new CustomerTransactionHistoryFragment());
+                        binding.buttonBack.setVisibility(View.INVISIBLE);
                         break;
                     case R.id.nav_settings:
                         loadFragment(new CustomerSettingsFragment());
+                        binding.buttonBack.setVisibility(View.INVISIBLE);
                         break;
                 }
                 return true;
@@ -90,15 +114,16 @@ public class CustomerActivity extends AppCompatActivity {
         });
     }
 
-
     public void loadFragment(Fragment fragment) {
         if (fragment == null)
             return;
-        // Hide back button if we're in the first view
-        if (fragment instanceof StartFragment)
-            binding.buttonBack.setVisibility(View.INVISIBLE);
+        this.fragment = fragment;
+
+        // Change back button to home icon if we're in the first screen
+        if (fragment instanceof CustomerHomeFragment)
+            binding.buttonBack.setActivated(false);
         else
-            binding.buttonBack.setVisibility(View.VISIBLE);
+            binding.buttonBack.setActivated(true);
 
         // Load fragment
         fm = getSupportFragmentManager();
@@ -108,45 +133,19 @@ public class CustomerActivity extends AppCompatActivity {
     }
 
     public ArrayList<Account> updateAccounts() {
-        ArrayList<Account> accList = new ArrayList<>();
-        ResultSet rs = DataBase.dataQuery("SELECT * FROM accounts WHERE owner_id = "+viewModel.getCustomerId()+" ORDER BY money_amount DESC");
         try {
-            if (rs != null) {
-                if (rs.getInt("state") == 2 || rs.getInt("state") == 4) {
-                    do {
-                        switch (rs.getInt("type")) {
-                            case 1:
-                                accList.add(new CurrentAccount(rs.getInt("id"),
-                                        viewModel.getCustomerId(), viewModel.getBankId(), 1,
-                                        rs.getInt("state"), rs.getString("name"),
-                                        rs.getString("address"), rs.getFloat("money_amount")));
-                                break;
-                            case 2:
-                                accList.add(new CreditAccount(rs.getInt("id"),
-                                        viewModel.getCustomerId(), viewModel.getBankId(), 2,
-                                        rs.getInt("state"), rs.getString("name"),
-                                        rs.getString("address"), rs.getFloat("money_amount"), rs.getFloat("credit_limit")));
-                                break;
-                            case 3:
-                                accList.add(new SavingsAccount(rs.getInt("id"),
-                                        viewModel.getCustomerId(), viewModel.getBankId(), 3,
-                                        rs.getInt("state"), rs.getString("name"),
-                                        rs.getString("address"), rs.getFloat("money_amount"), rs.getFloat("interest")));
-                                break;
-                            case 4:
-                                accList.add(new FixedTermAccount(rs.getInt("id"),
-                                        viewModel.getCustomerId(), viewModel.getBankId(), 4,
-                                        rs.getInt("state"), rs.getString("name"),
-                                        rs.getString("address"), rs.getFloat("money_amount"), rs.getDate("due_date"), rs.getFloat("interest")));
-                                break;
-                        }
-                    } while (rs.next());
-                }
-            }
+            return data.getCustomerAccounts(viewModel.getCustomerId(), viewModel.getBankId());
         }
-        catch (SQLException e) {
-            System.out.println("_LOG "+e);
+        catch (Exception e) {
+            System.err.println("_LOG: " + e);
+            Toast.makeText(this, "Error loading accounts.", Toast.LENGTH_LONG).show();
+            return new ArrayList<>();
         }
-        return accList;
+    }
+
+    private void loadMainActivity() {
+        Intent i = new Intent(this, MainActivity.class);
+        startActivity(i);
+        this.finish();
     }
 }

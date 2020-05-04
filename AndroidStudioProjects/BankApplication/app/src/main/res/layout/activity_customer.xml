@@ -16,8 +16,7 @@
             android:id="@+id/button_back"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:background="@drawable/ic_arrow_back"
-            android:visibility="invisible"
+            android:background="@drawable/button_toolbar_admin"
             android:elevation="8dp" />
     </androidx.appcompat.widget.Toolbar>
 

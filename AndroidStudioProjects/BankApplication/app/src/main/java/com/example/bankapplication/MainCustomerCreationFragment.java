@@ -18,11 +18,13 @@ import com.example.bankapplication.databinding.FragmentMainCustomerCreationBindi
 public class MainCustomerCreationFragment extends Fragment {
     private SharedViewModelMain viewModel;
     private FragmentMainCustomerCreationBinding binding;
+    private DataManager data;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentMainCustomerCreationBinding.inflate(inflater, container, false);
+        data = DataManager.getInstance();
         initElements();
         return binding.getRoot();
     }
@@ -36,7 +38,6 @@ public class MainCustomerCreationFragment extends Fragment {
 
     private void initElements() {
         initButtons();
-        initTextEditors();
     }
 
     private void initButtons() {
@@ -46,11 +47,6 @@ public class MainCustomerCreationFragment extends Fragment {
                 initializeAccountRequest();
             }
         });
-    }
-
-    private void initTextEditors() {
-        // Init password and legality check
-
     }
 
     // Check if account request can be sent here
@@ -64,28 +60,26 @@ public class MainCustomerCreationFragment extends Fragment {
     }
 
     private void createAccount(String userName, String name, String password, String socialid, String address, String phoneNumber, String zipcode) {
-        // TODO: Move this to own function
-        ResultSet rs = DataBase.dataQuery("SELECT * FROM henkilot WHERE bank_id = '" + viewModel.getBankId() + "' AND accountname = '" + userName + "' ");
-        // Instance where there isn't an account called this in the database
-        if (rs == null) {
+        try {
+            // Instance where there isn't an account called this in the database
+            if (!data.customerAlreadyExists(viewModel.getBankId(), userName)) {
+                // Create hashed password
+                String salt = Hasher.getRandomSalt();
+                String hashPass = Hasher.hashPassword(password, salt);
 
-            // Create hashed password
-            String salt = Hasher.getRandomSalt();
-            System.out.println("_LOG: "+salt);
-            String hashPass = Hasher.hashPassword(password, salt);
-
-            // Add to database
-            DataBase.dataInsert("INSERT INTO henkilot VALUES (" + (DataBase.getNewId("henkilot")) +
-                    ", '" + userName + "', '" + name + "', '" + phoneNumber + "', '" +
-                    hashPass + "', " + viewModel.getBankId() + ", '" + address + "', '" +
-                    zipcode + "', '" + socialid + "', " + 1 + ", '"+salt+"')");
+                // Add to database
+                data.createCustomerRequest(userName, name, phoneNumber, hashPass, viewModel.getBankId(), address, zipcode, socialid, salt);
+                Toast.makeText(getContext(), "Account request created.", Toast.LENGTH_LONG).show();
+            }
+            // Instance where there is
+            else {
+                Toast.makeText(getContext(), "Account called \"" + userName + "\" already exists in this bank.", Toast.LENGTH_LONG).show();
+            }
         }
-        // Instance where there is
-        else {
-            Toast toast = Toast.makeText(getContext(), "Account called \"" + userName + "\" already exists in this bank.", Toast.LENGTH_LONG);
-            toast.show();
+        catch (Exception e) {
+            System.err.println("_LOG: "+e);
+            Toast.makeText(getContext(), "Error creating account request.", Toast.LENGTH_LONG).show();
         }
-
     }
 
     private boolean passwordCheck() {

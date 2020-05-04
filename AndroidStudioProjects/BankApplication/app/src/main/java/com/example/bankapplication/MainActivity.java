@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private FragmentManager fm;
     private FragmentTransaction ft;
+    private Fragment fragment;
     private Bank bank;
 
     @Override
@@ -57,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        //DataBase.closeConnection();
         super.onDestroy();
     }
 
@@ -68,14 +68,24 @@ public class MainActivity extends AppCompatActivity {
         binding.buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadFragment(new StartFragment());
+                handleBackButtonAction();
             }
         });
+    }
+
+    private void handleBackButtonAction() {
+        if (fragment instanceof MainCustomerCreationFragment) {
+            loadFragment(new LoginFragment());
+        }
+        else {
+            loadFragment(new StartFragment());
+        }
     }
 
     public void loadFragment(Fragment fragment) {
         if (fragment == null)
             return;
+        this.fragment = fragment;
         // Hide back button if we're in the first view
         if (fragment instanceof StartFragment)
             binding.buttonBack.setVisibility(View.INVISIBLE);

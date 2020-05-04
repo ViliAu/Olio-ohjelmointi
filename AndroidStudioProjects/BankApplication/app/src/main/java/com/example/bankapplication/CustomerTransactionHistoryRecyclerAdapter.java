@@ -76,14 +76,10 @@ public class CustomerTransactionHistoryRecyclerAdapter extends RecyclerView.Adap
         holder.message.setText("Message: "+payment.getMessage());
 
         // Check if money was lost or gained
-        if (payment.getAccountFrom().equals(payment.getTargetAccount())) { //Lost
-            holder.amount.setText(String.format(Locale.GERMANY, "-%.2f€", payment.getAmount()));
-            holder.accountNumber.setText("To: " + payment.getAccountFrom());
-        }
-        else { //Gained
-            holder.amount.setText(String.format(Locale.GERMANY, "+%.2f€", payment.getAmount()));
-            holder.accountNumber.setText("From: " + payment.getAccountFrom());
-        }
+        char sign = payment.getAccountFrom().equals(payment.getTargetAccount()) ? '-' : '+';
+
+        holder.amount.setText(String.format(Locale.GERMANY, "%c%.2f€", sign, payment.getAmount()));
+        holder.accountNumber.setText("To: " + payment.getAccountFrom());
 
     }
 

@@ -32,7 +32,6 @@ public class AdminActivity extends AppCompatActivity {
             ft.add(R.id.fragment_container, new AdminHomeFragment());
             ft.commit();
         }
-        initElements();
 
         // Setup toolbar
         setupToolbar();
@@ -46,17 +45,17 @@ public class AdminActivity extends AppCompatActivity {
         binding.buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (currentFragment instanceof AdminHomeFragment) {
-                    loadMainActivity();
-                }
-                else
-                    loadFragment(new AdminHomeFragment());
+                handleBackButtonAction();
             }
         });
     }
 
-    void initElements() {
-
+    private void handleBackButtonAction() {
+        if (currentFragment instanceof AdminHomeFragment) {
+            loadMainActivity();
+        }
+        else
+            loadFragment(new AdminHomeFragment());
     }
 
     public void loadFragment(Fragment fragment) {

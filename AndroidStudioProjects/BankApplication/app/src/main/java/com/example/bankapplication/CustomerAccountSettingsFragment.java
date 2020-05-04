@@ -15,7 +15,6 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.example.bankapplication.databinding.FragmentCustomerAccountSettingsBinding;
 
-import java.sql.ResultSet;
 import java.util.Random;
 
 public class CustomerAccountSettingsFragment extends Fragment implements AdapterView.OnItemSelectedListener {
@@ -26,6 +25,7 @@ public class CustomerAccountSettingsFragment extends Fragment implements Adapter
     private TimeManager time;
     private Account acc;
     private int type;
+    private DataManager data;
 
     @Nullable
     @Override
@@ -33,6 +33,7 @@ public class CustomerAccountSettingsFragment extends Fragment implements Adapter
         binding = FragmentCustomerAccountSettingsBinding.inflate(inflater, container, false);
         bank = Bank.getInstance();
         time = TimeManager.getInstance();
+        data = DataManager.getInstance();
         return binding.getRoot();
     }
 
@@ -110,11 +111,15 @@ public class CustomerAccountSettingsFragment extends Fragment implements Adapter
     }
 
     private void requestCard() {
-        ResultSet rs;
-        rs = DataBase.dataQuery("SELECT * FROM cards WHERE owner_account = '" + acc.getAccountNumber() + "' AND state = 1");
-        if (rs != null) {
-            Toast.makeText(getContext(), "You have a pending card request.", Toast.LENGTH_LONG).show();
-            return;
+        try {
+            if (data.hasPendingCard(acc.getAccountNumber())) {
+                Toast.makeText(getContext(), "You have a pending card request.", Toast.LENGTH_LONG).show();
+                return;
+            }
+        }
+        catch (Exception e) {
+            System.err.println("_LOG: "+e);
+            Toast.makeText(getContext(), "Error creating card.", Toast.LENGTH_LONG).show();
         }
         String number = "";
         // Generate random number sequence
@@ -122,14 +127,17 @@ public class CustomerAccountSettingsFragment extends Fragment implements Adapter
             Random rand = new Random();
             number += String.valueOf(rand.nextInt(10));
         }
-        // Check database for same account number
-        rs = DataBase.dataQuery("SELECT * FROM accounts WHERE address = '" + number + "' ");
-        if (rs != null)
-            requestCard();
-
-        DataBase.dataInsert("INSERT INTO cards VALUES ("+DataBase.getNewId("cards")+
-                ", '"+acc.getAccountNumber()+"', "+100+", "+100+", "+1+", '"+number+"', "+1+", 'Bank card' ) ");
-        Toast.makeText(getContext(), "Card requested.", Toast.LENGTH_LONG).show();
+        // Check database for same card number
+        try {
+            if (data.exists("accounts", number))
+                requestCard();
+            data.createCardRequest(acc, number);
+            Toast.makeText(getContext(), "Card requested.", Toast.LENGTH_LONG).show();
+        }
+        catch (Exception e) {
+            System.err.println("_LOG: "+e);
+            Toast.makeText(getContext(), "Error creating card.", Toast.LENGTH_LONG).show();
+        }
     }
 
     private void updateInfo() {

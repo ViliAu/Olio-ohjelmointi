@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,13 +40,14 @@ public class CustomerTransactionHistoryFragment extends Fragment implements Adap
 
     private int accPosition = 0;
     private TimeManager time;
+    private DataManager data;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentCustomerTransactionHistoryBinding.inflate(inflater, container, false);
-        initElements();
         time = TimeManager.getInstance();
+        data = DataManager.getInstance();
         return binding.getRoot();
     }
 
@@ -54,11 +56,12 @@ public class CustomerTransactionHistoryFragment extends Fragment implements Adap
         super.onActivityCreated(savedInstanceState);
         if (getActivity() != null)
             viewModel = ViewModelProviders.of(getActivity()).get(SharedViewModelCustomer.class);
-        initSpinner();
+        initElements();
     }
 
     private void initElements() {
         initRecyclerview();
+        initSpinner();
     }
 
     private void initSpinner() {
@@ -76,6 +79,11 @@ public class CustomerTransactionHistoryFragment extends Fragment implements Adap
             if (a.state == 2 || a.state == 4) {
                 accs.add(new SpinnerAccount(a.getAccountNumber()));
             }
+        }
+        if (accs.isEmpty()) {
+            binding.spinner.setVisibility(View.INVISIBLE);
+            binding.twSelectAccount.setVisibility(View.INVISIBLE);
+            Toast.makeText(getContext(), "You don't have any accounts. Make new ones in the \"Accounts\" tab.", Toast.LENGTH_LONG).show();
         }
         return accs;
     }
@@ -103,25 +111,14 @@ public class CustomerTransactionHistoryFragment extends Fragment implements Adap
     }
 
     private ArrayList<PaymentTransaction> getPayments(String accountNumber) {
-        ArrayList<PaymentTransaction> transactions = new ArrayList<>();
-        ResultSet rs;
         try {
-            rs = DataBase.dataQuery("SELECT * FROM transaction_history WHERE account_from = '"+accountNumber+"' OR account_to = '"+accountNumber+"' ORDER BY date DESC");
-            if (rs != null) {
-                do {
-                    transactions.add(new PaymentTransaction(
-                            rs.getString("account_from"), rs.getString("account_to"), rs.getString("bic_from"),
-                            rs.getString("bic_to"), rs.getString("message"),
-                            rs.getFloat("amount"), rs.getTimestamp("date"),
-                            rs.getString("action"), accountNumber
-                    ));
-                } while (rs.next());
-            }
+            return data.getAccountPaymentHistory(accountNumber);
         }
-        catch (SQLException e) {
-            System.out.println("_LOG: "+e);
+        catch (Exception e) {
+            System.err.println("_LOG: "+e);
+            Toast.makeText(getContext(), "Couldn't fetch payments.", Toast.LENGTH_LONG).show();
+            return null;
         }
-        return transactions;
     }
 
     @Override
@@ -152,7 +149,6 @@ public class CustomerTransactionHistoryFragment extends Fragment implements Adap
         dialog.show(activity.getSupportFragmentManager(), "dialog");
     }
 
-    //TODO: Remove this class and add the functionality to account class
     private class SpinnerAccount {
         String text;
         String number;

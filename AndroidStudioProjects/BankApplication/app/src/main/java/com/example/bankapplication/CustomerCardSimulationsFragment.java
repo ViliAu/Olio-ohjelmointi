@@ -25,12 +25,14 @@ public class CustomerCardSimulationsFragment extends Fragment implements Adapter
     private ArrayAdapter<Card> cardAdapter;
     private Account acc;
     private Bank bank;
+    private DataManager data;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentCustomerCardSimulationsBinding.inflate(inflater, container, false);
         bank = Bank.getInstance();
+        data = DataManager.getInstance();
         return binding.getRoot();
     }
 
@@ -44,36 +46,9 @@ public class CustomerCardSimulationsFragment extends Fragment implements Adapter
 
     private void initElements() {
         acc = viewModel.getAccountToEdit();
-        cards = getCards();
+        cards = viewModel.getAccountCards();
         initSpinners();
         initButtons();
-    }
-
-    private ArrayList<Card> getCards() {
-        ArrayList<Card> custCards = null;
-        try {
-            ResultSet rs = DataBase.dataQuery("SELECT * FROM cards WHERE owner_account = '"+acc.getAccountNumber()+"' ");
-            if (rs != null) {
-                int state = rs.getInt("state");
-                custCards = new ArrayList<>();
-                do {
-                    if (state == 1 || state == 3) {
-                        continue;
-                    }
-                    custCards.add(new Card
-                            (rs.getString("owner_account"), rs.getString("number"),
-                                    rs.getFloat("pay_limit"), rs.getFloat("withdraw_limit"),
-                                    rs.getInt("country_limit"), rs.getInt("state"),
-                                    rs.getString("name"), rs.getFloat("paid"),
-                                    rs.getFloat("withdrawn"), rs.getInt("id")));
-                } while (rs.next());
-            }
-        }
-        catch (Exception e) {
-            Toast.makeText(getContext(), "Something went wrong!", Toast.LENGTH_LONG).show();
-            return null;
-        }
-        return custCards;
     }
 
     private void initSpinners() {
@@ -179,7 +154,6 @@ public class CustomerCardSimulationsFragment extends Fragment implements Adapter
             Toast.makeText(getContext(), "Simulation successful.", Toast.LENGTH_LONG).show();
             CustomerActivity act = (CustomerActivity)getActivity();
             viewModel.setAccounts(act.updateAccounts());
-            cards = getCards();
         }
         catch (Exception e) {
             Toast.makeText(getContext(), "Something went wrong.", Toast.LENGTH_LONG).show();

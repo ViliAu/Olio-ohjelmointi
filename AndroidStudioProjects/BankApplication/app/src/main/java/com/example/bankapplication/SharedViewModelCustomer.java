@@ -11,6 +11,7 @@ public class SharedViewModelCustomer extends ViewModel {
     private int bankId = 0;
     private Bank bank;
     private ArrayList<Account> accounts = new ArrayList<>();
+    private ArrayList<Card> accountCards = new ArrayList<>();
     private Account accountToEdit;
     private Card cardToEdit;
 
@@ -120,5 +121,13 @@ public class SharedViewModelCustomer extends ViewModel {
 
     public void setCardToEdit(Card cardToEdit) {
         this.cardToEdit = cardToEdit;
+    }
+
+    public ArrayList<Card> getAccountCards() {
+        return accountCards;
+    }
+
+    public void setAccountCards(ArrayList<Card> accountCards) {
+        this.accountCards = accountCards;
     }
 }

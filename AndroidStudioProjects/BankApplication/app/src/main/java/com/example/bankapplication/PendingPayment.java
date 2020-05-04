@@ -3,20 +3,37 @@ package com.example.bankapplication;
 import java.sql.Date;
 
 public class PendingPayment {
-    private final String accountFrom;
+    private final String accountFrom, accountTo;
     private final String message;
     private final Date dueDate;
     private final float amount;
-    private final boolean reoccurring;
+    private final boolean reoccurring, interest;
     private final int id;
+    private final String targetAccount;
 
-    public PendingPayment(String accountFrom, String message, Date dueDate, float amount, boolean reoccurring, int id) {
+    public PendingPayment(String accountFrom, String accountTo, String message, Date dueDate, float amount, boolean reoccurring, int id, boolean interest) {
         this.accountFrom = accountFrom;
+        this.accountTo = accountTo;
         this.message = message;
         this.dueDate = dueDate;
         this.amount = amount;
         this.reoccurring = reoccurring;
         this.id = id;
+        this.interest = interest;
+        this.targetAccount = "";
+    }
+
+    // Used in recycler view
+    public PendingPayment(String accountFrom, String accountTo, String message, Date dueDate, float amount, boolean reoccurring, int id, boolean interest, String targetAccount) {
+        this.accountFrom = accountFrom;
+        this.accountTo = accountTo;
+        this.message = message;
+        this.dueDate = dueDate;
+        this.amount = amount;
+        this.reoccurring = reoccurring;
+        this.id = id;
+        this.interest = interest;
+        this.targetAccount = targetAccount;
     }
 
     public String getAccountFrom() {
@@ -41,5 +58,17 @@ public class PendingPayment {
 
     public int getId() {
         return id;
+    }
+
+    public String getAccountTo() {
+        return accountTo;
+    }
+
+    public boolean isInterest() {
+        return interest;
+    }
+
+    public String getTargetAccount() {
+        return targetAccount;
     }
 }

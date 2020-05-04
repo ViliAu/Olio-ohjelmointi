@@ -17,8 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bankapplication.databinding.FragmentCustomerHomeBinding;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -29,13 +27,13 @@ public class CustomerHomeFragment extends Fragment implements AdapterView.OnItem
     private CustomerHomeRecyclerAdapter recyclerAdapter;
     private RecyclerView.LayoutManager recyclerLayoutManager;
 
-
     private FragmentCustomerHomeBinding binding;
     private SharedViewModelCustomer viewModel;
     private ArrayAdapter<Account> accountAdapter;
 
     private ArrayList<SpinnerAccount> accs;
     private ArrayList<PendingPayment> payments = new ArrayList<>();
+    private DataManager data;
 
     private int accPosition = 0;
 
@@ -43,6 +41,7 @@ public class CustomerHomeFragment extends Fragment implements AdapterView.OnItem
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentCustomerHomeBinding.inflate(inflater, container, false);
+        data = DataManager.getInstance();
         initElements();
         return binding.getRoot();
     }
@@ -75,6 +74,11 @@ public class CustomerHomeFragment extends Fragment implements AdapterView.OnItem
                 accs.add(new SpinnerAccount(a.getAccountNumber()));
             }
         }
+        if (accs.isEmpty()) {
+            binding.spinner.setVisibility(View.INVISIBLE);
+            binding.twSelectAccount.setVisibility(View.INVISIBLE);
+            Toast.makeText(getContext(), "You don't have any accounts. Make new ones in the \"Accounts\" tab.", Toast.LENGTH_LONG).show();
+        }
         return accs;
     }
 
@@ -100,29 +104,26 @@ public class CustomerHomeFragment extends Fragment implements AdapterView.OnItem
     }
 
     private ArrayList<PendingPayment> getPayments(String accountNumber) {
-        ArrayList<PendingPayment> pendings = new ArrayList<>();
-        ResultSet rs;
         try {
-            rs = DataBase.dataQuery("SELECT * FROM pending_transactions WHERE account_from = '"+accountNumber+"' ");
-            if (rs != null) {
-                do {
-                    pendings.add(new PendingPayment(
-                            accountNumber, rs.getString("message"), rs.getDate("due_date"),
-                            rs.getFloat("amount"), rs.getBoolean("reoccuring"),
-                            rs.getInt("id")));
-                } while (rs.next());
-            }
+            return data.getAccountPendingPayments(accountNumber);
         }
-        catch (SQLException e) {
-            System.out.println("_LOG: "+e);
+        catch (Exception e) {
+            System.err.println("_LOG: "+e);
+            Toast.makeText(getContext(), "Error fetching payments.", Toast.LENGTH_LONG).show();
+            return null;
         }
-        return pendings;
     }
 
     private void deletePayment(int id) {
-        DataBase.dataUpdate("DELETE FROM pending_transactions WHERE id = "+id);
-        updateRecyclerView();
-        Toast.makeText(getContext(), "Payment cancelled.", Toast.LENGTH_SHORT).show();
+        try {
+            data.deletePayment(id);
+            updateRecyclerView();
+            Toast.makeText(getContext(), "Payment cancelled.", Toast.LENGTH_SHORT).show();
+        }
+        catch (Exception e) {
+            System.err.println("_LOG: "+e);
+            Toast.makeText(getContext(), "Error deleting payment.", Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override

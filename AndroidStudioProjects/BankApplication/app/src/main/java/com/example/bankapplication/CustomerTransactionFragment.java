@@ -16,8 +16,6 @@ import androidx.lifecycle.ViewModelProviders;
 import com.example.bankapplication.databinding.FragmentCustomerTransactionBinding;
 
 import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -30,6 +28,7 @@ public class CustomerTransactionFragment extends Fragment {
     private Bank bank;
     private Date currentDate;
     private TimeManager time;
+    private DataManager data;
 
     @Nullable
     @Override
@@ -38,6 +37,7 @@ public class CustomerTransactionFragment extends Fragment {
         initElements();
         bank = Bank.getInstance();
         time = TimeManager.getInstance();
+        data = DataManager.getInstance();
         return binding.getRoot();
     }
 
@@ -46,7 +46,7 @@ public class CustomerTransactionFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         if (getActivity() != null)
             viewModel = ViewModelProviders.of(getActivity()).get(SharedViewModelCustomer.class);
-        initSpinner();
+        initSpinner(0);
     }
 
     private void initElements() {
@@ -75,11 +75,11 @@ public class CustomerTransactionFragment extends Fragment {
         });
     }
 
-    private void initSpinner() {
+    private void initSpinner(int pos) {
         accountAdapter = new ArrayAdapter(getContext(), R.layout.spinner_item_account_customer, getPayableAccounts());
         accountAdapter.setDropDownViewResource(R.layout.spinner_item_account_customer);
         binding.spinner.setAdapter(accountAdapter);
-        binding.spinner.setSelection(0);
+        binding.spinner.setSelection(pos);
     }
 
     // Get all the user's accounts that have buying enabled
@@ -90,13 +90,18 @@ public class CustomerTransactionFragment extends Fragment {
                 accs.add(new SpinnerAccount(a.getAccountNumber(), a.getBalance()));
             }
         }
+        if (accs.isEmpty()) {
+            binding.buttonMakeTransaction.setEnabled(false);
+            Toast.makeText(getContext(), "You don't have any accounts. Make new ones in the \"Accounts\" tab.", Toast.LENGTH_LONG).show();
+        }
         return accs;
     }
 
     // Check if the amount is correct
-    private void checkTransaction() { //TODO: Move to bank class
+    private void checkTransaction() {
         boolean canTransfer = true;
         float amount = 0;
+        Account accTo = null;
         try {
             amount = Float.parseFloat(binding.etAmount.getText().toString());
         }
@@ -110,10 +115,10 @@ public class CustomerTransactionFragment extends Fragment {
         }
         // Check if the receiving account exists
         try {
-            ResultSet rs = DataBase.dataQuery("SELECT * FROM accounts WHERE address = '" + binding.etAccountTo.getText().toString() + "' ");
-            if (rs != null) {
-                if (rs.getInt("state") == 1 || rs.getInt("state") == 3) {
-                    System.out.println("_LOG: "+rs.getInt("state"));
+            accTo = data.getAccountByNumber(binding.etAccountTo.getText().toString());
+            if (accTo != null) {
+                if (accTo.getState() == 1 || accTo.getState() == 3) {
+                    System.out.println("_LOG: "+accTo.state);
                     binding.etAccountTo.setError("Account hasn't been approved or has been disabled by the administration.");
                     canTransfer = false;
                 }
@@ -123,24 +128,49 @@ public class CustomerTransactionFragment extends Fragment {
                 canTransfer = false;
             }
         }
-        catch (SQLException e) {
+        catch (Exception e) {
             System.out.println("_LOG: "+e);
-            Toast.makeText(getContext(), "Something went wrong. Please try again."+e, Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "Error trying to find receiving account."+e, Toast.LENGTH_LONG).show();
         }
         // Check if money is being transferred to the same account
         if (binding.etAccountTo.equals(accs.get(binding.spinner.getSelectedItemPosition()).getAccountNumber())) {
             canTransfer = false;
             Toast.makeText(getContext(), "The Sending and receiving accounts cannot be same.", Toast.LENGTH_LONG).show();
         }
+        // Lastly check if the account has enough money
+        try {
+            if (!data.hasEnoughMoney(accs.get(binding.spinner.getSelectedItemPosition()).getAccountNumber(), amount)) {
+                canTransfer = false;
+                Toast.makeText(getContext(), "Not enough money.", Toast.LENGTH_LONG).show();
+            }
+        }
+        catch (Exception e) {
+            System.err.println("_LOG: "+e);
+            Toast.makeText(getContext(), "Error trying to find account balance.", Toast.LENGTH_SHORT).show();
+        }
+
         if (canTransfer) {
-            String toast = "";
-            toast = bank.transferMoney(accs.get(binding.spinner.getSelectedItemPosition()).getAccountNumber(),
-                    binding.etAccountTo.getText().toString(), amount,
-                    currentDate,binding.switchReoccuring.isChecked(), binding.etMessage.getText().toString());
-            Toast.makeText(getContext(), toast, Toast.LENGTH_LONG).show();
-            CustomerActivity ca = (CustomerActivity)getActivity();
-            viewModel.setAccounts(ca.updateAccounts());
-            initSpinner();
+            try {
+                PendingPayment p = new PendingPayment(
+                        accs.get(binding.spinner.getSelectedItemPosition()).getAccountNumber(),
+                        accTo.getAccountNumber(), binding.etMessage.getText().toString(),
+                        currentDate, amount, binding.switchReoccuring.isChecked(),
+                        0, false);
+
+                bank.transferMoney(p);
+                if (binding.switchReoccuring.isChecked())
+                    Toast.makeText(getContext(), "Transfer due date set.", Toast.LENGTH_LONG).show();
+                else {
+                    Toast.makeText(getContext(), "Money transferred.", Toast.LENGTH_LONG).show();
+                    CustomerActivity ca = (CustomerActivity)getActivity();
+                    viewModel.setAccounts(ca.updateAccounts());
+                    initSpinner(binding.spinner.getSelectedItemPosition());
+                }
+            }
+            catch (Exception e) {
+                System.err.println("_LOG: "+e);
+                Toast.makeText(getContext(), "Error creating payment.", Toast.LENGTH_LONG).show();
+            }
         }
     }
 
