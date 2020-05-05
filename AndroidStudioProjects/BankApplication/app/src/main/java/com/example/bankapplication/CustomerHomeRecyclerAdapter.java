@@ -73,7 +73,18 @@ public class CustomerHomeRecyclerAdapter extends RecyclerView.Adapter<CustomerHo
     @Override
     public void onBindViewHolder(@NonNull CustomerAccountViewHolder holder, int position) {
         PendingPayment payment = paymentList.get(position);
-        String recurrence = (payment.isReoccurring()) ? "RECURRING" : "NOT RECURRING";
+        String recurrence = "";
+        switch (payment.isReoccurring()) {
+            case 0 :
+                recurrence = "NOT RECURRING";
+                break;
+            case 1:
+                recurrence = "RECURRING WEEKLY";
+                break;
+            case 2:
+                recurrence = "RECURRING MONTHLY";
+                break;
+        }
         holder.recurrence.setText(recurrence);
         holder.amount.setText(String.format(Locale.GERMANY, "%.2f€", payment.getAmount()));
 

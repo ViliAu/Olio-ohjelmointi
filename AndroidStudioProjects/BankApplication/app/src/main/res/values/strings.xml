@@ -35,4 +35,10 @@
         <item>Anywhere in the world</item>
     </string-array>
 
+    <string-array name="recurrence">
+        <item>None</item>
+        <item>Weekly</item>
+        <item>Monthly</item>
+    </string-array>
+
 </resources>

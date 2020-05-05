@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/tw_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:gravity="start"
+        android:textStyle="bold"
+        android:text="Enter code"
+        android:textSize="30sp" />
+
+    <TextView
+        android:id="@+id/tw_code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tw_header"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:gravity="start"
+        android:text="557557"
+        android:textSize="25sp" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/input_code"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/tw_code">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_code"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:hint="Enter code here"
+            android:textSize="25sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+</RelativeLayout>

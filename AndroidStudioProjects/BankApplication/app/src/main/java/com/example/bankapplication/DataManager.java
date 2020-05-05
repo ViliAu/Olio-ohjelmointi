@@ -1,29 +1,18 @@
 package com.example.bankapplication;
 
-import android.content.Context;
-import android.provider.ContactsContract;
-import android.widget.Toast;
-
-import java.sql.Array;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
-// This class handles all the queries to database and also checks if there's an ongoing query
+// This class handles all the queries to database
 public class DataManager {
-    private ResultSet rs;
 
-    public static DataManager dm = null;
-
+    private static DataManager dm = null;
     public static DataManager getInstance() {
         if (dm == null) {
             dm = new DataManager();
         }
         return dm;
-    }
-
-    public int getNewId(String table) throws Exception{
-        return DataBase.getNewId(table);
     }
 
     public ArrayList<AccountListElement> loadAccounts(int id) throws Exception {
@@ -115,7 +104,7 @@ public class DataManager {
     }
 
     public boolean hasPendingCard(String accNumber) throws Exception {
-        DataBase.dataQuery("SELECT * FROM cards WHERE owner_account = '" + accNumber + "' AND state = 1");
+        ResultSet rs = DataBase.dataQuery("SELECT * FROM cards WHERE owner_account = '" + accNumber + "' AND state = 1");
         return (rs == null);
     }
 
@@ -209,7 +198,7 @@ public class DataManager {
             do {
                 pendings.add(new PendingPayment(rs.getString("account_from"), rs.getString("account_to"),
                         rs.getString("message"), rs.getDate("due_date"),
-                        rs.getFloat("amount"), rs.getBoolean("recurring"),
+                        rs.getFloat("amount"), rs.getInt("recurring"),
                         rs.getInt("id"), rs.getBoolean("interest"),
                         accountNumber));
             } while (rs.next());
@@ -262,7 +251,7 @@ public class DataManager {
             do {
                 payments.add(new PendingPayment(rs.getString("account_from"), rs.getString("account_to"),
                         rs.getString("message"), rs.getDate("due_date"),
-                        rs.getFloat("amount"), rs.getBoolean("recurring"),
+                        rs.getFloat("amount"), rs.getInt("recurring"),
                         rs.getInt("id"), rs.getBoolean("interest")));
             } while (rs.next());
         }
@@ -291,5 +280,9 @@ public class DataManager {
                 } while (rs.next());
         }
         return custCards;
+    }
+
+    public void changeRecurrenceToNone(int id) throws Exception {
+        DataBase.dataQuery("UPDATE pending_transactions SET recurring = 0 WHERE id = "+id);
     }
 }

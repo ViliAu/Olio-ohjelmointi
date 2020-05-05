@@ -1,5 +1,6 @@
 package com.example.bankapplication;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,12 +18,14 @@ public class LoginFragment extends Fragment {
     private SharedViewModelMain viewModel;
     private FragmentLoginBinding binding;
     private Bank bank;
+    private MainActivity activity;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentLoginBinding.inflate(inflater, container, false);
         bank = Bank.getInstance();
+        activity = (MainActivity)getActivity();
         initElements();
         return binding.getRoot();
     }
@@ -55,11 +58,11 @@ public class LoginFragment extends Fragment {
     }
 
     private void loadAccRequestFragment() {
-        MainActivity m = (MainActivity) getActivity();
-        m.loadFragment(new MainCustomerCreationFragment());
+        activity.loadFragment(new MainCustomerCreationFragment());
     }
 
     private void loginBank(String name, String pass) {
+        viewModel.setCustomerId(0);
         LoginManager log = new LoginManager();
         int[] result;
         result = log.login(name, pass, bank.getId());
@@ -74,8 +77,8 @@ public class LoginFragment extends Fragment {
                 Toast.makeText(getContext(), "Customer hasn't been approved by administration yet.", Toast.LENGTH_LONG).show();
                 break;
             case 4:
-                MainActivity m = (MainActivity)getActivity();
-                m.loadCustomerActivity(result[1]);
+                viewModel.setCustomerId(result[1]);
+                showPinDialog();
                 break;
             case 5:
                 Toast.makeText(getContext(), "Customer has been disabled by the administration.", Toast.LENGTH_LONG).show();
@@ -87,5 +90,11 @@ public class LoginFragment extends Fragment {
             default:
                 break;
         }
+    }
+
+    private void showPinDialog() {
+        // Open dialog
+        LoginPinCodeDialog dialog = new LoginPinCodeDialog();
+        dialog.show(activity.getSupportFragmentManager(), "pindialog");
     }
 }

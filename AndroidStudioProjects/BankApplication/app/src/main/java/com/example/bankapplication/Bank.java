@@ -117,23 +117,29 @@ public class Bank {
 
     // Used to transfer money between two accounts.
     public void transferMoney(PendingPayment p) throws Exception {
-        // Check if the transaction happens other time than today
+        // Check if the transaction happens in the future (due_date)
         if (!p.getDate().before(new Date(time.today()))) {
             data.createNewPendingTransaction(new PendingPayment(p.getAccountFrom(), p.getAccountTo(),
-                    p.getMessage(), p.getDate(), p.getAmount(), false, 0, false));
+                    p.getMessage(), p.getDate(), p.getAmount(), 0, 0, false));
             return;
         }
+
         // Check if the transaction is recurring
-        if (p.isReoccurring()) {
+        if (p.isReoccurring() == 2) {
             // Set payment a month ahead
             data.createNewPendingTransaction(new PendingPayment(p.getAccountFrom(), p.getAccountTo(),
                     p.getMessage(), new Date(time.getDateAdvancedByMonth(p.getDate().getTime())),
-                    p.getAmount(), true, 0, false));
+                    p.getAmount(), 2, 0, false));
+        }
+        else if (p.isReoccurring() == 1) {
+            // Set payment a week ahead
+            data.createNewPendingTransaction(new PendingPayment(p.getAccountFrom(), p.getAccountTo(),
+                    p.getMessage(), new Date(time.getDateAdvancedByWeek(p.getDate().getTime())),
+                    p.getAmount(), 1, 0, false));
         }
 
         DataBase.dataQuery("EXEC transfer_money @account_from = '" + p.getAccountFrom() + "', @account_to = '" + p.getAccountTo() + "', @amount = " + p.getAmount());
         createTransactionHistory(p.getAccountFrom(), p.getAccountTo(), p.getAmount(), p.getMessage(), p.getDate(), "Transaction", "", "");
-        return;
     }
 
     private void payInterest(PendingPayment p) throws Exception {
@@ -173,9 +179,14 @@ public class Bank {
                         transferMoney(p);
                         data.deletePayment(p.getId());
                     }
+                    else {
+                        if (p.isReoccurring() != 0) {
+                            data.changeRecurrenceToNone(p.getId());
+                        }
+                    }
                 }
                 // Iterate the payment if it's recurring so that every month gets paid
-                if (p.isReoccurring()) {
+                if (p.isReoccurring() != 0) {
                     checkPendingPayments();
                     break;
                 }

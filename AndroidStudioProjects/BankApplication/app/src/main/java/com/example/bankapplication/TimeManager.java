@@ -47,6 +47,13 @@ public class TimeManager {
         return cal.getTimeInMillis();
     }
 
+    public long getDateAdvancedByWeek(long date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(date);
+        cal.add(Calendar.WEEK_OF_YEAR, 1);
+        return cal.getTimeInMillis();
+    }
+
     public String getDateTime(long time) {
         return sqlDateTimeFormatter.format(new Date(time));
     }

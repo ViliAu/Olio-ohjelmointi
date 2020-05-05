@@ -76,6 +76,12 @@ public class CustomerTransactionFragment extends Fragment {
     }
 
     private void initSpinner(int pos) {
+        ArrayAdapter<CharSequence> recurrAdapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.recurrence, R.layout.spinner_item_account_type);
+        recurrAdapter.setDropDownViewResource(R.layout.spinner_item_account_type);
+        binding.spinnerRecurrence.setAdapter(recurrAdapter);
+        binding.spinnerRecurrence.setSelection(0);
+
         accountAdapter = new ArrayAdapter(getContext(), R.layout.spinner_item_account_customer, getPayableAccounts());
         accountAdapter.setDropDownViewResource(R.layout.spinner_item_account_customer);
         binding.spinner.setAdapter(accountAdapter);
@@ -118,7 +124,6 @@ public class CustomerTransactionFragment extends Fragment {
             accTo = data.getAccountByNumber(binding.etAccountTo.getText().toString());
             if (accTo != null) {
                 if (accTo.getState() == 1 || accTo.getState() == 3) {
-                    System.out.println("_LOG: "+accTo.state);
                     binding.etAccountTo.setError("Account hasn't been approved or has been disabled by the administration.");
                     canTransfer = false;
                 }
@@ -130,7 +135,7 @@ public class CustomerTransactionFragment extends Fragment {
         }
         catch (Exception e) {
             System.out.println("_LOG: "+e);
-            Toast.makeText(getContext(), "Error trying to find receiving account."+e, Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "Error trying to find receiving account.", Toast.LENGTH_LONG).show();
         }
         // Check if money is being transferred to the same account
         if (binding.etAccountTo.equals(accs.get(binding.spinner.getSelectedItemPosition()).getAccountNumber())) {
@@ -154,18 +159,39 @@ public class CustomerTransactionFragment extends Fragment {
                 PendingPayment p = new PendingPayment(
                         accs.get(binding.spinner.getSelectedItemPosition()).getAccountNumber(),
                         accTo.getAccountNumber(), binding.etMessage.getText().toString(),
-                        currentDate, amount, binding.switchReoccuring.isChecked(),
+                        currentDate, amount, binding.spinnerRecurrence.getSelectedItemPosition(),
                         0, false);
 
                 bank.transferMoney(p);
-                if (binding.switchReoccuring.isChecked())
-                    Toast.makeText(getContext(), "Transfer due date set.", Toast.LENGTH_LONG).show();
+                String toastText;
+                // Give the user a toast according to his actions
+
+                // Due date
+                if (currentDate.after(new Date(time.today()))) {
+                    // Not recurring
+                    if (binding.spinnerRecurrence.getSelectedItemPosition() == 0) {
+                        toastText = "Trasfer due date set";
+                    }
+                    // Recurring
+                    else {
+                        toastText = "Transfer due date and recurrence set";
+                    }
+                }
+                // Transfer
                 else {
-                    Toast.makeText(getContext(), "Money transferred.", Toast.LENGTH_LONG).show();
+                    // Not recurring
+                    if (binding.spinnerRecurrence.getSelectedItemPosition() == 0) {
+                        toastText = "Money transferred.";
+                    }
+                    // Recurring
+                    else {
+                        toastText = "Money transferred and recurrence set.";
+                    }
                     CustomerActivity ca = (CustomerActivity)getActivity();
                     viewModel.setAccounts(ca.updateAccounts());
                     initSpinner(binding.spinner.getSelectedItemPosition());
                 }
+                Toast.makeText(getContext(), toastText, Toast.LENGTH_LONG).show();
             }
             catch (Exception e) {
                 System.err.println("_LOG: "+e);

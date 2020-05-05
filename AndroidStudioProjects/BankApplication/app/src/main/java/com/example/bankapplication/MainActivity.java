@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 // Main activity consist of bank selection + login + new account creation.
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements LoginPinCodeDialog.PinDialogListener{
 
     private ActivityMainBinding binding;
     private FragmentManager fm;
@@ -115,4 +115,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void changeToCustomerActivity(int id) {
+        if (id != 0)
+            loadCustomerActivity(id);
+        else {
+            Toast.makeText(this, "Error while trying to log in", Toast.LENGTH_LONG).show();
+        }
+    }
 }

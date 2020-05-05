@@ -19,12 +19,14 @@ public class MainCustomerCreationFragment extends Fragment {
     private SharedViewModelMain viewModel;
     private FragmentMainCustomerCreationBinding binding;
     private DataManager data;
+    private Bank bank;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentMainCustomerCreationBinding.inflate(inflater, container, false);
         data = DataManager.getInstance();
+        bank = Bank.getInstance();
         initElements();
         return binding.getRoot();
     }
@@ -68,7 +70,7 @@ public class MainCustomerCreationFragment extends Fragment {
                 String hashPass = Hasher.hashPassword(password, salt);
 
                 // Add to database
-                data.createCustomerRequest(userName, name, phoneNumber, hashPass, viewModel.getBankId(), address, zipcode, socialid, salt);
+                data.createCustomerRequest(userName, name, phoneNumber, hashPass, bank.getId(), address, zipcode, socialid, salt);
                 Toast.makeText(getContext(), "Account request created.", Toast.LENGTH_LONG).show();
             }
             // Instance where there is

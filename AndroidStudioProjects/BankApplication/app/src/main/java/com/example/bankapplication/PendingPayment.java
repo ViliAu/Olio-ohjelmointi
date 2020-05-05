@@ -7,11 +7,11 @@ public class PendingPayment {
     private final String message;
     private final Date dueDate;
     private final float amount;
-    private final boolean reoccurring, interest;
-    private final int id;
+    private final boolean interest;
+    private final int id, reoccurring;
     private final String targetAccount;
 
-    public PendingPayment(String accountFrom, String accountTo, String message, Date dueDate, float amount, boolean reoccurring, int id, boolean interest) {
+    public PendingPayment(String accountFrom, String accountTo, String message, Date dueDate, float amount, int reoccurring, int id, boolean interest) {
         this.accountFrom = accountFrom;
         this.accountTo = accountTo;
         this.message = message;
@@ -24,7 +24,7 @@ public class PendingPayment {
     }
 
     // Used in recycler view
-    public PendingPayment(String accountFrom, String accountTo, String message, Date dueDate, float amount, boolean reoccurring, int id, boolean interest, String targetAccount) {
+    public PendingPayment(String accountFrom, String accountTo, String message, Date dueDate, float amount, int reoccurring, int id, boolean interest, String targetAccount) {
         this.accountFrom = accountFrom;
         this.accountTo = accountTo;
         this.message = message;
@@ -52,7 +52,7 @@ public class PendingPayment {
         return amount;
     }
 
-    public boolean isReoccurring() {
+    public int isReoccurring() {
         return reoccurring;
     }
 
