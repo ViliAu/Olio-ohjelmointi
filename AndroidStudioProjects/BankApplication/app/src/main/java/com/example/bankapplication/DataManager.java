@@ -105,7 +105,7 @@ public class DataManager {
 
     public boolean hasPendingCard(String accNumber) throws Exception {
         ResultSet rs = DataBase.dataQuery("SELECT * FROM cards WHERE owner_account = '" + accNumber + "' AND state = 1");
-        return (rs == null);
+        return (rs != null);
     }
 
     public void payInterest(String account, float amount, Date date, int id) throws Exception {
@@ -167,13 +167,8 @@ public class DataManager {
     }
 
     public boolean exists(String table, String accountNumber) throws Exception {
-        try {
-            ResultSet rs = DataBase.dataQuery("SELECT * FROM " + table + " WHERE address = '" + accountNumber + "' ");
-            return (rs == null);
-        } catch (Exception e) {
-            System.err.println("_LOG: " + e);
-            throw e;
-        }
+        ResultSet rs = DataBase.dataQuery("SELECT * FROM " + table + " WHERE address = '" + accountNumber + "' ");
+        return (rs != null);
     }
 
     public void resetCards() throws Exception {
