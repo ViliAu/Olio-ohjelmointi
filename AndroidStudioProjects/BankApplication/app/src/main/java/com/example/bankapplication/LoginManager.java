@@ -1,7 +1,5 @@
 package com.example.bankapplication;
 
-import java.sql.ResultSet;
-
 public class LoginManager {
     private DataManager data;
     public LoginManager() {
@@ -14,12 +12,20 @@ public class LoginManager {
         4 = Load customer activity
         5 = Customer disabled
         6 = Admin
+        7 = User not found
      */
 
     public int[] login(String name, String pass, int bankId) {
         int[] i = new int[2];
+        Customer c = null;
         try {
-            Customer c = data.getSingleCustomer(bankId, name);
+            c = data.getSingleCustomer(bankId, name);
+        }
+        catch (Exception e) {
+            System.err.println("_LOG: "+e);
+        }
+
+        try {
             if (c == null) {
                 i[0] = 1;
                 return i;

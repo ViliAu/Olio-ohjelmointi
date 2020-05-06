@@ -13,20 +13,80 @@
 
     <ImageButton
         android:id="@+id/button_snorkkeli"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="30dp"
+        android:layout_width="128dp"
+        android:layout_height="128dp"
+        android:layout_marginStart="30dp"
         android:layout_marginTop="150dp"
-        android:background="@drawable/ic_dollar" />
+        android:background="@drawable/ic_snorkkeli" />
 
     <TextView
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/button_snorkkeli"
-        android:layout_alignLeft="@+id/button_snorkkeli"
-        android:layout_alignRight="@+id/button_snorkkeli"
+        android:layout_alignStart="@+id/button_snorkkeli"
+        android:layout_alignEnd="@+id/button_snorkkeli"
         android:gravity="center"
         android:text="Snorkkeli"
         android:textSize="20sp" />
+
+    <ImageButton
+        android:id="@+id/button_oppoika"
+        android:layout_width="128dp"
+        android:layout_height="128dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginTop="150dp"
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/ic_pojutin" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button_oppoika"
+        android:layout_alignStart="@+id/button_oppoika"
+        android:layout_alignEnd="@+id/button_oppoika"
+        android:gravity="center"
+        android:text="Op-poika"
+        android:textSize="20sp" />
+
+    <ImageButton
+        android:id="@+id/button_syppi"
+        android:layout_width="128dp"
+        android:layout_height="128dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="100dp"
+        android:layout_below="@id/button_snorkkeli"
+        android:background="@drawable/ic_syppi" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button_syppi"
+        android:layout_alignStart="@+id/button_syppi"
+        android:layout_alignEnd="@+id/button_syppi"
+        android:gravity="center"
+        android:text="Syppi"
+        android:textSize="20sp" />
+
+    <ImageButton
+        android:id="@+id/button_roskis"
+        android:layout_width="128dp"
+        android:layout_height="128dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginTop="100dp"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/button_oppoika"
+        android:background="@drawable/ic_roskis" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button_roskis"
+        android:layout_alignStart="@+id/button_roskis"
+        android:layout_alignEnd="@+id/button_roskis"
+        android:gravity="center"
+        android:text="Roskapankki"
+        android:textSize="20sp" />
+
+
 
 </RelativeLayout>

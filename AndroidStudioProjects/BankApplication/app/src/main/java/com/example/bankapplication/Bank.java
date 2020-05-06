@@ -42,15 +42,11 @@ public class Bank {
     }
 
     public void setValues(int id) throws Exception {
-        try {
-            ResultSet rs = DataBase.dataQuery("SELECT * FROM banks WHERE id = " + id);
-            this.id = id;
-            this.bic = rs.getString("bic");
-            this.name = rs.getString("name");
-            this.interest = rs.getFloat("interest");
-        } catch (Exception e) {
-            throw e;
-        }
+        BankData bank = data.getBankById(id);
+        this.id = bank.getId();
+        this.bic = bank.getBic();
+        this.name = bank.getName();
+        this.interest = bank.getInterest();
     }
 
     private String getBicById(int id) {
@@ -110,9 +106,7 @@ public class Bank {
         if (type == 4)
             bankInterest *= 3;
         // Insert the account in the database
-
-        DataBase.dataInsert("INSERT INTO accounts VALUES (" + DataBase.getNewId("accounts") + ", " + ownerId +
-                ", " + id + ", '" + accNumber + "', " + 0 + ", " + type + ", " + 1 + ", '" + accName + "', " + creditLimit + ", '" + dueDate + "', " + bankInterest + ") ");
+        data.createAccountRequest(ownerId, id, accNumber, type, accName, creditLimit, dueDate, bankInterest);
     }
 
     // Used to transfer money between two accounts.
@@ -130,15 +124,14 @@ public class Bank {
             data.createNewPendingTransaction(new PendingPayment(p.getAccountFrom(), p.getAccountTo(),
                     p.getMessage(), new Date(time.getDateAdvancedByMonth(p.getDate().getTime())),
                     p.getAmount(), 2, 0, false));
-        }
-        else if (p.isReoccurring() == 1) {
+        } else if (p.isReoccurring() == 1) {
             // Set payment a week ahead
             data.createNewPendingTransaction(new PendingPayment(p.getAccountFrom(), p.getAccountTo(),
                     p.getMessage(), new Date(time.getDateAdvancedByWeek(p.getDate().getTime())),
                     p.getAmount(), 1, 0, false));
         }
 
-        DataBase.dataQuery("EXEC transfer_money @account_from = '" + p.getAccountFrom() + "', @account_to = '" + p.getAccountTo() + "', @amount = " + p.getAmount());
+        data.transferMoney(p);
         createTransactionHistory(p.getAccountFrom(), p.getAccountTo(), p.getAmount(), p.getMessage(), p.getDate(), "Transaction", "", "");
     }
 
@@ -173,13 +166,11 @@ public class Bank {
                 // Check if payment is an interest
                 if (p.isInterest()) {
                     payInterest(p);
-                }
-                else {
+                } else {
                     if (data.hasEnoughMoney(p.getAccountFrom(), p.getAmount())) {
                         transferMoney(p);
                         data.deletePayment(p.getId());
-                    }
-                    else {
+                    } else {
                         if (p.isReoccurring() != 0) {
                             data.changeRecurrenceToNone(p.getId());
                         }
@@ -191,8 +182,7 @@ public class Bank {
                     break;
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.err.println("_LOG: " + e);
         }
     }
@@ -232,30 +222,19 @@ public class Bank {
 
     public void updateAccount(int id, String accountName, int accountType,
                               float creditLimit, String accNumber, int state) throws Exception {
-        DataBase.dataUpdate("UPDATE accounts SET name = '" + accountName +
-                "', type = " + accountType + ", credit_limit = " + creditLimit + ", state = " + state + " WHERE id = " + id);
-        try {
-            createNewInterestPayment(accNumber, accountType);
-        } catch (Exception e) {
-            throw e;
-        }
+        data.updateAccountInfo(id, accountName, accountType, creditLimit, accNumber, state);
+        createNewInterestPayment(accNumber, accountType);
     }
 
     private void createNewInterestPayment(String accNumber, int type) throws Exception {
         // Check if there's already an interest payment
-        System.out.println("_LOG: " + type);
-        try {
-            ResultSet rs = DataBase.dataQuery("SELECT * FROM pending_transactions WHERE account_to = '" + accNumber + "' AND interest = 'true'");
-            if (rs != null) {
-                if (type == 3 || type == 4) {
-                    return;
-                } else {
-                    DataBase.dataUpdate("DELETE FROM pending_transactions WHERE account_to = '" + accNumber + "' AND interest = 'true'");
-                    return;
-                }
+        if (data.existsInterest(accNumber)) {
+            if (type == 3 || type == 4) {
+                return;
+            } else {
+                data.deleteInterest(accNumber);
+                return;
             }
-        } catch (Exception e) {
-            throw e;
         }
 
         // Create pending interest payment if the account is a savings account or fixed term
@@ -267,39 +246,29 @@ public class Bank {
 
                /* Because interests are handled differently than normal transactions, instead of
                money amount we input the interest of the bank. */
-            DataBase.dataInsert("INSERT INTO pending_transactions VALUES ("
-                    + DataBase.getNewId("pending_transactions") +
-                    ", '" + name + "', '" + accNumber + "', " + bankInterest + ", '" + new Date(time.getDateAdvancedByMonth(time.today())) +
-                    "', '" + true + "', '" + accountString + "', '" + true + "') ");
+            data.createNewPendingTransaction(new PendingPayment(name, accNumber, accountString,
+                    new Date(time.getDateAdvancedByMonth(time.today())), bankInterest, 2, 0, true));
         }
     }
 
     // Withdrawing or depositing
     public void cardAction(int action, String accountNumber, float amount, int cardId) throws
             Exception {
-        try {
-            if (action == 0) {
-                DataBase.dataUpdate("EXEC add_money @account_number = '" + accountNumber + "', @amount = " + amount);
-                createTransactionHistory("ATM", accountNumber, amount, "Cash deposit.", new Date(time.today()), "Deposit", this.bic, "");
-            } else if (action == 1) {
-                DataBase.dataUpdate("EXEC add_money @account_number = '" + accountNumber + "', @amount = " + (-amount));
-                DataBase.dataUpdate("UPDATE cards SET withdrawn += " + amount + " WHERE id = " + cardId);
-                createTransactionHistory(accountNumber, "ATM", amount, "Cash withdraw.", new Date(time.today()), "Withdraw", "", this.bic);
-            }
-        } catch (Exception e) {
-            System.out.println("_LOG: " + e);
+        if (action == 0) {
+            data.addMoney(accountNumber, amount);
+            createTransactionHistory("ATM", accountNumber, amount, "Cash deposit.", new Date(time.today()), "Deposit", this.bic, "");
+        } else if (action == 1) {
+            data.addMoney(accountNumber, -amount);
+            data.updateCardDailies("withdrawn", amount, cardId);
+            createTransactionHistory(accountNumber, "ATM", amount, "Cash withdraw.", new Date(time.today()), "Withdraw", "", this.bic);
         }
     }
 
     public void cardPayment(String accountNumber, float amount, int cardId, String to) throws
             Exception {
-        try {
-            DataBase.dataUpdate("EXEC add_money @account_number = '" + accountNumber + "', @amount = " + (-amount));
-            DataBase.dataUpdate("UPDATE cards SET paid += " + amount + " WHERE id = " + cardId);
-            createTransactionHistory(accountNumber, to, amount, "Card payment to " + to, new Date(time.today()), "Card payment", "", this.bic);
-        } catch (Exception e) {
-            System.out.println("_LOG: " + e);
-        }
+        data.addMoney(accountNumber, -amount);
+        data.updateCardDailies("paid", amount, cardId);
+        createTransactionHistory(accountNumber, to, amount, "Card payment to " + to, new Date(time.today()), "Card payment", "", this.bic);
     }
 
     private void checkCards() {

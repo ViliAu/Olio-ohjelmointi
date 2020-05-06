@@ -46,11 +46,29 @@ public class StartFragment extends Fragment {
                 updateBankInfo(1);
             }
         });
+        binding.buttonOppoika.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateBankInfo(2);
+            }
+        });
+        binding.buttonSyppi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateBankInfo(3);
+            }
+        });
+        binding.buttonRoskis.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateBankInfo(4);
+            }
+        });
     }
 
     private void updateBankInfo(int id) {
         try {
-            bank.setValues(1);
+            bank.setValues(id);
         }
         catch (Exception e) {
             Toast.makeText(getContext(), "Couldn't get bank information from database.", Toast.LENGTH_LONG).show();

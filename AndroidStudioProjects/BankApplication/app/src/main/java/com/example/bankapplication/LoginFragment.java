@@ -84,10 +84,10 @@ public class LoginFragment extends Fragment {
                 Toast.makeText(getContext(), "Customer has been disabled by the administration.", Toast.LENGTH_LONG).show();
                 break;
             case 6:
-                MainActivity m2 = (MainActivity)getActivity();
-                m2.loadAdminActivity();
+                activity.loadAdminActivity();
                 break;
             default:
+                Toast.makeText(getContext(), "Error trying to fetch account.", Toast.LENGTH_SHORT).show();
                 break;
         }
     }

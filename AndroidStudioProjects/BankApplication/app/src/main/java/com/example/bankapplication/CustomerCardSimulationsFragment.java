@@ -157,7 +157,7 @@ public class CustomerCardSimulationsFragment extends Fragment implements Adapter
             viewModel.setAccounts(act.updateAccounts());
         }
         catch (Exception e) {
-            Toast.makeText(getContext(), "Something went wrong.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "Error trying to simulate.", Toast.LENGTH_LONG).show();
         }
     }
 

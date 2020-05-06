@@ -14,6 +14,8 @@ import com.example.divinebrowser.databinding.ActivityMainBinding;
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
+    private boolean pressed;
+    private int steps = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,13 +33,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void connect(String url) {
+        steps = 0;
+        binding.buttonLang.setVisibility(View.INVISIBLE);
+
         if (url.equals("index.html")) {
             binding.webview.loadUrl("file:///android_asset/index.html");
+            binding.buttonLang.setVisibility(View.VISIBLE);
             return;
         }
 
         String parsedUrl = url;
-        parsedUrl = parsedUrl.replaceAll("\\s", "");
+        parsedUrl = parsedUrl.replaceAll(" ", "");
         // Try given url without parsing
         if (checkURL(parsedUrl))
             binding.webview.loadUrl(parsedUrl);
@@ -56,21 +62,20 @@ public class MainActivity extends AppCompatActivity {
         else
             binding.webview.loadUrl("file:///android_asset/site_not_found.html");
         checkPageViewButtonStages();
-        binding.etSearch.setText(binding.webview.getUrl());
         System.out.println("_LOG: Connecting to: "+ binding.webview.getUrl());
     }
 
     private void checkPageViewButtonStages() {
-        if (!binding.webview.canGoBack())
+        if (!binding.webview.canGoBack() || steps == 10)
             binding.buttonBack.setActivated(false);
         else
             binding.buttonBack.setActivated(true);
 
-        if (!binding.webview.canGoForward())
+        if (!binding.webview.canGoForward() || steps == 0)
             binding.buttonForward.setActivated(false);
         else
             binding.buttonForward.setActivated(true);
-
+        System.out.println("_LOG: "+steps);
     }
 
     private boolean checkURL(String url) {
@@ -93,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         });
         binding.webview.setWebViewClient(new WebViewClient());
         binding.webview.getSettings().setJavaScriptEnabled(true);
-        binding.webview.canGoBackOrForward(10);
+        binding.webview.canGoBackOrForward(2);
         connect("http://www.google.fi");
     }
 
@@ -125,6 +130,9 @@ public class MainActivity extends AppCompatActivity {
         binding.buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!binding.buttonBack.isActivated())
+                    return;
+                steps++;
                 binding.webview.goBack();
                 checkPageViewButtonStages();
             }
@@ -133,9 +141,25 @@ public class MainActivity extends AppCompatActivity {
         binding.buttonForward.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!binding.buttonForward.isActivated())
+                    return;
+                steps--;
                 binding.webview.goForward();
                 checkPageViewButtonStages();
             }
         });
+
+        binding.buttonLang.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pressed = !pressed;
+                switchLang();
+            }
+        });
+    }
+
+    private void switchLang() {
+        String jsFunc = pressed ? "shoutOut()" : "initialize()";
+        binding.webview.evaluateJavascript(jsFunc, null);
     }
 }

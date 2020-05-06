@@ -53,7 +53,7 @@ public class MainCustomerCreationFragment extends Fragment {
 
     // Check if account request can be sent here
     private void initializeAccountRequest() {
-        if (/*passwordCheck() && */fieldsCheck()) {
+        if (passwordCheck() && fieldsCheck()) {
             createAccount(binding.etUsername.getText().toString(), binding.etName.getText().toString(),
                     binding.etPassword.getText().toString(), binding.etSocialId.getText().toString(),
                     binding.etAddress.getText().toString(), binding.etPhonenumber.getText().toString(),

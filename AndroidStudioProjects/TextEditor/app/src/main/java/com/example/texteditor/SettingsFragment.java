@@ -22,7 +22,7 @@ public class SettingsFragment extends Fragment {
     private FragmentSettingsBinding binding;
 
     // Primitives
-    private String textToCaps;
+    //private String textToCaps;
     private int[] colors;
 
     @Nullable
@@ -61,7 +61,7 @@ public class SettingsFragment extends Fragment {
                 binding.etFontSize.setText(viewModel.getSize().getValue().toString());
 
         if (viewModel.getLineAmount().getValue() != null)
-                binding.etFontSize.setText(viewModel.getLineAmount().getValue().toString());
+                binding.etLineAmount.setText(viewModel.getLineAmount().getValue().toString());
 
         // Set Switch
         if (viewModel.getEditAccess().getValue() != null)
@@ -87,6 +87,7 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 viewModel.setEditAccess(isChecked);
+                viewModel.setEdit(isChecked);
             }
         });
 

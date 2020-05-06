@@ -73,7 +73,7 @@ public class CustomerSettingsFragment extends Fragment {
     }
 
     private void checkAccountUpdateInfo() {
-        if (/*passwordCheck() && */fieldsCheck()) {
+        if (passwordCheck() && fieldsCheck()) {
             updateAccountInfo(binding.etName.getText().toString(),
                     binding.etPassword.getText().toString(), binding.etSocialId.getText().toString(),
                     binding.etAddress.getText().toString(), binding.etPhonenumber.getText().toString(),

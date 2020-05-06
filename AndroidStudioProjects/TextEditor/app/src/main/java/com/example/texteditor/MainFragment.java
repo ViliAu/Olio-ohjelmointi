@@ -62,6 +62,14 @@ public class MainFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         viewModel = ViewModelProviders.of(getActivity()).get(SharedViewModel.class);
 
+        // Get Text field accessibility
+        viewModel.getEditAccess().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                binding.etUserText.setEnabled(aBoolean);
+            }
+        });
+
         // Get text
         viewModel.getOverrideableText().observe(getViewLifecycleOwner(), new Observer<CharSequence>() {
             @Override
@@ -76,10 +84,10 @@ public class MainFragment extends Fragment {
             @Override
             public void onChanged(int[] ints) {
                 binding.twEditorText.setTextColor(Color.rgb(ints[0], ints[1], ints[2]));
-                if (!binding.etUserText.isEnabled())
+                if (!viewModel.isEdit())
                     binding.etUserText.setTextColor(Color.rgb(ints[0], ints[1], ints[2]));
                 else
-                  binding.etUserText.setTextColor(Color.rgb(0,0,0));
+                    binding.etUserText.setTextSize(20);
             }
         });
 
@@ -88,7 +96,7 @@ public class MainFragment extends Fragment {
             @Override
             public void onChanged(Integer integer) {
                 binding.twEditorText.setTextSize(integer);
-                if (!binding.etUserText.isEnabled())
+                if (!viewModel.isEdit())
                     binding.etUserText.setTextSize(integer);
                 else
                   binding.etUserText.setTextSize(20);
@@ -100,18 +108,10 @@ public class MainFragment extends Fragment {
             @Override
             public void onChanged(Integer integer) {
                 binding.twEditorText.setLines(integer);
-                if (!binding.etUserText.isEnabled())
+                if (!viewModel.isEdit())
                     binding.etUserText.setLines(integer);
                 else
                   binding.etUserText.setLines(5);
-            }
-        });
-
-        // Get Text field accessibility
-        viewModel.getEditAccess().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean aBoolean) {
-                binding.etUserText.setEnabled(aBoolean);
             }
         });
 

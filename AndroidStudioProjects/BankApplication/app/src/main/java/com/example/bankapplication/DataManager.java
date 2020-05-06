@@ -292,4 +292,44 @@ public class DataManager {
     public void changeRecurrenceToNone(int id) throws Exception {
         DataBase.dataQuery("UPDATE pending_transactions SET recurring = 0 WHERE id = "+id);
     }
+
+    public void deleteInterest(String accNumber) throws Exception {
+        DataBase.dataUpdate("DELETE FROM pending_transactions WHERE account_to = '" + accNumber + "' AND interest = 'true'");
+    }
+
+    public boolean existsInterest(String accNumber) throws Exception {
+        ResultSet rs = DataBase.dataQuery("SELECT * FROM pending_transactions WHERE account_to = '" + accNumber + "' AND interest = 'true'");
+        return rs != null;
+    }
+
+    public void updateAccountInfo(int id, String accountName, int accountType,
+                                  float creditLimit, String accNumber, int state) throws Exception {
+        DataBase.dataUpdate("UPDATE accounts SET name = '" + accountName +
+                "', type = " + accountType + ", credit_limit = " + creditLimit + ", state = " + state + " WHERE id = " + id);
+    }
+
+    public void addMoney(String accountNumber, float amount) throws Exception {
+        DataBase.dataUpdate("EXEC add_money @account_number = '" + accountNumber + "', @amount = " + amount);
+    }
+
+    public void updateCardDailies(String column, float amount, int cardId) throws Exception {
+        DataBase.dataUpdate("UPDATE cards SET "+column+" += " + amount + " WHERE id = " + cardId);
+    }
+
+    public BankData getBankById(int id) throws Exception {
+        ResultSet rs = DataBase.dataQuery("SELECT * FROM banks WHERE id = " + id);
+        return new BankData(rs.getInt("id"), rs.getFloat("interest"),
+                rs.getString("bic"), rs.getString("name"));
+    }
+
+    public void transferMoney(PendingPayment p) throws Exception {
+        DataBase.dataQuery("EXEC transfer_money @account_from = '"
+                + p.getAccountFrom() + "', @account_to = '"
+                + p.getAccountTo() + "', @amount = " + p.getAmount());
+    }
+
+    public void createAccountRequest(int ownerId, int bankId, String accNumber, int type, String accName, float creditLimit, Date dueDate, float bankInterest ) throws Exception {
+        DataBase.dataInsert("INSERT INTO accounts VALUES (" + DataBase.getNewId("accounts") + ", " + ownerId +
+                ", " + bankId + ", '" + accNumber + "', " + 0 + ", " + type + ", " + 1 + ", '" + accName + "', " + creditLimit + ", '" + dueDate + "', " + bankInterest + ") ");
+    }
 }

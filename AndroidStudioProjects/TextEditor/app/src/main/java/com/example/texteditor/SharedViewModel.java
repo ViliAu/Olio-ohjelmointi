@@ -13,6 +13,8 @@ public class SharedViewModel extends ViewModel {
 
     private MutableLiveData<CharSequence> stringSaver = new MutableLiveData<CharSequence>();
 
+    private boolean edit = false;
+
     // Overrideable text
     public void setOverrideableText(CharSequence input) {
         overrideableText.setValue(input);
@@ -65,5 +67,13 @@ public class SharedViewModel extends ViewModel {
 
     public LiveData<Boolean> getEditAccess() {
         return editAccess;
+    }
+
+    public boolean isEdit() {
+        return edit;
+    }
+
+    public void setEdit(boolean edit) {
+        this.edit = edit;
     }
 }
