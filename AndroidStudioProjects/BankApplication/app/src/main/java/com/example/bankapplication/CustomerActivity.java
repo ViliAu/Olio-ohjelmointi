@@ -34,6 +34,7 @@ public class CustomerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityCustomerBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        LoadingScreen.progressBar = binding.progressbar;
 
         // Setup viewmodel
         data = DataManager.getInstance();

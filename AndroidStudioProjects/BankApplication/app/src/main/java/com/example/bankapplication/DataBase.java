@@ -17,13 +17,14 @@ public class DataBase {
     //private DataBaseAccess access;
 
     // Deny instantiation
-    private DataBase(){}
+    private DataBase() {
+    }
 
-    static ResultSet dataQuery(String query) throws Exception{
+    static ResultSet dataQuery(String query) throws Exception {
         return dataBaseAccess(query);
     }
 
-    public static void dataInsert(String input) throws Exception{
+    public static void dataInsert(String input) throws Exception {
         rs = dataBaseAccess(input);
     }
 
@@ -31,7 +32,7 @@ public class DataBase {
         rs = dataBaseAccess(update);
     }
 
-    public static int getNewId(String tableName) throws Exception{
+    public static int getNewId(String tableName) throws Exception {
         return createNewId(tableName);
     }
 
@@ -39,29 +40,27 @@ public class DataBase {
     public static class DatabaseAccess extends AsyncTask<String, String, String> {
         @Override
         protected String doInBackground(String... params) { */
-    private static ResultSet dataBaseAccess(String query) throws Exception{
+    private static ResultSet dataBaseAccess(String query) throws Exception {
+        LoadingScreen l = new LoadingScreen();
+        l.execute();
         String result;
-        try {
-            // Connect to database
-            boolean isConnected = getConnection();
-            if (!isConnected) {
-                result = "Couldn't connect to database.";
-            }
-            else {
-                // Execute sql query
-                System.out.println("_LOG: Query start: " + query);
-                Statement stmt = connection.createStatement();
-                rs = stmt.executeQuery(query);
 
-                if (rs.next()) {
-                    return rs;
-                }
-                else {
-                    return null;
-                }
+        // Connect to database
+        boolean isConnected = getConnection();
+        if (!isConnected) {
+            result = "Couldn't connect to database.";
+        } else {
+            // Execute sql query
+            System.out.println("_LOG: Query start: " + query);
+            Statement stmt = connection.createStatement();
+            rs = stmt.executeQuery(query);
+
+            if (rs.next()) {
+                l.cancel(true);
+                return rs;
+            } else {
+                result = "Couldn't find any matches!";
             }
-        } catch (Exception e) {
-            result = e.getMessage();
         }
         System.out.println("_LOG: " + result);
         return null;
@@ -74,17 +73,15 @@ public class DataBase {
             boolean isConnected = getConnection();
             if (!isConnected) {
                 result = "Couldn't connect to database.";
-            }
-            else {
+            } else {
                 // Execute sql query
-                System.out.println("_LOG: Query start: SELECT TOP 1 * FROM " +tableName+ " ORDER BY id DESC");
+                System.out.println("_LOG: Query start: SELECT TOP 1 * FROM " + tableName + " ORDER BY id DESC");
                 Statement stmt = connection.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT TOP 1 * FROM " +tableName+ " ORDER BY id DESC");
+                ResultSet rs = stmt.executeQuery("SELECT TOP 1 * FROM " + tableName + " ORDER BY id DESC");
                 System.out.println("_LOG: Query end");
                 if (rs.next()) {
-                    return rs.getInt("id")+1;
-                }
-                else {
+                    return rs.getInt("id") + 1;
+                } else {
                     result = ("List is empty or couldn't create list order");
                 }
             }
@@ -107,11 +104,9 @@ public class DataBase {
             ConnectionURL = "jdbc:jtds:sqlserver://SQL5047.site4now.net;" +
                     "database=DB_A57EF2_bank;user=DB_A57EF2_bank_admin;password=db_bank11212";
             con = DriverManager.getConnection(ConnectionURL);
-        }
-        catch (SQLException sqle) {
+        } catch (SQLException sqle) {
             System.out.println("_LOG: SQLException: " + sqle);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("_LOG: Exception: " + e);
         }
         connection = con;
@@ -122,9 +117,8 @@ public class DataBase {
             if (connection == null || connection.isClosed())
                 connect();
             return connection != null;
-        }
-        catch (SQLException e) {
-            System.out.println("_LOG: "+e);
+        } catch (SQLException e) {
+            System.out.println("_LOG: " + e);
             return false;
         }
     }

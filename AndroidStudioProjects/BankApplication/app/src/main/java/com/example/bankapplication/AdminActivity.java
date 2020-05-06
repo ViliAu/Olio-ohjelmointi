@@ -24,6 +24,7 @@ public class AdminActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityAdminBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        LoadingScreen.progressBar = binding.progressbar;
 
         // Initialize view to start fragment
         fm = getSupportFragmentManager();
