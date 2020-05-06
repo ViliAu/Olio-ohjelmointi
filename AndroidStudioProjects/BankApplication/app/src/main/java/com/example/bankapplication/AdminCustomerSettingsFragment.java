@@ -28,6 +28,8 @@ public class AdminCustomerSettingsFragment extends Fragment implements AdapterVi
     private String accountNumber = "";
     private ArrayList<AccountListElement> accList = new ArrayList<>();
     private ArrayAdapter<AccountListElement> accountAdapter;
+    private ArrayList<Card> cards = new ArrayList<>();
+    private ArrayAdapter<Card> cardAdapter;
     private DataManager data;
     private Customer customer;
 
@@ -128,8 +130,23 @@ public class AdminCustomerSettingsFragment extends Fragment implements AdapterVi
         binding.spinner.setSelection(0);
     }
 
+    private void initCardSpinner() {
+        cardAdapter = new ArrayAdapter(getContext(), R.layout.spinner_item_account_customer, cards);
+        cardAdapter.setDropDownViewResource(R.layout.spinner_item_account_customer);
+        binding.spinnerCard.setAdapter(cardAdapter);
+        binding.spinnerCard.setSelection(0);
+    }
+
     private void initText() {
         binding.twCustomerName.setText(customer.getName());
+        if (accList.isEmpty()) {
+            binding.twAccountName.setVisibility(View.GONE);
+            binding.twAccountNumber.setVisibility(View.GONE);
+            binding.twAccountId.setVisibility(View.GONE);
+            binding.twAccountBalance.setVisibility(View.GONE);
+            binding.twAccountState.setVisibility(View.GONE);
+            binding.twAccountType.setVisibility(View.GONE);
+        }
     }
 
     private void changeCustomerState(int state) {
@@ -162,11 +179,11 @@ public class AdminCustomerSettingsFragment extends Fragment implements AdapterVi
 
     private void changeCardState(int state) {
         try {
-            data.updateState( "cards", state, accountNumber);
+            data.updateState( "cards", state, cards.get(binding.spinnerCard.getSelectedItemPosition()).getId());
             if (state == 2)
-                Toast.makeText(getContext(), "All account cards enabled.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Card enabled.", Toast.LENGTH_LONG).show();
             else if (state == 3)
-                Toast.makeText(getContext(), "All account cards disabled.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Card disabled.", Toast.LENGTH_LONG).show();
         }
         catch (Exception e) {
             System.err.println("_LOG: "+e);
@@ -176,6 +193,8 @@ public class AdminCustomerSettingsFragment extends Fragment implements AdapterVi
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        accountId = accList.get(position).getId();
+        accountNumber = accList.get(position).getAccountNumber();
         try {
             binding.twAccountName.setText("Account name: " + accList.get(position).getName());
             binding.twAccountNumber.setText("Account number: " + accList.get(position).getAccountNumber());
@@ -183,6 +202,20 @@ public class AdminCustomerSettingsFragment extends Fragment implements AdapterVi
             binding.twAccountBalance.setText(String.format(Locale.GERMANY, "Account balance: %.2f", accList.get(position).getBalance()));
             binding.twAccountState.setText("Account state: " + accList.get(position).getStateString());
             binding.twAccountType.setText(String.format(Locale.GERMANY, "Account type: %d", accList.get(position).getType()));
+            getCards(accountNumber);
+            if (cards.isEmpty()) {
+                binding.buttonAcceptCards.setVisibility(View.GONE);
+                binding.buttonRejectCards.setVisibility(View.GONE);
+                binding.twCard.setVisibility(View.GONE);
+                binding.spinnerCard.setVisibility(View.GONE);
+            }
+            else {
+                binding.buttonAcceptCards.setVisibility(View.VISIBLE);
+                binding.buttonRejectCards.setVisibility(View.VISIBLE);
+                binding.twCard.setVisibility(View.VISIBLE);
+                binding.spinnerCard.setVisibility(View.VISIBLE);
+                initCardSpinner();
+            }
         }
         catch (IndexOutOfBoundsException ie) {
             System.err.println("_LOG: "+ie);
@@ -190,12 +223,13 @@ public class AdminCustomerSettingsFragment extends Fragment implements AdapterVi
         catch (Exception e) {
             System.err.println("_LOG: "+e);
         }
-        accountId = accList.get(position).getId();
-        accountNumber = accList.get(position).getAccountNumber();
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
+    }
 
+    private void getCards(String accountNumber) throws Exception {
+        cards = data.getAccountCardsAdmin(accountNumber);
     }
 }

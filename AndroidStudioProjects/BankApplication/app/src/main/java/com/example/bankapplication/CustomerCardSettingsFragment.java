@@ -66,6 +66,7 @@ public class CustomerCardSettingsFragment extends Fragment {
                 checkSettings();
             }
         });
+        binding.switchPaymentEnabled.setChecked(card.getState() == 2);
     }
 
     private void checkSettings() {
@@ -98,8 +99,9 @@ public class CustomerCardSettingsFragment extends Fragment {
     }
 
     private void updateCardSettings(float payAmount, float withdrawAmount) {
+        int state = binding.switchPaymentEnabled.isChecked() ? 2 : 4;
         try {
-            data.updateCardSettings(binding.etCardName.getText().toString(), payAmount, withdrawAmount, binding.spinner.getSelectedItemPosition() + 1, card.getId());
+            data.updateCardSettings(binding.etCardName.getText().toString(), payAmount, withdrawAmount, binding.spinner.getSelectedItemPosition() + 1, card.getId(), state);
             Toast.makeText(getContext(), "Card updated", Toast.LENGTH_LONG).show();
         }
         catch (Exception e) {

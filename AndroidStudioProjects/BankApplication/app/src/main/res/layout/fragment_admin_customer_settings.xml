@@ -1,154 +1,186 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/header"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:gravity="center"
-        android:text="Account settings: "
-        android:textSize="40sp" />
+        android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/tw_customer_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/header"
-        android:layout_marginTop="15dp"
-        android:elevation="8dp"
-        android:gravity="center"
-        android:text="EXAMPLEACCOUNT"
-        android:textSize="25sp"
-        android:textStyle="bold" />
+        <TextView
+            android:id="@+id/header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:gravity="center"
+            android:text="Account settings: "
+            android:textSize="40sp" />
 
-    <ImageButton
-        android:id="@+id/button_reject_customer"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_below="@id/tw_customer_name"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="75dp"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/ic_remove_circle" />
+        <TextView
+            android:id="@+id/tw_customer_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/header"
+            android:layout_marginTop="15dp"
+            android:elevation="8dp"
+            android:gravity="center"
+            android:text="EXAMPLEACCOUNT"
+            android:textSize="25sp"
+            android:textStyle="bold" />
 
-    <ImageButton
-        android:id="@+id/button_accept_customer"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_below="@id/tw_customer_name"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="75dp"
-        android:background="@drawable/ic_check_black_24dp" />
+        <ImageButton
+            android:id="@+id/button_reject_customer"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_below="@id/tw_customer_name"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="75dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/ic_account_reject" />
 
-    <Spinner
-        android:id="@+id/spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/button_reject_customer"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp" />
+        <ImageButton
+            android:id="@+id/button_accept_customer"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_below="@id/tw_customer_name"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="75dp"
+            android:background="@drawable/ic_account_accept" />
 
-    <TextView
-        android:id="@+id/tw_account_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/spinner"
-        android:layout_marginStart="10dp"
-        android:text="Account name: "
-        android:textSize="25sp" />
+        <TextView
+            android:id="@+id/tw_account"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/spinner"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="-40dp"
+            android:text="Account:"
+            android:textSize="20dp" />
 
-    <TextView
-        android:id="@+id/tw_account_number"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tw_account_name"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="10dp"
-        android:text="Account number: "
-        android:textSize="20sp" />
+        <Spinner
+            android:id="@+id/spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/button_reject_customer"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="50dp" />
 
-    <TextView
-        android:id="@+id/tw_account_id"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tw_account_number"
-        android:layout_marginTop="5dp"
-        android:layout_marginStart="10dp"
-        android:text="Account id: "
-        android:textSize="20sp" />
+        <TextView
+            android:id="@+id/tw_account_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/spinner"
+            android:layout_marginStart="10dp"
+            android:text="Account name: "
+            android:textSize="25sp" />
 
-    <TextView
-        android:id="@+id/tw_account_balance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tw_account_id"
-        android:layout_marginTop="5dp"
-        android:layout_marginStart="10dp"
-        android:text="Account balance: "
-        android:textSize="20sp" />
+        <TextView
+            android:id="@+id/tw_account_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tw_account_name"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:text="Account number: "
+            android:textSize="20sp" />
 
-    <TextView
-        android:id="@+id/tw_account_type"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tw_account_balance"
-        android:layout_marginTop="5dp"
-        android:layout_marginStart="10dp"
-        android:text="Account type: "
-        android:textSize="20sp" />
+        <TextView
+            android:id="@+id/tw_account_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tw_account_number"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="5dp"
+            android:text="Account id: "
+            android:textSize="20sp" />
 
-    <TextView
-        android:id="@+id/tw_account_state"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tw_account_type"
-        android:layout_marginTop="5dp"
-        android:layout_marginStart="10dp"
-        android:text="Account state: "
-        android:textSize="20sp" />
+        <TextView
+            android:id="@+id/tw_account_balance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tw_account_id"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="5dp"
+            android:text="Account balance: "
+            android:textSize="20sp" />
 
-    <ImageButton
-        android:id="@+id/button_reject_account"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="75dp"
-        android:layout_marginBottom="20dp"
-        android:background="@drawable/ic_remove_circle" />
+        <TextView
+            android:id="@+id/tw_account_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tw_account_balance"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="5dp"
+            android:text="Account type: "
+            android:textSize="20sp" />
 
-    <ImageButton
-        android:id="@+id/button_accept_account"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="75dp"
-        android:layout_marginBottom="20dp"
-        android:background="@drawable/ic_check_black_24dp" />
+        <TextView
+            android:id="@+id/tw_account_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tw_account_type"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="5dp"
+            android:text="Account state: "
+            android:textSize="20sp" />
 
-    <ImageButton
-        android:id="@+id/button_reject_cards"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="125dp"
-        android:layout_marginBottom="20dp"
-        android:background="@drawable/ic_card_not_ok" />
+        <ImageButton
+            android:id="@+id/button_reject_account"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_below="@id/tw_account_state"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="75dp"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/ic_bank_account_reject" />
 
-    <ImageButton
-        android:id="@+id/button_accept_cards"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="125dp"
-        android:layout_marginBottom="20dp"
-        android:background="@drawable/ic_card_ok" />
+        <ImageButton
+            android:id="@+id/button_accept_account"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_below="@id/tw_account_state"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="75dp"
+            android:background="@drawable/ic_bank_account_accept" />
 
-</RelativeLayout>
+        <ImageButton
+            android:id="@+id/button_reject_cards"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="75dp"
+            android:layout_below="@id/tw_card"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/ic_card_not_ok" />
+
+        <ImageButton
+            android:id="@+id/button_accept_cards"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/tw_card"
+            android:layout_marginEnd="75dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/ic_card_ok" />
+
+        <TextView
+            android:id="@+id/tw_card"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Card: "
+            android:layout_below="@id/button_reject_account"
+            android:layout_marginTop="20dp"
+            android:textSize="20sp"
+            android:layout_marginStart="10dp" />
+
+        <Spinner
+            android:id="@+id/spinner_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/tw_card"
+            android:layout_alignTop="@id/tw_card"
+            android:layout_toEndOf="@id/tw_card" />
+    </RelativeLayout>
+</ScrollView>

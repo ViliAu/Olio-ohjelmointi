@@ -15,7 +15,6 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.example.bankapplication.databinding.FragmentCustomerCardSimulationsBinding;
 
-import java.sql.ResultSet;
 import java.util.ArrayList;
 
 public class CustomerCardSimulationsFragment extends Fragment implements AdapterView.OnItemSelectedListener {
@@ -25,14 +24,12 @@ public class CustomerCardSimulationsFragment extends Fragment implements Adapter
     private ArrayAdapter<Card> cardAdapter;
     private Account acc;
     private Bank bank;
-    private DataManager data;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentCustomerCardSimulationsBinding.inflate(inflater, container, false);
         bank = Bank.getInstance();
-        data = DataManager.getInstance();
         return binding.getRoot();
     }
 
@@ -97,6 +94,10 @@ public class CustomerCardSimulationsFragment extends Fragment implements Adapter
         boolean canSimulate = true;
         float amount = 1;
         Card card = cards.get(binding.spinnerCard.getSelectedItemPosition());
+        if (card.getState() == 4) {
+            Toast.makeText(getContext(), "Card has paying disabled.", Toast.LENGTH_LONG).show();
+            return;
+        }
         try {
             amount = Float.parseFloat(binding.etAmount.getText().toString().trim());
         }

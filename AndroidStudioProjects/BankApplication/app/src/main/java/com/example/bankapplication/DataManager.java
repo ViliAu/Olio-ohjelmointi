@@ -162,10 +162,6 @@ public class DataManager {
         DataBase.dataUpdate("UPDATE " + table + " SET state = " + state + " WHERE id = " + id);
     }
 
-    public void updateState(String table, int state, String accNum) throws Exception {
-        DataBase.dataUpdate("UPDATE " + table + " SET state = " + state + " WHERE owner_account = '" + accNum + "' ");
-    }
-
     public boolean exists(String table, String accountNumber) throws Exception {
         ResultSet rs = DataBase.dataQuery("SELECT * FROM " + table + " WHERE address = '" + accountNumber + "' ");
         return (rs != null);
@@ -179,10 +175,10 @@ public class DataManager {
         DataBase.dataUpdate("EXEC check_expired_accounts");
     }
 
-    public void updateCardSettings(String name, float payAmount, float withdrawAmount, int countryLimit, int id) throws Exception {
+    public void updateCardSettings(String name, float payAmount, float withdrawAmount, int countryLimit, int id, int state) throws Exception {
         DataBase.dataUpdate("UPDATE cards SET name = '" + name + "', pay_limit = " + payAmount +
                 ", withdraw_limit = " + withdrawAmount + ", country_limit = " + countryLimit +
-                " WHERE id = " + id);
+                ", state = "+state+" WHERE id = " + id);
     }
 
     // Used in recycler view
@@ -273,6 +269,22 @@ public class DataManager {
                                 rs.getString("name"), rs.getFloat("paid"),
                                 rs.getFloat("withdrawn"), rs.getInt("id")));
                 } while (rs.next());
+        }
+        return custCards;
+    }
+
+    public ArrayList<Card> getAccountCardsAdmin(String accountNumber) throws Exception {
+        ArrayList<Card> custCards = new ArrayList<>();
+        ResultSet rs = DataBase.dataQuery("SELECT * FROM cards WHERE owner_account = '" + accountNumber + "' ");
+        if (rs != null) {
+            do {
+                custCards.add(new Card
+                        (rs.getString("owner_account"), rs.getString("number"),
+                                rs.getFloat("pay_limit"), rs.getFloat("withdraw_limit"),
+                                rs.getInt("country_limit"), rs.getInt("state"),
+                                rs.getString("name"), rs.getFloat("paid"),
+                                rs.getFloat("withdrawn"), rs.getInt("id")));
+            } while (rs.next());
         }
         return custCards;
     }
