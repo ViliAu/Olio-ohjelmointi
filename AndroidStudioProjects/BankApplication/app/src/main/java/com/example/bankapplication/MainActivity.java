@@ -32,6 +32,11 @@ public class MainActivity extends AppCompatActivity implements LoginPinCodeDialo
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        LoadingScreen.progressBar = binding.progressbar;
+        // Ugly workaround for loading progress bar
+        LoadingScreen l = new LoadingScreen();
+        l.cancel(true);
+        //l.cancel(true);
 
         // Setup toolbar
         setupToolbar();
