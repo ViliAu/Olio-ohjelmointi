@@ -70,7 +70,7 @@ public class CustomerHomeFragment extends Fragment implements AdapterView.OnItem
     private ArrayList<SpinnerAccount> getPayableAccounts() {
         accs = new ArrayList<>();
         for (Account a : viewModel.getAccounts()) {
-            if (a.state == 2) {
+            if (a.state == 2 || a.state == 4) {
                 accs.add(new SpinnerAccount(a.getAccountNumber()));
             }
         }

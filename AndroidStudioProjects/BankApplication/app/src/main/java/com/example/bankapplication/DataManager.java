@@ -98,9 +98,9 @@ public class DataManager {
                         "', '" + date + "', '" + action + "')");
     }
 
-    public void createCardRequest(Account acc, String number) throws Exception {
+    public void createCardRequest(Account acc, String number, Date date) throws Exception {
         DataBase.dataInsert("INSERT INTO cards VALUES (" + DataBase.getNewId("cards") +
-                ", '" + acc.getAccountNumber() + "', " + 100 + ", " + 100 + ", " + 1 + ", '" + number + "', " + 1 + ", 'Bank card' ) ");
+                ", '" + acc.getAccountNumber() + "', " + 100 + ", " + 100 + ", " + 1 + ", '" + number + "', " + 1 + ", "+0+", "+0+", '"+date+"', 'Bank card' ) ");
     }
 
     public boolean hasPendingCard(String accNumber) throws Exception {

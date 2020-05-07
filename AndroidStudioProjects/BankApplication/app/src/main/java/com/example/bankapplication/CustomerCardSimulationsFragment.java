@@ -96,7 +96,7 @@ public class CustomerCardSimulationsFragment extends Fragment implements Adapter
         boolean canSimulate = true;
         float amount = 1;
         Card card = cards.get(binding.spinnerCard.getSelectedItemPosition());
-        if (card.getState() == 4) {
+        if (card.getState() == 4 && binding.spinnerSimulation.getSelectedItemPosition() == 2) {
             Toast.makeText(getContext(), "Card has paying disabled.", Toast.LENGTH_LONG).show();
             return;
         }

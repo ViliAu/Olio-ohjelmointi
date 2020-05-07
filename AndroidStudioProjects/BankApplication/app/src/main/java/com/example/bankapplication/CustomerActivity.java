@@ -91,23 +91,18 @@ public class CustomerActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.nav_home:
                         loadFragment(new CustomerHomeFragment());
-                        binding.buttonBack.setVisibility(View.VISIBLE);
                         break;
                     case R.id.nav_accounts:
                         loadFragment(new CustomerAccountsFragment());
-                        binding.buttonBack.setVisibility(View.INVISIBLE);
                         break;
                     case R.id.nav_transaction:
                         loadFragment(new CustomerTransactionFragment());
-                        binding.buttonBack.setVisibility(View.INVISIBLE);
                         break;
                     case R.id.nav_transaction_history:
                         loadFragment(new CustomerTransactionHistoryFragment());
-                        binding.buttonBack.setVisibility(View.INVISIBLE);
                         break;
                     case R.id.nav_settings:
                         loadFragment(new CustomerSettingsFragment());
-                        binding.buttonBack.setVisibility(View.INVISIBLE);
                         break;
                 }
                 return true;
@@ -121,6 +116,14 @@ public class CustomerActivity extends AppCompatActivity {
         this.fragment = fragment;
 
         // Change back button to home icon if we're in the first screen
+        if (fragment instanceof CustomerSettingsFragment || fragment instanceof CustomerTransactionHistoryFragment ||
+                fragment instanceof CustomerTransactionFragment || fragment instanceof CustomerAccountsFragment) {
+            binding.buttonBack.setVisibility(View.INVISIBLE);
+        }
+        else {
+            binding.buttonBack.setVisibility(View.VISIBLE);
+        }
+
         if (fragment instanceof CustomerHomeFragment)
             binding.buttonBack.setActivated(false);
         else

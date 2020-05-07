@@ -13,7 +13,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
             android:gravity="center"
-            android:text="Account settings: "
+            android:text="Customer settings: "
             android:textSize="40sp" />
 
         <TextView
@@ -56,7 +56,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="-40dp"
             android:text="Account:"
-            android:textSize="20dp" />
+            android:textSize="20sp" />
 
         <Spinner
             android:id="@+id/spinner"
@@ -153,6 +153,7 @@
             android:layout_marginStart="75dp"
             android:layout_below="@id/tw_card"
             android:layout_marginTop="20dp"
+            android:visibility="gone"
             android:background="@drawable/ic_card_not_ok" />
 
         <ImageButton
@@ -163,6 +164,7 @@
             android:layout_below="@id/tw_card"
             android:layout_marginEnd="75dp"
             android:layout_marginTop="20dp"
+            android:visibility="gone"
             android:background="@drawable/ic_card_ok" />
 
         <TextView
@@ -173,6 +175,7 @@
             android:layout_below="@id/button_reject_account"
             android:layout_marginTop="20dp"
             android:textSize="20sp"
+            android:visibility="gone"
             android:layout_marginStart="10dp" />
 
         <Spinner
@@ -181,6 +184,7 @@
             android:layout_height="wrap_content"
             android:layout_alignBottom="@id/tw_card"
             android:layout_alignTop="@id/tw_card"
+            android:visibility="gone"
             android:layout_toEndOf="@id/tw_card" />
     </RelativeLayout>
 </ScrollView>

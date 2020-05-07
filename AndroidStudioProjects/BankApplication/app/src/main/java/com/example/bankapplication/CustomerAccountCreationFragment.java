@@ -87,7 +87,7 @@ public class CustomerAccountCreationFragment extends Fragment implements Adapter
                 bank.createAccountRequest(accountType, viewModel.getCustomerId(),
                         binding.etAccountName.getText().toString(),
                         Float.parseFloat(binding.etCreditLimit.getText().toString()), currentDate);
-                Toast.makeText(getContext(), "Account created.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Account creation request sent.", Toast.LENGTH_LONG).show();
             }
             catch (Exception e) {
                 System.out.println("_LOG: "+e);

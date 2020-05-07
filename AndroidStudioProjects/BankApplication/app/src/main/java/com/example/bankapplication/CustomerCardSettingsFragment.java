@@ -103,6 +103,7 @@ public class CustomerCardSettingsFragment extends Fragment {
         try {
             data.updateCardSettings(binding.etCardName.getText().toString(), payAmount, withdrawAmount, binding.spinner.getSelectedItemPosition() + 1, card.getId(), state);
             Toast.makeText(getContext(), "Card updated", Toast.LENGTH_LONG).show();
+            viewModel.setAccountCards(data.getAccountCards(viewModel.getAccountToEdit()));
         }
         catch (Exception e) {
             System.err.println("_LOG: "+e);

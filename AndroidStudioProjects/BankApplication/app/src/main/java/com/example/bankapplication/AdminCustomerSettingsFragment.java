@@ -15,7 +15,6 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.example.bankapplication.databinding.FragmentAdminCustomerSettingsBinding;
 
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -25,6 +24,7 @@ public class AdminCustomerSettingsFragment extends Fragment implements AdapterVi
     private SharedViewModelAdmin viewModel;
 
     private int accountId = 0;
+    private int accType = 0;
     private String accountNumber = "";
     private ArrayList<AccountListElement> accList = new ArrayList<>();
     private ArrayAdapter<AccountListElement> accountAdapter;
@@ -146,6 +146,10 @@ public class AdminCustomerSettingsFragment extends Fragment implements AdapterVi
             binding.twAccountBalance.setVisibility(View.GONE);
             binding.twAccountState.setVisibility(View.GONE);
             binding.twAccountType.setVisibility(View.GONE);
+            binding.buttonAcceptAccount.setVisibility(View.GONE);
+            binding.buttonRejectAccount.setVisibility(View.GONE);
+            binding.twAccount.setVisibility(View.GONE);
+            binding.spinner.setVisibility(View.GONE);
         }
     }
 
@@ -165,8 +169,12 @@ public class AdminCustomerSettingsFragment extends Fragment implements AdapterVi
 
     private void changeAccountState(int state) {
         try {
-            data.updateState("accounts", state, accountId);
+            // Change state to payment disabled if the acc is savings or fixed term
             if (state == 2)
+                state = ((accType == 3 || accType == 4)) ? 4 : 2;
+
+            data.updateState("accounts", state, accountId);
+            if (state == 2 || state == 4)
                 Toast.makeText(getContext(), "Account enabled.", Toast.LENGTH_LONG).show();
             else if (state == 3)
                 Toast.makeText(getContext(), "Account disabled.", Toast.LENGTH_LONG).show();
@@ -194,6 +202,7 @@ public class AdminCustomerSettingsFragment extends Fragment implements AdapterVi
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         accountId = accList.get(position).getId();
+        accType = accList.get(position).getType();
         accountNumber = accList.get(position).getAccountNumber();
         try {
             binding.twAccountName.setText("Account name: " + accList.get(position).getName());
@@ -203,13 +212,7 @@ public class AdminCustomerSettingsFragment extends Fragment implements AdapterVi
             binding.twAccountState.setText("Account state: " + accList.get(position).getStateString());
             binding.twAccountType.setText(String.format(Locale.GERMANY, "Account type: %d", accList.get(position).getType()));
             getCards(accountNumber);
-            if (cards.isEmpty()) {
-                binding.buttonAcceptCards.setVisibility(View.GONE);
-                binding.buttonRejectCards.setVisibility(View.GONE);
-                binding.twCard.setVisibility(View.GONE);
-                binding.spinnerCard.setVisibility(View.GONE);
-            }
-            else {
+            if (!cards.isEmpty()) {
                 binding.buttonAcceptCards.setVisibility(View.VISIBLE);
                 binding.buttonRejectCards.setVisibility(View.VISIBLE);
                 binding.twCard.setVisibility(View.VISIBLE);

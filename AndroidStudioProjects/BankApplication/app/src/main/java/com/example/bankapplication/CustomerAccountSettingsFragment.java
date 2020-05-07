@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.example.bankapplication.databinding.FragmentCustomerAccountSettingsBinding;
 
+import java.sql.Date;
 import java.util.Random;
 
 public class CustomerAccountSettingsFragment extends Fragment implements AdapterView.OnItemSelectedListener {
@@ -131,7 +132,7 @@ public class CustomerAccountSettingsFragment extends Fragment implements Adapter
         try {
             if (data.exists("accounts", number))
                 requestCard();
-            data.createCardRequest(acc, number);
+            data.createCardRequest(acc, number, new Date(time.today()));
             Toast.makeText(getContext(), "Card requested.", Toast.LENGTH_LONG).show();
         }
         catch (Exception e) {

@@ -64,7 +64,7 @@ public class MainCustomerCreationFragment extends Fragment {
     private void createAccount(String userName, String name, String password, String socialid, String address, String phoneNumber, String zipcode) {
         try {
             // Instance where there isn't an account called this in the database
-            if (!data.customerAlreadyExists(viewModel.getBankId(), userName)) {
+            if (!data.customerAlreadyExists(bank.getId(), userName)) {
                 // Create hashed password
                 String salt = Hasher.getRandomSalt();
                 String hashPass = Hasher.hashPassword(password, salt);
