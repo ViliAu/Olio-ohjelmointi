@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.example.bankapplication.databinding.FragmentCustomerAccountSettingsBinding;
 
 import java.sql.Date;
+import java.util.Locale;
 import java.util.Random;
 
 public class CustomerAccountSettingsFragment extends Fragment implements AdapterView.OnItemSelectedListener {
@@ -62,13 +63,8 @@ public class CustomerAccountSettingsFragment extends Fragment implements Adapter
     private void initTexts() {
         binding.etAccountName.setText(acc.getName());
         binding.etInfo.setText("0");
-        if (!(acc instanceof CreditAccount)) {
-            binding.twInfo.setVisibility(View.INVISIBLE);
-            binding.etInfo.setVisibility(View.INVISIBLE);
-        }
-        else {
-            binding.etInfo.setText(String.valueOf(((CreditAccount) acc).getCreditLimit()));
-        }
+        binding.twInfo.setVisibility(View.VISIBLE);
+        binding.etInfo.setVisibility(View.VISIBLE);
     }
 
     private void initSwitch() {
@@ -177,6 +173,8 @@ public class CustomerAccountSettingsFragment extends Fragment implements Adapter
         if (acc instanceof FixedTermAccount) {
             binding.twAccountType.setVisibility(View.INVISIBLE);
             binding.spinner.setVisibility(View.INVISIBLE);
+            binding.etInfo.setVisibility(View.INVISIBLE);
+            binding.twInfo.setVisibility(View.INVISIBLE);
             return;
         }
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
@@ -190,17 +188,22 @@ public class CustomerAccountSettingsFragment extends Fragment implements Adapter
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         binding.switchPaymentEnabled.setEnabled(true);
-        binding.switchPaymentEnabled.setChecked(true);
         binding.buttonUpdateInfo.setEnabled(true);
         binding.twInfo.setVisibility(View.INVISIBLE);
         binding.etInfo.setVisibility(View.INVISIBLE);
+        binding.etInfo.setText("0");
         if (position == 2) {
             binding.switchPaymentEnabled.setChecked(false);
             binding.switchPaymentEnabled.setEnabled(false);
         }
-        else if (position == 3) {
+        else if (position == 1) {
             binding.twInfo.setVisibility(View.VISIBLE);
             binding.etInfo.setVisibility(View.VISIBLE);
+            if (acc instanceof CreditAccount)
+                binding.etInfo.setText(String.valueOf(((CreditAccount) acc).getCreditLimit()));
+            else
+                binding.etInfo.setText("0");
+
         }
         type = position+1;
     }

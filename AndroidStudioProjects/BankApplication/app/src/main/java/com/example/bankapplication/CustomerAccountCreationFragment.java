@@ -49,6 +49,11 @@ public class CustomerAccountCreationFragment extends Fragment implements Adapter
         initSpinner();
         initButtons();
         initCalendar();
+        initText();
+    }
+
+    private void initText() {
+        binding.twBankInterest.setText(String.format(Locale.getDefault(), "Bank interest: %.2f%%", bank.getInterest()));
     }
 
     private void initSpinner() {

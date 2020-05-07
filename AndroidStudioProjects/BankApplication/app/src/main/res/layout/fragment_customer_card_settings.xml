@@ -27,6 +27,7 @@
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/tw_card_name"
+        android:inputType="text"
         android:layout_below="@id/header" />
 
     <TextView
@@ -45,6 +46,7 @@
         android:layout_alignEnd="@id/et_card_name"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/tw_withdraw_limit"
+        android:inputType="numberDecimal"
         android:layout_below="@id/tw_card_name" />
 
     <TextView
@@ -63,6 +65,7 @@
         android:layout_alignEnd="@id/et_card_name"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/tw_pay_limit"
+        android:inputType="numberDecimal"
         android:layout_below="@id/tw_withdraw_limit" />
 
     <TextView

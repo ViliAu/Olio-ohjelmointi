@@ -74,7 +74,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Zip code"
-            android:inputType="text"
+            android:inputType="number"
             android:textSize="15sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -90,7 +90,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Phone number"
-            android:inputType="text"
+            android:inputType="phone"
             android:textSize="15sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -107,6 +107,7 @@
             android:layout_height="wrap_content"
             android:hint="Username"
             android:inputType="text"
+            android:maxLength="20"
             android:textSize="15sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -134,8 +135,9 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp"
         android:background="#e0e0e0"
+        android:padding="15dp"
         android:text="Send request"
-        android:textSize="25sp" />
+        android:textSize="15sp" />
 
 
 </RelativeLayout>

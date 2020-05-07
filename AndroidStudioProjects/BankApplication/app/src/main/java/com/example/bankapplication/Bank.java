@@ -40,6 +40,9 @@ public class Bank {
     public int getId() {
         return id;
     }
+    public float getInterest() {
+        return interest;
+    }
 
     public void setValues(int id) throws Exception {
         BankData bank = data.getBankById(id);
@@ -150,7 +153,7 @@ public class Bank {
 
         // Calculate payable interest and pay interest
         sum *= (p.getAmount() * 0.01f);
-        data.payInterest(p.getAccountTo(), sum, new Date(time.getDateAdvancedByMonth(p.getDate().getTime())), id,
+        data.payInterest(p.getAccountTo(), sum, new Date(time.getDateAdvancedByMonth(p.getDate().getTime())), p.getId(),
                 new Date(time.getDateAdvancedByMonth(p.getDate().getTime())));
 
         // Create transaction history

@@ -110,7 +110,7 @@ public class DataManager {
 
     public void payInterest(String account, float amount, Date date, int id, Date advanceDate) throws Exception {
         DataBase.dataUpdate("EXEC pay_interest @account = '" + account + "', @amount = " + amount + ", @date = '" + date + "', @id =" + id);
-        DataBase.dataUpdate("UPDATE pending_transactions set due_date = '" + advanceDate + "' WHERE id = "+id);
+        //DataBase.dataUpdate("UPDATE pending_transactions set due_date = '" + advanceDate + "' WHERE id = "+id);
     }
 
     public ArrayList<Customer> getCustomersForAdminView(String searchPattern, String searchWord) throws Exception {
@@ -229,7 +229,7 @@ public class DataManager {
 
     public boolean hasEnoughMoney(String accountFrom, float amount) throws Exception {
         ResultSet rs = DataBase.dataQuery("SELECT * FROM accounts WHERE address = '" + accountFrom + "' ");
-        return (rs.getFloat("money_amount") + rs.getFloat("credit_limit") > amount);
+        return (rs.getFloat("money_amount") + rs.getFloat("credit_limit") >= amount);
     }
 
     public ArrayList<PendingPayment> getPendingPayments() throws Exception {
@@ -320,7 +320,7 @@ public class DataManager {
     }
 
     public void transferMoney(PendingPayment p) throws Exception {
-        DataBase.dataQuery("EXEC transfer_money @account_from = '"
+        DataBase.dataUpdate("EXEC transfer_money @account_from = '"
                 + p.getAccountFrom() + "', @account_to = '"
                 + p.getAccountTo() + "', @amount = " + p.getAmount());
     }

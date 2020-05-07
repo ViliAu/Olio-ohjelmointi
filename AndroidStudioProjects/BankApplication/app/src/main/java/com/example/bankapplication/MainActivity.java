@@ -79,6 +79,14 @@ public class MainActivity extends AppCompatActivity implements LoginPinCodeDialo
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        if (fragment instanceof StartFragment)
+            super.onBackPressed();
+        else
+            handleBackButtonAction();
+    }
+
     private void handleBackButtonAction() {
         if (fragment instanceof MainCustomerCreationFragment) {
             loadFragment(new LoginFragment());

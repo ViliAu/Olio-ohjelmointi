@@ -136,6 +136,7 @@ public class CustomerTransactionFragment extends Fragment {
         catch (Exception e) {
             System.out.println("_LOG: "+e);
             Toast.makeText(getContext(), "Error trying to find receiving account.", Toast.LENGTH_LONG).show();
+            binding.etAccountTo.setError("Account not found.");
         }
         // Check if money is being transferred to the same account
         if (binding.etAccountTo.equals(accs.get(binding.spinner.getSelectedItemPosition()).getAccountNumber())) {

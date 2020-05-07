@@ -104,10 +104,10 @@ public class CustomerHomeRecyclerAdapter extends RecyclerView.Adapter<CustomerHo
             holder.amount.setTextColor(Color.rgb(153, 204, 0));
             holder.deleteImage.setVisibility(View.INVISIBLE);
         }
-        //
+        
         if (payment.getDate().before(new Date(time.today())))
             holder.dueDate.setTextColor(Color.rgb(255,68,68));
-        holder.dueDate.setText("Due date: "+payment.getDate().toString());
+        holder.dueDate.setText("Due date: "+time.getReadableDate(payment.getDate().getTime()));
         holder.message.setText("Message: "+payment.getMessage());
     }
 

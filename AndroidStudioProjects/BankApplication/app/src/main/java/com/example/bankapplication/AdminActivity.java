@@ -51,6 +51,11 @@ public class AdminActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        handleBackButtonAction();
+    }
+
     private void handleBackButtonAction() {
         if (currentFragment instanceof AdminHomeFragment) {
             loadMainActivity();

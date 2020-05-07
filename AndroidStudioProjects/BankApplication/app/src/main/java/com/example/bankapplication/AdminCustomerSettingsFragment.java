@@ -128,7 +128,7 @@ public class AdminCustomerSettingsFragment extends Fragment implements AdapterVi
         accountAdapter.setDropDownViewResource(R.layout.spinner_item_account_type);
         binding.spinner.setAdapter(accountAdapter);
         binding.spinner.setOnItemSelectedListener(this);
-        binding.spinner.setSelection(0);
+        binding.spinner.setSelection(accPos);
     }
 
     private void initCardSpinner() {
@@ -136,6 +136,7 @@ public class AdminCustomerSettingsFragment extends Fragment implements AdapterVi
         cardAdapter.setDropDownViewResource(R.layout.spinner_item_account_customer);
         binding.spinnerCard.setAdapter(cardAdapter);
         binding.spinnerCard.setSelection(accPos);
+        binding.spinnerCard.setSelection(0);
     }
 
     private void initText() {

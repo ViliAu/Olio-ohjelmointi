@@ -51,7 +51,8 @@
         android:layout_below="@+id/input_password"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp"
-        android:textSize="50dp"
+        android:textSize="20dp"
+        android:padding="10dp"
         android:background="#e0e0e0"
         android:text="LOGIN" />
 

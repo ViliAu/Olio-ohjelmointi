@@ -70,6 +70,11 @@ public class CustomerActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        handleBackButtonAction();
+    }
+
     private void handleBackButtonAction() {
         if (fragment instanceof CustomerAccountCreationFragment ||
                 fragment instanceof CustomerCardSimulationsFragment ||
