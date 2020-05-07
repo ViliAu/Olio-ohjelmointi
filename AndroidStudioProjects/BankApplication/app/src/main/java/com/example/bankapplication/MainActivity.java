@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements LoginPinCodeDialo
         LoadingScreen.progressBar = binding.progressbar;
         // Ugly workaround for loading progress bar
         LoadingScreen l = new LoadingScreen();
+        l.execute();
         l.cancel(true);
         //l.cancel(true);
 

@@ -41,26 +41,26 @@ public class DataBase {
         @Override
         protected String doInBackground(String... params) { */
     private static ResultSet dataBaseAccess(String query) throws Exception {
-        LoadingScreen l = new LoadingScreen();
-        l.execute();
         String result;
-
-        // Connect to database
-        boolean isConnected = getConnection();
-        if (!isConnected) {
-            result = "Couldn't connect to database.";
-        } else {
-            // Execute sql query
-            System.out.println("_LOG: Query start: " + query);
-            Statement stmt = connection.createStatement();
-            rs = stmt.executeQuery(query);
-
-            if (rs.next()) {
-                l.cancel(true);
-                return rs;
+        try {
+            // Connect to database
+            boolean isConnected = getConnection();
+            if (!isConnected) {
+                result = "Couldn't connect to database.";
             } else {
-                result = "Couldn't find any matches!";
+                // Execute sql query
+                System.out.println("_LOG: Query start: " + query);
+                Statement stmt = connection.createStatement();
+                ResultSet rs = stmt.executeQuery(query);
+                if (rs.next()) {
+                    return rs;
+                } else {
+                    result = "Couldn't find any matches!";
+                }
             }
+        }
+        catch (Exception e) {
+            result = e.getMessage();
         }
         System.out.println("_LOG: " + result);
         return null;

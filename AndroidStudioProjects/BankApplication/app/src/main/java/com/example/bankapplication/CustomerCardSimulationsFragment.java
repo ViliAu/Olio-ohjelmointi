@@ -24,12 +24,14 @@ public class CustomerCardSimulationsFragment extends Fragment implements Adapter
     private ArrayAdapter<Card> cardAdapter;
     private Account acc;
     private Bank bank;
+    private DataManager data;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentCustomerCardSimulationsBinding.inflate(inflater, container, false);
         bank = Bank.getInstance();
+        data = DataManager.getInstance();
         return binding.getRoot();
     }
 
@@ -155,6 +157,8 @@ public class CustomerCardSimulationsFragment extends Fragment implements Adapter
             Toast.makeText(getContext(), "Simulation successful.", Toast.LENGTH_LONG).show();
             CustomerActivity act = (CustomerActivity)getActivity();
             viewModel.setAccounts(act.updateAccounts());
+            viewModel.setAccountCards(data.getAccountCards(viewModel.getAccountToEdit()));
+            cards = viewModel.getAccountCards();
         }
         catch (Exception e) {
             Toast.makeText(getContext(), "Error trying to simulate.", Toast.LENGTH_LONG).show();
