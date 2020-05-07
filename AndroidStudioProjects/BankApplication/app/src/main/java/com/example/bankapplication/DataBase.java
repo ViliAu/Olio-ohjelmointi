@@ -13,8 +13,6 @@ public class DataBase {
 
     private static Connection connection;
     // Database query result
-    private static ResultSet rs;
-    //private DataBaseAccess access;
 
     // Deny instantiation
     private DataBase() {
@@ -37,7 +35,7 @@ public class DataBase {
         if (rs == null)
             return 0;
         else
-            return rs.getInt("id");
+            return rs.getInt("id")+1;
     }
 
     private static ResultSet fetchData(String query) throws Exception {
@@ -52,13 +50,7 @@ public class DataBase {
             System.out.println("_LOG: Query start: " + query);
             Statement stmt = connection.createStatement();
             ResultSet rs;
-            //try {
-                rs = stmt.executeQuery(query);
-            /*}
-            catch (Exception e) {
-                System.err.println("_LOG: "+e);
-                //throw e;
-            }*/
+            rs = stmt.executeQuery(query);
             if (rs.next()) {
                 return rs;
             } else {

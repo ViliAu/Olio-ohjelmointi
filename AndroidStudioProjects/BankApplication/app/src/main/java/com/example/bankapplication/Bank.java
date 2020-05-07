@@ -150,7 +150,8 @@ public class Bank {
 
         // Calculate payable interest and pay interest
         sum *= (p.getAmount() * 0.01f);
-        data.payInterest(p.getAccountTo(), sum, new Date(time.getDateAdvancedByMonth(p.getDate().getTime())), id);
+        data.payInterest(p.getAccountTo(), sum, new Date(time.getDateAdvancedByMonth(p.getDate().getTime())), id,
+                new Date(time.getDateAdvancedByMonth(p.getDate().getTime())));
 
         // Create transaction history
         data.createTransactionHistory(p.getAccountFrom(), p.getAccountTo(), bicFrom, bicTo, sum,

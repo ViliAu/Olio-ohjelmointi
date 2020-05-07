@@ -82,7 +82,7 @@ public class DataManager {
     }
 
     public int getBankIdByBankName(String name) throws Exception {
-        ResultSet rs = DataBase.dataQuery("SELECT * FROM accounts WHERE name = '" + name + "'");
+        ResultSet rs = DataBase.dataQuery("SELECT * FROM banks WHERE name = '" + name + "'");
         return rs.getInt("id");
     }
 
@@ -108,12 +108,9 @@ public class DataManager {
         return (rs != null);
     }
 
-    public void payInterest(String account, float amount, Date date, int id) throws Exception {
-        try {
-            DataBase.dataUpdate("EXEC pay_interest @account = '" + account + "', @amount = " + amount + ", @date = '" + date + "', @id =" + id);
-        } catch (Exception e) {
-            throw e;
-        }
+    public void payInterest(String account, float amount, Date date, int id, Date advanceDate) throws Exception {
+        DataBase.dataUpdate("EXEC pay_interest @account = '" + account + "', @amount = " + amount + ", @date = '" + date + "', @id =" + id);
+        DataBase.dataUpdate("UPDATE pending_transactions set due_date = '" + advanceDate + "' WHERE id = "+id);
     }
 
     public ArrayList<Customer> getCustomersForAdminView(String searchPattern, String searchWord) throws Exception {
