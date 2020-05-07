@@ -85,7 +85,10 @@ public class CustomerTransactionHistoryRecyclerAdapter extends RecyclerView.Adap
 
     @Override
     public int getItemCount() {
-        return paymentList.size();
+        if (paymentList == null)
+            return 0;
+        else
+            return paymentList.size();
     }
 
 }

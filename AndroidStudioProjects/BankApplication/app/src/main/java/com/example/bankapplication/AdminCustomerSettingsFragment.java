@@ -25,6 +25,7 @@ public class AdminCustomerSettingsFragment extends Fragment implements AdapterVi
 
     private int accountId = 0;
     private int accType = 0;
+    private int accPos = 0;
     private String accountNumber = "";
     private ArrayList<AccountListElement> accList = new ArrayList<>();
     private ArrayAdapter<AccountListElement> accountAdapter;
@@ -134,7 +135,7 @@ public class AdminCustomerSettingsFragment extends Fragment implements AdapterVi
         cardAdapter = new ArrayAdapter(getContext(), R.layout.spinner_item_account_customer, cards);
         cardAdapter.setDropDownViewResource(R.layout.spinner_item_account_customer);
         binding.spinnerCard.setAdapter(cardAdapter);
-        binding.spinnerCard.setSelection(0);
+        binding.spinnerCard.setSelection(accPos);
     }
 
     private void initText() {
@@ -178,6 +179,8 @@ public class AdminCustomerSettingsFragment extends Fragment implements AdapterVi
                 Toast.makeText(getContext(), "Account enabled.", Toast.LENGTH_LONG).show();
             else if (state == 3)
                 Toast.makeText(getContext(), "Account disabled.", Toast.LENGTH_LONG).show();
+            accList = data.loadAccounts(customer.getId());
+            initSpinner();
         }
         catch (Exception e) {
             System.err.println("_LOG: "+e);
@@ -204,6 +207,7 @@ public class AdminCustomerSettingsFragment extends Fragment implements AdapterVi
         accountId = accList.get(position).getId();
         accType = accList.get(position).getType();
         accountNumber = accList.get(position).getAccountNumber();
+        accPos = position;
         try {
             binding.twAccountName.setText("Account name: " + accList.get(position).getName());
             binding.twAccountNumber.setText("Account number: " + accList.get(position).getAccountNumber());

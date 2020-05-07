@@ -113,7 +113,10 @@ public class CustomerHomeRecyclerAdapter extends RecyclerView.Adapter<CustomerHo
 
     @Override
     public int getItemCount() {
-        return paymentList.size();
+        if (paymentList == null)
+            return 0;
+        else
+            return paymentList.size();
     }
 
 }

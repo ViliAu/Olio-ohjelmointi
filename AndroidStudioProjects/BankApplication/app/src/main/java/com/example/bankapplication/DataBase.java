@@ -21,78 +21,93 @@ public class DataBase {
     }
 
     static ResultSet dataQuery(String query) throws Exception {
-        return dataBaseAccess(query);
+        return fetchData(query);
     }
 
     public static void dataInsert(String input) throws Exception {
-        rs = dataBaseAccess(input);
+        dataBaseUpdate(input);
     }
 
     public static void dataUpdate(String update) throws Exception {
-        rs = dataBaseAccess(update);
+        dataBaseUpdate(update);
     }
 
     public static int getNewId(String tableName) throws Exception {
-        return createNewId(tableName);
+        ResultSet rs = fetchData("SELECT TOP 1 * FROM " + tableName + " ORDER BY id DESC");
+        if (rs == null)
+            return 0;
+        else
+            return rs.getInt("id");
     }
 
-    /* Database query class, asynchronous
-    public static class DatabaseAccess extends AsyncTask<String, String, String> {
-        @Override
-        protected String doInBackground(String... params) { */
-    private static ResultSet dataBaseAccess(String query) throws Exception {
+    private static ResultSet fetchData(String query) throws Exception {
         String result;
-        try {
-            // Connect to database
-            boolean isConnected = getConnection();
-            if (!isConnected) {
-                result = "Couldn't connect to database.";
+        // Connect to database
+        boolean isConnected = getConnection();
+        if (!isConnected) {
+            result = "Couldn't connect to database.";
+            throw new Exception();
+        } else {
+            // Execute sql query
+            System.out.println("_LOG: Query start: " + query);
+            Statement stmt = connection.createStatement();
+            ResultSet rs;
+            //try {
+                rs = stmt.executeQuery(query);
+            /*}
+            catch (Exception e) {
+                System.err.println("_LOG: "+e);
+                //throw e;
+            }*/
+            if (rs.next()) {
+                return rs;
             } else {
-                // Execute sql query
-                System.out.println("_LOG: Query start: " + query);
-                Statement stmt = connection.createStatement();
-                ResultSet rs = stmt.executeQuery(query);
-                if (rs.next()) {
-                    return rs;
-                } else {
-                    result = "Couldn't find any matches!";
-                }
+                result = "Couldn't find any matches!";
             }
-        }
-        catch (Exception e) {
-            result = e.getMessage();
         }
         System.out.println("_LOG: " + result);
         return null;
     }
 
+    private static void dataBaseUpdate(String query) throws Exception {
+        String result = "";
+        // Connect to database
+        boolean isConnected = getConnection();
+        if (!isConnected) {
+            result = "Couldn't connect to database.";
+            throw new Exception();
+        } else {
+            // Execute sql query
+            System.out.println("_LOG: Query start: " + query);
+            Statement stmt = connection.createStatement();
+            stmt.executeUpdate(query);
+        }
+        System.out.println("_LOG: " + result);
+    }
+
+    /*
     private static int createNewId(String tableName) throws Exception {
         String result;
-        try {
-            // Connect to database
-            boolean isConnected = getConnection();
-            if (!isConnected) {
-                result = "Couldn't connect to database.";
+        // Connect to database
+        boolean isConnected = getConnection();
+        if (!isConnected) {
+            result = "Couldn't connect to database.";
+        } else {
+            // Execute sql query
+            System.out.println("_LOG: Query start: SELECT TOP 1 * FROM " + tableName + " ORDER BY id DESC");
+            Statement stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT TOP 1 * FROM " + tableName + " ORDER BY id DESC");
+            System.out.println("_LOG: Query end");
+            if (rs.next()) {
+                return rs.getInt("id") + 1;
             } else {
-                // Execute sql query
-                System.out.println("_LOG: Query start: SELECT TOP 1 * FROM " + tableName + " ORDER BY id DESC");
-                Statement stmt = connection.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT TOP 1 * FROM " + tableName + " ORDER BY id DESC");
-                System.out.println("_LOG: Query end");
-                if (rs.next()) {
-                    return rs.getInt("id") + 1;
-                } else {
-                    result = ("List is empty or couldn't create list order");
-                }
+                result = ("List is empty or couldn't create list order");
             }
-        } catch (Exception ex) {
-            result = ex.getMessage();
         }
         System.out.println("_LOG: " + result);
         return 0;
-    }
+    }*/
 
-    // DATABASE CONNECTION ÄLÄ KOSKE HYVIN TOIMII
     @SuppressLint("NewApi")
     private static void connect() {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -122,14 +137,4 @@ public class DataBase {
             return false;
         }
     }
-    /*
-    public static void closeConnection() {
-        try {
-            connection.close();
-            System.out.println("_LOG: Database closed successfully.");
-        }
-        catch (SQLException e) {
-            System.out.println("_LOG: "+e);
-        }
-    }*/
 }
